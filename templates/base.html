@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="{{ lang | default(value="en") }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+  {%- if config.description %}
+  <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+  {%- endif %}
+  <meta name="generator" content="zola + seijaku">
+  {%- set site_desc = config.description | default(value="") %}
+  {%- if page is defined %}
+  {%- set og_title = page.title %}{% set og_desc = page.description | default(value=site_desc) %}{% set og_type = "article" %}
+  {%- elif section is defined %}
+  {%- set og_title = section.title %}{% set og_desc = section.description | default(value=site_desc) %}{% set og_type = "website" %}
+  {%- else %}
+  {%- set og_title = config.title %}{% set og_desc = site_desc %}{% set og_type = "website" %}
+  {%- endif %}
+  {%- set og_image = "" %}
+  {%- if page is defined %}{% if page.extra.og_image %}{% set og_image = get_url(path=page.extra.og_image) %}{% elif page.extra.image %}{% set og_image = get_url(path=page.extra.image) %}{% endif %}{% endif %}
+  {%- if og_image == "" and config.extra.seijaku.og_image %}{% set og_image = get_url(path=config.extra.seijaku.og_image) %}{% endif %}
+  <meta property="og:site_name" content="{{ config.title }}">
+  <meta property="og:type" content="{{ og_type }}">
+  <meta property="og:title" content="{{ og_title }}">
+  <meta property="og:description" content="{{ og_desc }}">
+  <meta property="og:url" content="{{ current_url | default(value=config.base_url) | safe }}">
+  {%- if og_image != "" %}
+  <meta property="og:image" content="{{ og_image | safe }}">
+  <meta name="twitter:card" content="summary_large_image">
+  {%- else %}
+  <meta name="twitter:card" content="summary">
+  {%- endif %}
+  {%- if config.generate_feeds %}
+  {%- for feed in config.feed_filenames %}
+  <link rel="alternate" type="application/rss+xml" title="{{ config.title }}" href="{{ get_url(path=feed) | safe }}">
+  {%- endfor %}
+  {%- endif %}
+  <link rel="stylesheet" href="{{ get_url(path="seijaku.css") | safe }}">
+  {%- block extra_head %}{% endblock extra_head %}
+</head>
+<body class="{% block body_class %}interior{% endblock body_class %}">
+  <a class="skip-link" href="#main-content">skip to content</a>
+  {%- if config.extra.seijaku.banner %}
+  <aside class="callout" role="note" aria-label="Site notice">
+    <div class="callout__inner">
+      <span class="callout__signal" aria-hidden="true"><i></i><i></i><i></i></span>
+      <p class="callout__text">{{ config.extra.seijaku.banner | safe }}</p>
+      <span class="callout__stamp" aria-hidden="true">broadcast / 001</span>
+    </div>
+  </aside>
+  {%- endif %}
+
+  {% include "partials/nav.html" %}
+
+  <main class="page" id="main-content">
+    {% block content %}{% endblock content %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer__flare" aria-hidden="true"></div>
+    <div class="footer__lead">
+      <p>Keep thinking<br>beyond defaults.</p>
+      <a class="button button--dark" href="{{ get_url(path="/articles/") | safe }}">Enter the archive</a>
+    </div>
+    <div class="footer__columns">
+      <div class="footer__column footer__column--wide">
+        <span class="footer__column-title">Location</span>
+        <nav class="youarehere" aria-label="You are here">
+          <a href="{{ get_url(path="/") | safe }}">Home</a>{% block crumbs %}{% endblock crumbs %}
+        </nav>
+      </div>
+      <div class="footer__column">
+        <span class="footer__column-title">Explore</span>
+        <nav class="footer__links" aria-label="Footer">
+          {%- if config.extra.seijaku.nav %}
+          {%- for item in config.extra.seijaku.nav %}
+          <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
+          {%- endfor %}
+          {%- endif %}
+          {%- if config.extra.seijaku.explore %}
+          {%- for item in config.extra.seijaku.explore %}
+          <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
+          {%- endfor %}
+          {%- endif %}
+        </nav>
+      </div>
+      <div class="footer__column">
+        {%- if config.extra.seijaku.social %}
+        <span class="footer__column-title">Elsewhere</span>
+        <nav class="footer__links" aria-label="Elsewhere">
+          {%- for item in config.extra.seijaku.social %}
+          <a href="{{ item.url | safe }}" rel="me">{{ item.name }}</a>
+          {%- endfor %}
+        </nav>
+        {%- else %}
+        <span class="footer__column-title">System</span>
+        <span>zero javascript</span>
+        <span>local type</span>
+        <span>open web</span>
+        {%- endif %}
+      </div>
+    </div>
+    <div class="footer__meta">
+      <span class="footer__brand">{{ config.title }}{% if config.extra.seijaku.version %} · ver. {{ config.extra.seijaku.version }}{% endif %}</span>
+      {%- if config.extra.seijaku.footer_note %}<span class="footer__note">{{ config.extra.seijaku.footer_note }}</span>{%- endif %}
+      <span>© signal remains yours</span>
+    </div>
+  </footer>
+</body>
+</html>

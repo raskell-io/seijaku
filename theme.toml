@@ -1,0 +1,56 @@
+name = "seijaku"
+description = "静寂 — a cinematic, hand-made theme: oversized grotesk type, full-bleed imagery, tinted editorial cards, and pill navigation. Zero JavaScript."
+license = "MIT"
+homepage = "https://github.com/raskell-io/seijaku"
+min_version = "0.19.0"
+demo = ""
+
+[extra]
+# All options live under [extra.seijaku] in your site's config.toml:
+#
+#   [extra.seijaku]
+#   version = "aw26"                        # seasonal version label in the brand (optional)
+#   banner = "A quiet announcement."        # site notice above the nav (optional)
+#   tagline = "(a quiet corner of the web)" # small text next to the brand (optional)
+#   footer_note = "made with care"          # footer sign-off (optional)
+#   mark = "images/mark.svg"                # monochrome SVG, inlined so it inherits text colour; used in nav and cards (optional)
+#   logo = "images/logo.png"                # raster alternative to mark (optional)
+#   portrait = "images/me.webp"             # circular portrait above the hero deck (optional)
+#   og_image = "images/og.png"              # default social image (optional)
+#   main_section = "articles"               # section listed on the homepage
+#   projects_section = "projects"           # section rendered by projects.html; enables the homepage strip (optional)
+#   cta = { name = "Start here", url = "@/start-here.md" }   # bevelled nav button (optional; defaults to main_section)
+#   nav = [                                 # primary pill; the current section is highlighted
+#     { name = "Articles", url = "@/articles/_index.md" },
+#     { name = "About", url = "@/about.md" },
+#   ]
+#   explore = [ { name = "Tags", url = "/tags" }, { name = "RSS", url = "/rss.xml" } ]   # footer-only links (optional)
+#   social = [ { name = "GitHub", url = "https://github.com/you" } ]                     # footer "Elsewhere" column (optional)
+#
+# Projects: content/projects/_index.md sets `template = "projects.html"` and lists tiers,
+# each naming project slugs in display order:
+#
+#   [extra]
+#   headline = "Built to survive production."   # homepage strip heading (optional)
+#   tiers = [
+#     { key = "venture", title = "Ventures", deck = "…", projects = ["raskell-01"] },
+#   ]
+#
+# Each project is a TOML file at data/projects/<slug>.toml:
+#
+#   title = "RASKELL-01"
+#   description = "One sentence."
+#   status = "live"            # live | stable | dev | early | progress (or set status_label)
+#   logo = "brands/x.png"      # small mark (optional; falls back to a monogram)
+#   image = "images/x.webp"    # large product visual above the card body (optional)
+#   featured = true            # include in the homepage strip (max 4)
+#   stack = ["Rust"]
+#   links = [ { name = "Website", url = "https://…" }, { name = "GitHub", url = "https://…" } ]
+#
+# Pages without a date (about, start-here, speaking) render without the metadata table.
+# A page can set `extra.portrait` (and `extra.portrait_alt`) to show a circular portrait beside its header.
+# Article pages set `extra.og_image` (or `extra.image`) for social previews.
+
+[author]
+name = "raskell.io"
+homepage = "https://raskell.io"

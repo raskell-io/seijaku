@@ -1,0 +1,51 @@
+// Interior page headers: large grotesk title, deck, optional eyebrow.
+.pagehead { margin-block-end: clamp(3rem, 6vw, 5rem); }
+.pagehead__eyebrow { margin-block-end: 1.1rem; color: var(--muted); font-size: 1rem; font-weight: 500; }
+.pagehead__eyebrow a { color: inherit; text-decoration: none; }
+.pagehead__eyebrow a:hover { text-decoration: underline; }
+.pagehead__title { max-width: 16ch; font-size: clamp(2.75rem, 6vw, 5.4rem); font-weight: 500; line-height: 1; letter-spacing: -0.04em; text-wrap: balance; }
+.pagehead__deck { max-width: 52rem; margin-block-start: clamp(1.5rem, 3vw, 2.5rem); font-size: var(--text-deck); font-weight: 500; line-height: 1.3; text-wrap: pretty; }
+
+.pagehead--post .pagehead__title { max-width: 14ch; }
+
+// Hairline-framed article body with corner ticks, as on Cortical's text sections.
+.post__body {
+  position: relative;
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(0rem, 5vw, 4.5rem) clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid var(--line);
+}
+
+.post__body::before,
+.post__body::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.post__body::before { left: -2px; }
+.post__body::after { right: -2px; }
+
+@media (min-width: 56rem) {
+  .post__body { border-inline: 1px solid var(--line); }
+}
+
+@media (max-width: 56rem) {
+  .post__body::before, .post__body::after { display: none; }
+}
+
+@media (max-width: 38rem) {
+  .pagehead__title { font-size: clamp(2.5rem, 12vw, 4rem); }
+}
+
+// Optional portrait beside a page header (front matter: extra.portrait).
+.pagehead--portrait { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto auto auto; column-gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+.pagehead--portrait > * { grid-column: 1; }
+.pagehead__portrait { grid-column: 2; grid-row: 1 / 5; align-self: start; width: clamp(9rem, 18vw, 16rem); height: auto; margin-block-start: 0.25rem; border-radius: 50%; }
+@media (max-width: 44rem) {
+  .pagehead--portrait { grid-template-columns: 1fr; }
+  .pagehead__portrait { grid-column: 1; grid-row: 1; width: 8rem; margin-block-end: 1.5rem; }
+}

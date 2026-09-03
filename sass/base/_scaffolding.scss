@@ -1,0 +1,116 @@
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  background: var(--paper-deep);
+}
+
+body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-prose);
+  font-size: clamp(1rem, 1.2vw, 1.18rem);
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Interior pages get a faint champagne/ice wash at the top for depth.
+.interior {
+  background:
+    radial-gradient(70rem 24rem at 88% 0, color-mix(in srgb, var(--ice) 38%, transparent), transparent 70%),
+    radial-gradient(48rem 20rem at 6% 0, color-mix(in srgb, var(--champagne) 26%, transparent), transparent 70%),
+    var(--paper);
+}
+
+.page {
+  width: min(var(--shell), calc(100% - (var(--gutter) * 2)));
+  margin-inline: auto;
+  padding-block: clamp(9rem, 12.5vw, 11.25rem) clamp(5rem, 9vw, 9rem);
+  flex: 1;
+}
+
+.home .page { width: 100%; padding: 0; }
+
+.skip-link {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  translate: 0 -120%;
+  background: #fff;
+  color: #000;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  &:focus { translate: 0; }
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+  &:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+}
+
+::selection { background: var(--ice); color: #071110; }
+
+// Brand mark, reused on cards.
+.mark { position: relative; width: 2.25rem; height: 1.35rem; display: block; }
+.mark::before { content: ""; position: absolute; inset: 0.12rem auto auto 0; width: 1.2rem; height: 1.1rem; border-radius: 50% 0 50% 50%; background: currentColor; transform: skewX(-18deg); }
+.mark i { position: absolute; width: 0.23rem; aspect-ratio: 1; border-radius: 50%; background: currentColor; }
+.mark i:nth-child(1) { inset: 0.05rem 0.48rem auto auto; }
+.mark i:nth-child(2) { inset: 0.55rem 0.14rem auto auto; }
+.mark i:nth-child(3) { inset: auto 0.5rem 0.04rem auto; }
+.mark--svg, .mark--img { width: 2.25rem; height: 2.25rem; }
+.mark--svg::before, .mark--img::before { content: none; }
+.mark--svg svg { display: block; width: 100%; height: 100%; }
+.mark--img { object-fit: contain; border-radius: 50%; }
+
+// Pill buttons. Default = bevelled gradient; --dark = graphite with ring border; --outline = hairline.
+.button {
+  display: inline-flex;
+  min-height: 3.75rem;
+  padding: 1.15rem 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 100px;
+  border: 1px solid transparent;
+  background: linear-gradient(180deg, #fbfaf8 0%, #e9e8e5 100%) padding-box, var(--ring-gradient) border-box;
+  box-shadow: 0 2px 0 #fff inset, 0 1px 1px rgba(255,255,255,0.5) inset, 0 0 1px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.1), 0 12px 30px rgba(0,0,0,0.1);
+  color: #000;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.button:visited { color: #000; }
+.button:hover { transform: translateY(-2px); box-shadow: 0 2px 0 #fff inset, 0 18px 36px rgba(0,0,0,0.18); }
+.button:active { transform: translateY(1px); }
+.button--dark { background: linear-gradient(#111514, #111514) padding-box, var(--ring-gradient) border-box; box-shadow: 0 0 1px rgba(255,255,255,0.55) inset, 0 2px 0 rgba(255,255,255,0.12) inset, 0 0 2.5rem rgba(71, 195, 201, 0.08); color: #fff; }
+.button--dark:visited { color: #fff; }
+.button--outline { border: 1px solid currentColor; background: transparent; box-shadow: none; color: inherit; }
+.button--outline:visited { color: inherit; }
+.button--outline:hover { transform: none; box-shadow: none; background: color-mix(in srgb, currentColor 8%, transparent); }
+.button--small { min-height: 2.5rem; padding: 0.75rem 1.375rem; font-size: 1rem; }
+.button.is-disabled { pointer-events: none; }
+
+@media (max-width: 40rem) {
+  .page { padding-block-start: 7.5rem; }
+  .button { min-height: 3.2rem; padding: 0.9rem 1.35rem; font-size: 0.95rem; }
+  .button--small { min-height: 2.5rem; padding: 0.7rem 1.2rem; font-size: 0.95rem; }
+}
+
+@media print {
+  .callout, .topnav, .feature-cards, .footer { display: none !important; }
+  .page, .home .page { width: 100%; padding: 0; }
+  body, .interior { background: #fff; color: #000; }
+}

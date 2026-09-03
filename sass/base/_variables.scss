@@ -1,0 +1,99 @@
+@font-face {
+  font-family: "Seijaku Sans";
+  src: url("fonts/geist-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Seijaku Sans";
+  src: url("fonts/geist-medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Seijaku Mono";
+  src: url("fonts/ibm-plex-mono-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Seijaku Mono";
+  src: url("fonts/ibm-plex-mono-medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+  --font-prose: "Seijaku Sans", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-mono: "Seijaku Mono", "SFMono-Regular", Consolas, monospace;
+  --paper: #f6f5f2;
+  --paper-deep: #ecebe8;
+  --ink: #000;
+  --muted: #626260;
+  --line: rgba(0, 0, 0, 0.14);
+  --card-silver: #b8bcbb;
+  --champagne: #efd093;
+  --pearl: #f4f0df;
+  --ice: #c8f0ef;
+  --canary: var(--champagne);
+  --forest: #0b2926;
+  --violet: #086b73;
+  --violet-bright: #58cbd2;
+  --cyan: #086b73;
+  --cyan-bright: #39bfc8;
+  --faint: #767673;
+  --line-strong: rgba(0, 0, 0, 0.32);
+  --surface: rgba(255, 255, 255, 0.42);
+  --glow-violet: rgba(57, 191, 200, 0.15);
+  --ring-gradient: linear-gradient(118deg, #e9bd70 0%, #f4f0df 46%, #c8f0ef 73%, #62d0d5 100%);
+  --ring-gradient-ink: linear-gradient(118deg, #b47a1c 0%, #8f8a72 46%, #2b9aa1 73%, #0b7a82 100%);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+  --screen: #d7e28c;
+  --screen-ink: #182018;
+  --tint-1: #ebe4d3;
+  --tint-2: #ebe9e2;
+  --tint-3: #dbe8e7;
+  --tint-4: #dfe5df;
+  --tint-5: #e1e0e7;
+  --tint-6: #dfe4e8;
+  --tint-bar: rgba(0, 0, 0, 0.06);
+  --text-deck: clamp(1.25rem, 1.95vw, 1.75rem);
+  --shell: 72.875rem;
+  --measure: 50rem;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #111312;
+    --paper-deep: #080908;
+    --ink: #f6f5f2;
+    --muted: #aaa9a5;
+    --line: rgba(255, 255, 255, 0.16);
+    --line-strong: rgba(255, 255, 255, 0.34);
+    --surface: rgba(255, 255, 255, 0.06);
+    --faint: #8b8b87;
+    --cyan: #a9e8e9;
+    --cyan-bright: #72d7dc;
+    --violet: #a9e8e9;
+    --violet-bright: #72d7dc;
+    --glow-violet: rgba(114, 215, 220, 0.16);
+    --ring-gradient-ink: var(--ring-gradient);
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+    --tint-1: #262219;
+    --tint-2: #232320;
+    --tint-3: #1b2625;
+    --tint-4: #1e241f;
+    --tint-5: #22212a;
+    --tint-6: #1e2427;
+    --tint-bar: rgba(255, 255, 255, 0.05);
+  }
+}

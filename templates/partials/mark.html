@@ -1,0 +1,9 @@
+{#- Brand mark. Set mark_class before including to add a modifier class. -#}
+{%- set mc = mark_class | default(value="") %}
+{%- if config.extra.seijaku.mark %}
+<span class="mark mark--svg {{ mc }}" aria-hidden="true">{{ load_data(path="static/" ~ config.extra.seijaku.mark, format="plain") | safe }}</span>
+{%- elif config.extra.seijaku.logo %}
+<img class="mark mark--img {{ mc }}" src="{{ get_url(path=config.extra.seijaku.logo) | safe }}" alt="">
+{%- else %}
+<span class="mark {{ mc }}" aria-hidden="true"><i></i><i></i><i></i></span>
+{%- endif %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} | {{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
+{% block content %}
+{%- if taxonomy.name == "tags" %}{% set pretty = term.name %}{% else %}{% set pretty = term.name | replace(from="-", to=" ") | title %}{% endif %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow"><a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{{ taxonomy.name | capitalize }}</a></p>
+  <h1 class="pagehead__title">{{ pretty }}</h1>
+  <p class="pagehead__deck">{{ term.pages | length }} {% if term.pages | length == 1 %}entry{% else %}entries{% endif %} filed under “{{ pretty }}”.</p>
+</header>
+{%- set pages = term.pages %}
+{% include "partials/post_list.html" %}
+{% endblock content %}
+{% block crumbs %} → <a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{{ taxonomy.name | capitalize }}</a> → <span aria-current="page">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %}</span>{% endblock crumbs %}

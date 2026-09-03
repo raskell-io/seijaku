@@ -1,0 +1,21 @@
+<table class="meta">
+  <tbody>
+    {%- if page.reading_time %}
+    <tr><th scope="row">Duration</th><td>{{ page.reading_time }} minute read</td></tr>
+    {%- endif %}
+    {%- if page.updated %}
+    <tr><th scope="row">Updated</th><td><time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time></td></tr>
+    {%- elif page.date %}
+    <tr><th scope="row">Published</th><td><time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time></td></tr>
+    {%- endif %}
+    {%- if page.taxonomies.categories %}
+    <tr><th scope="row">Category</th><td>{% for c in page.taxonomies.categories %}<a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{{ c | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {%- endif %}
+    {%- if page.taxonomies.series %}
+    <tr><th scope="row">Series</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {%- endif %}
+    {%- if page.taxonomies.tags %}
+    <tr><th scope="row">Topics</th><td>{% for tag in page.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{{ tag }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {%- endif %}
+  </tbody>
+</table>

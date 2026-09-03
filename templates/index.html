@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block body_class %}home{% endblock body_class %}
+{% block content %}
+{%- set main = config.extra.seijaku.main_section | default(value="articles") %}
+{%- set sec = get_section(path=main ~ "/_index.md") %}
+<section class="hero-home">
+  <div class="hero-home__shade" aria-hidden="true"></div>
+  <div class="hero-home__body">
+    {%- if config.extra.seijaku.portrait %}
+    <img class="hero-home__portrait" src="{{ get_url(path=config.extra.seijaku.portrait) | safe }}" alt="" width="96" height="96">
+    {%- endif %}
+    {{ section.content | safe }}
+  </div>
+  <div class="hero-home__buttons">
+    <a class="button" href="{{ sec.permalink | safe }}">Read the writing</a>
+    <a class="button" href="{{ get_url(path="/tags/") | safe }}">Explore the index</a>
+  </div>
+</section>
+
+<section class="feature-cards" aria-label="Explore seijaku">
+  {%- set latest = sec.pages | first %}
+  <article class="feature-card feature-card--device">
+    <img class="feature-card__device" src="{{ get_url(path="images/raskell-device.webp") | safe }}" alt="A fictional RASKELL-01 biological edge computer">
+    <div class="feature-card__body">
+      <h2>{{ latest.title }}</h2>
+      {%- if latest.description %}<p>{{ latest.description }}</p>{%- endif %}
+    </div>
+    <a class="button" href="{{ latest.permalink | safe }}">Read the latest</a>
+  </article>
+
+  <article class="feature-card feature-card--cloud">
+    <div class="feature-card__body">
+      <h2>The archive</h2>
+      <p>{{ sec.pages | length }} transmissions on edge systems, applied security, and thoughtful automation.</p>
+    </div>
+    <a class="button" href="{{ sec.permalink | safe }}">Browse everything</a>
+  </article>
+
+  <article class="feature-card feature-card--research">
+    <div class="feature-card__body">
+      <h2>Follow the signal</h2>
+      <p>Ideas are connected by subject, not trapped inside an algorithmic feed.</p>
+    </div>
+    <a class="button" href="{{ get_url(path="/tags/") | safe }}">See all topics</a>
+  </article>
+</section>
+
+<section class="home-latest">
+  <header class="pagehead home-latest__head">
+    <p class="pagehead__eyebrow">Latest writing</p>
+    <h2 class="pagehead__title">Writing for a more human web.</h2>
+  </header>
+  {%- if sec.pages %}
+  {%- set pages = sec.pages | slice(end=3) %}
+  {% include "partials/post_list.html" %}
+  <a class="button button--outline home-latest__more" href="{{ sec.permalink | safe }}">All {{ sec.title | default(value=main) | lower }}</a>
+  {%- endif %}
+</section>
+
+{%- if config.extra.seijaku.projects_section %}
+{%- set psec = get_section(path=config.extra.seijaku.projects_section ~ "/_index.md") %}
+{%- set_global featured = [] %}
+{%- for tier in psec.extra.tiers %}{% for slug in tier.projects %}{% set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}{% if p.featured %}{% set_global featured = featured | concat(with=p) %}{% endif %}{% endfor %}{% endfor %}
+{%- if featured | length > 0 %}
+<section class="home-projects">
+  <header class="pagehead home-projects__head">
+    <p class="pagehead__eyebrow">{{ psec.title }}</p>
+    <h2 class="pagehead__title">{{ psec.extra.headline | default(value=psec.title) }}</h2>
+  </header>
+  <ul class="projects projects--strip">
+    {%- for p in featured | slice(end=4) %}
+    {% include "partials/project_card.html" %}
+    {%- endfor %}
+  </ul>
+  <a class="button button--outline home-projects__more" href="{{ psec.permalink | safe }}">All {{ psec.title | lower }}</a>
+</section>
+{%- endif %}
+{%- endif %}
+{% endblock content %}

@@ -1,0 +1,48 @@
+.footer {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(55% 48% at 18% 100%, rgba(47, 155, 158, 0.2), transparent 100%),
+    radial-gradient(48% 42% at 82% 100%, rgba(207, 155, 82, 0.16), transparent 100%),
+    #020706;
+  color: #fff;
+  font-size: 1rem;
+}
+
+// Two soft light leaks (champagne over ice) that carry the page colour into the
+// black footer. Blurred pseudo-elements are oversized and clipped so no
+// transparent halo shows at the edges.
+.footer__flare { position: relative; height: 5.5rem; overflow: hidden; }
+.footer__flare::before,
+.footer__flare::after { content: ""; position: absolute; inset-inline: -2rem; }
+.footer__flare::before { top: -0.75rem; height: 3.5rem; background: linear-gradient(270deg, var(--paper) 0%, #e8c27c 12%, #5e4a2c 40%, #020706 70%); filter: blur(9px); }
+.footer__flare::after { bottom: -0.5rem; height: 2.75rem; background: linear-gradient(270deg, var(--paper) 0%, var(--ice) 14%, #0e3d3c 42%, transparent 74%); filter: blur(11px); }
+
+.footer__lead { min-height: 26rem; padding: clamp(4rem, 8vw, 7rem) var(--gutter); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; text-align: center; }
+.footer__lead p { font-size: clamp(3rem, 7.2vw, 7rem); font-weight: 500; line-height: 0.9; letter-spacing: -0.075em; }
+
+.footer__columns { display: grid; grid-template-columns: 2fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.14); }
+.footer__column { min-height: 12rem; padding: clamp(2rem, 4.5vw, 4rem); display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; border-right: 1px solid rgba(255,255,255,0.14); }
+.footer__column:last-child { border-right: 0; }
+.footer__column-title { margin-block-end: 1.2rem; background: var(--ring-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.5rem; }
+.footer__links, .youarehere { display: flex; flex-direction: column; gap: 0.9rem; }
+.youarehere { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.65rem; line-height: 1.4; }
+.footer a { color: #fff; }
+.footer a:visited { color: #fff; }
+.footer__meta { padding: 2.25rem var(--gutter); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; border-top: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.68); }
+.footer__brand { color: #fff; font-weight: 600; }
+
+@media (max-width: 48rem) {
+  .footer__columns { grid-template-columns: 1fr 1fr; }
+  .footer__column--wide { grid-column: 1 / -1; }
+}
+
+@media (max-width: 32rem) {
+  .footer__flare { height: 3.5rem; }
+  .footer__flare::before { height: 2.5rem; }
+  .footer__flare::after { height: 2rem; }
+  .footer__lead { min-height: 22rem; }
+  .footer__columns { grid-template-columns: 1fr; }
+  .footer__column--wide { grid-column: auto; }
+  .footer__column { min-height: 0; border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.14); }
+}

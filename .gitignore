@@ -1,0 +1,6 @@
+public/
+.DS_Store
+*.log
+# session handover notes stay local
+HANDOVER.md
+CLAUDE_HANDOVER.md

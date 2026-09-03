@@ -1,0 +1,132 @@
+.hero-home {
+  position: relative;
+  min-height: 100svh;
+  padding: clamp(9.5rem, 17svh, 12.5rem) 9.5vw clamp(4.5rem, 9svh, 7rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #070707 url("images/raskell-hero.webp") center / cover no-repeat;
+  color: #fff;
+}
+
+.hero-home__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 87% 33%, rgba(117, 222, 222, 0.14), transparent 24%),
+    radial-gradient(circle at 65% 86%, rgba(237, 191, 111, 0.1), transparent 25%),
+    linear-gradient(90deg, rgba(1, 10, 10, 0.5), rgba(0,0,0,0.02) 66%),
+    linear-gradient(0deg, rgba(0, 8, 7, 0.4), transparent 45%);
+}
+
+.hero-home__body,
+.hero-home__buttons { position: relative; z-index: 1; }
+
+// Headline pinned to the top of the viewport, deck + CTAs anchored to the
+// bottom edge so the whole fold reads as one composition.
+.hero-home__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.hero-home__body h1 {
+  max-width: 10.5em;
+  margin-block-end: auto;
+  padding-block-end: clamp(2.5rem, 6svh, 4.5rem);
+  font-size: clamp(3.6rem, 8.8vw, 10rem);
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.07em;
+  text-wrap: balance;
+}
+
+.hero-home__body p { max-width: 46rem; margin: 0; color: #fff; font-size: clamp(1.1rem, 1.9vw, 1.85rem); line-height: 1.3; text-wrap: pretty; }
+.hero-home__body strong { font-weight: 600; }
+.hero-home__buttons { margin-block-start: clamp(2rem, 4svh, 3rem); display: flex; flex-wrap: wrap; gap: 1.2rem 3.5rem; }
+.hero-home__buttons .button { min-width: min(18.5rem, 100%); }
+
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  padding: 1.25rem;
+  background: var(--paper);
+}
+
+.feature-card {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(37rem, 52vw, 48rem);
+  padding: clamp(1.7rem, 3vw, 2.4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: clamp(2rem, 4vw, 3rem);
+  overflow: hidden;
+  border-radius: 0.55rem;
+  background: linear-gradient(180deg, #b6bab9 0%, #dbdbdb 100%);
+  color: #000;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+}
+
+.feature-card::before { content: ""; position: absolute; inset: 0 0 auto 0; z-index: 2; height: 2px; background: var(--ring-gradient); opacity: 0.78; }
+
+.feature-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(0,0,0,0.72), transparent 65%); opacity: 0; }
+.feature-card--cloud { background: linear-gradient(145deg, rgba(6, 62, 64, 0.56), rgba(225, 190, 128, 0.1)), #5f8889 url("images/raskell-cloud.webp") center / cover no-repeat; background-blend-mode: color, normal; color: #fff; }
+.feature-card--research { background: #10150e url("images/raskell-research.webp") center / cover no-repeat; color: #fff; }
+.feature-card--cloud::after, .feature-card--research::after { opacity: 1; }
+
+.feature-card__device { position: absolute; z-index: 0; inset: clamp(1.5rem, 4vw, 3rem) 50% auto auto; translate: 50% 0; width: min(88%, 25rem); height: 46%; object-fit: contain; filter: drop-shadow(0 2rem 2rem rgba(0,0,0,0.2)); }
+.feature-card__body, .feature-card > .button { position: relative; z-index: 1; }
+.feature-card__body { display: flex; flex-direction: column; gap: 1.3rem; }
+.feature-card h2 { font-size: clamp(2.5rem, 3.6vw, 3.6rem); font-weight: 600; line-height: 1.02; letter-spacing: -0.055em; }
+.feature-card p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-size: clamp(1rem, 1.55vw, 1.45rem); line-height: 1.25; }
+.feature-card--device h2 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.feature-card > .button { width: 100%; }
+
+.home-latest {
+  padding: clamp(5rem, 9vw, 9rem) var(--gutter);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.home-latest > * { width: min(var(--shell), 100%); margin-inline: auto; }
+.home-latest__head { margin-block-end: clamp(2.5rem, 5vw, 4rem); }
+.home-latest__head .pagehead__title { max-width: 13ch; }
+.home-latest__more { display: flex; width: fit-content; margin: clamp(2.5rem, 5vw, 4rem) auto 0; padding-inline: 2.5rem; }
+
+@media (max-width: 68rem) {
+  .feature-cards { grid-template-columns: 1fr 1fr; }
+  .feature-card:first-child { grid-column: 1 / -1; min-height: 42rem; }
+  .feature-card__device { height: 62%; }
+}
+
+// Portrait tablets: the viewport is tall, so use the stacked four-line headline at a larger size.
+@media (max-width: 60rem) and (orientation: portrait) {
+  .hero-home__body h1 { max-width: 6.1em; font-size: clamp(3.6rem, 11vw, 6.5rem); }
+}
+
+@media (max-width: 44rem) {
+  .hero-home { min-height: max(100svh, 44rem); padding: 9.5rem 9.5vw 4rem; }
+  .hero-home__body h1 { max-width: 6.1em; padding-block-end: 2rem; font-size: clamp(3.6rem, 14vw, 5.6rem); line-height: 1; }
+  .hero-home__buttons { gap: 1rem; }
+  .hero-home__buttons .button { width: 100%; }
+  .feature-cards { grid-template-columns: 1fr; }
+  .feature-card:first-child { grid-column: auto; }
+  .feature-card, .feature-card:first-child { min-height: 36rem; }
+  .feature-card__device { height: 42%; }
+}
+
+@media (max-width: 25rem) {
+  .hero-home { padding-inline: 1.25rem; }
+  .hero-home__body h1 { font-size: 3.25rem; }
+  .feature-cards { padding: 0.75rem; gap: 0.75rem; }
+  .feature-card { min-height: 32rem; }
+}
+
+// Optional portrait above the hero deck (config: extra.seijaku.portrait).
+.hero-home__portrait { order: 1; width: clamp(4rem, 6vw, 5.5rem); height: auto; margin-block-end: 0.25rem; border-radius: 50%; }
+.hero-home__body p { order: 2; }

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+<header class="pagehead">
+  {%- if paginator %}{% set total = paginator.total_pages %}{% else %}{% set total = section.pages | length %}{% endif %}
+  <p class="pagehead__eyebrow">{{ total }} {% if total == 1 %}entry{% else %}entries{% endif %}</p>
+  <h1 class="pagehead__title">{{ section.title }}</h1>
+  {%- if section.description %}
+  <p class="pagehead__deck">{{ section.description }}</p>
+  {%- endif %}
+</header>
+{{ section.content | safe }}
+{%- if paginator %}
+{%- set pages = paginator.pages %}
+{% include "partials/post_list.html" %}
+{% include "partials/pagination.html" %}
+{%- else %}
+{%- set pages = section.pages %}
+{% include "partials/post_list.html" %}
+{%- endif %}
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ section.title }}</span>{% endblock crumbs %}

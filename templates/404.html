@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}404 | {{ config.title }}{% endblock title %}
+{% block content %}
+<div class="lost">
+  <p class="lost__signal">Error · coordinates unresolved</p>
+  <p class="lost__code">404</p>
+  <h1>Signal lost in the fog.</h1>
+  <p>This page has drifted beyond the charted web.</p>
+  <a class="button button--outline lost__home" href="{{ get_url(path="/") | safe }}">← Return to base</a>
+</div>
+{% endblock content %}

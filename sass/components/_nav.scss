@@ -1,0 +1,135 @@
+.topnav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  width: 100%;
+  padding: 1.875rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.home .topnav { color: #fff; }
+.interior .topnav { background: color-mix(in srgb, var(--paper) 55%, transparent); backdrop-filter: blur(24px); }
+
+.topnav__brand {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  text-decoration: none;
+}
+
+.topnav__brand:visited { color: inherit; }
+.topnav__brand small { margin-inline-start: 0.15rem; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.62; }
+
+// Borderless translucent pill; the active item wears the same bevelled white pill as the CTA.
+.topnav__links {
+  justify-self: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1.5rem;
+  border-radius: 100px;
+  background: rgba(128, 130, 129, 0.6);
+  backdrop-filter: blur(10px);
+  color: #fff;
+}
+
+.topnav__links a {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 100px;
+  color: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.topnav__links a:visited { color: inherit; }
+.topnav__links a:hover { background: rgba(255, 255, 255, 0.14); }
+.topnav__links a.is-active,
+.topnav__links a.is-active:visited,
+.topnav__links a.is-active:hover {
+  background: linear-gradient(180deg, #f9f7f5 0%, #ecebe9 100%);
+  box-shadow: 0 2px 0 #fff inset, 0 1px 1px rgba(255, 255, 255, 0.5) inset, 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+// Over paper the grey is deepened until white links pass AA; over the hero and in dark it stays Cortical-light.
+.interior .topnav__links { background: rgba(88, 90, 89, 0.8); }
+
+@media (prefers-color-scheme: dark) {
+  .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
+}
+
+.topnav__action { justify-self: end; }
+
+@supports (animation-timeline: scroll()) {
+  .home .topnav {
+    animation: nav-glass linear both;
+    animation-timeline: scroll(root);
+    animation-range: 5rem 18rem;
+  }
+}
+
+@keyframes nav-glass {
+  to { background: rgba(14, 16, 16, 0.32); backdrop-filter: blur(28px); }
+}
+
+// Mobile: brand + hamburger; links and CTA move into a bevelled sheet. No JavaScript.
+.topnav__menu { display: none; position: relative; justify-self: end; }
+.topnav__menu summary { list-style: none; width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: 100px; cursor: pointer; }
+.topnav__menu summary::-webkit-details-marker { display: none; }
+.topnav__menu summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.topnav__menu summary span { position: relative; display: block; width: 1.375rem; height: 2px; border-radius: 2px; background: currentColor; transition: background 150ms ease; }
+.topnav__menu summary span::before,
+.topnav__menu summary span::after { content: ""; position: absolute; inset-inline: 0; height: 2px; border-radius: 2px; background: currentColor; transition: transform 200ms ease, top 200ms ease; }
+.topnav__menu summary span::before { top: -7px; }
+.topnav__menu summary span::after { top: 7px; }
+.topnav__menu[open] summary span { background: transparent; }
+.topnav__menu[open] summary span::before { top: 0; transform: rotate(45deg); }
+.topnav__menu[open] summary span::after { top: 0; transform: rotate(-45deg); }
+
+.topnav__sheet {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  min-width: 15rem;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, #f9f7f5 0%, #ecebe9 100%);
+  box-shadow: 0 2px 0 #fff inset, 0 1px 1px rgba(255, 255, 255, 0.5) inset, 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.1), 0 12px 30px rgba(0, 0, 0, 0.14);
+  color: #000;
+}
+
+.topnav__sheet a { padding: 0.8rem 1.1rem; border-radius: 100px; color: inherit; font-weight: 500; text-decoration: none; }
+.topnav__sheet a:visited { color: inherit; }
+.topnav__sheet a:not(.button):hover, .topnav__sheet a.is-active { background: rgba(0, 0, 0, 0.06); }
+.topnav__sheet .button { margin-block-start: 0.35rem; justify-content: center; }
+.topnav__sheet .button--dark, .topnav__sheet .button--dark:visited { color: #fff; }
+
+@media (max-width: 58rem) {
+  .topnav { grid-template-columns: 1fr auto; padding: 1.25rem 1.5rem; }
+  .topnav__links, .topnav__action { display: none; }
+  .topnav__menu { display: block; }
+}
+
+@media (max-width: 34rem) {
+  .topnav { padding: 1.1rem 1.25rem; }
+  .topnav__brand { font-size: 1.1rem; }
+  .topnav__brand small { display: none; }
+  .topnav__brand .mark { scale: 0.86; transform-origin: left center; width: 2rem; }
+}

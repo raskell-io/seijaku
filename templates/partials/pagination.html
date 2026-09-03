@@ -1,0 +1,5 @@
+<nav class="pagination" aria-label="Pagination">
+  {%- if paginator.previous %}<a class="button button--outline button--small" href="{{ paginator.previous | safe }}">← Newer</a>{% else %}<span class="button button--outline button--small is-disabled" aria-hidden="true">← Newer</span>{% endif %}
+  <span class="pagination__where">Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</span>
+  {%- if paginator.next %}<a class="button button--outline button--small" href="{{ paginator.next | safe }}">Older →</a>{% else %}<span class="button button--outline button--small is-disabled" aria-hidden="true">Older →</span>{% endif %}
+</nav>

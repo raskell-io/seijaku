@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
+{% block content %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">Index</p>
+  <h1 class="pagehead__title">{{ taxonomy.name | capitalize }}</h1>
+  <p class="pagehead__deck">Everything on the site, filed by subject. Pick a topic to follow the thread.</p>
+</header>
+<ul class="pills">
+  {%- for term in terms %}
+  <li><a class="pill" href="{{ term.permalink | safe }}">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} <small>{{ term.pages | length }}</small></a></li>
+  {%- endfor %}
+</ul>
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ taxonomy.name | capitalize }}</span>{% endblock crumbs %}

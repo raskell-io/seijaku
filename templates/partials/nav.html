@@ -1,0 +1,43 @@
+{%- set main = config.extra.seijaku.main_section | default(value="articles") %}
+{%- set here = current_path | default(value="") %}
+{%- set cta = config.extra.seijaku.cta | default(value=false) %}
+{%- if cta %}
+{%- if cta.url is starting_with("@/") %}{% set cta_href = get_url(path=cta.url) %}{% else %}{% set cta_href = cta.url %}{% endif %}
+{%- set cta_name = cta.name %}
+{%- else %}
+{%- set cta_href = get_url(path="/" ~ main ~ "/") %}
+{%- set cta_name = "Start reading" %}
+{%- endif %}
+<nav class="topnav" aria-label="Main">
+  <a href="{{ get_url(path="/") | safe }}" class="topnav__brand">
+    {%- set mark_class = "topnav__mark" %}
+    {% include "partials/mark.html" %}
+    <span>{{ config.title }}</span>
+    {%- if config.extra.seijaku.version %}<small>{{ config.extra.seijaku.version }}</small>{%- endif %}
+  </a>
+  {%- if config.extra.seijaku.nav %}
+  <ul class="topnav__links">
+    {%- for item in config.extra.seijaku.nav %}
+    {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+    {%- set path = href | replace(from=config.base_url, to="") %}
+    {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
+    <li><a href="{{ href | safe }}"{% if active %} class="is-active" aria-current="{% if here == path %}page{% else %}true{% endif %}"{% endif %}>{{ item.name }}</a></li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+  <a class="topnav__action button button--small" href="{{ cta_href | safe }}">{{ cta_name }}</a>
+  <details class="topnav__menu">
+    <summary aria-label="Menu"><span></span></summary>
+    <div class="topnav__sheet">
+      {%- if config.extra.seijaku.nav %}
+      {%- for item in config.extra.seijaku.nav %}
+      {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+      {%- set path = href | replace(from=config.base_url, to="") %}
+      {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
+      <a href="{{ href | safe }}"{% if active %} class="is-active"{% endif %}>{{ item.name }}</a>
+      {%- endfor %}
+      {%- endif %}
+      <a class="button button--dark button--small" href="{{ cta_href | safe }}">{{ cta_name }}</a>
+    </div>
+  </details>
+</nav>

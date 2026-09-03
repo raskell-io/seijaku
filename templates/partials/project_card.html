@@ -1,0 +1,29 @@
+<li class="project{% if p.featured %} project--featured{% endif %}">
+  {%- if p.image %}
+  <div class="project__visual"><img src="{{ get_url(path=p.image) | safe }}" alt="" loading="lazy"></div>
+  {%- endif %}
+  <div class="project__body">
+    <div class="project__top">
+      {%- if p.logo %}
+      <img class="project__logo" src="{{ get_url(path=p.logo) | safe }}" alt="" loading="lazy">
+      {%- else %}
+      <span class="project__monogram" aria-hidden="true">{{ p.title | truncate(length=1, end="") }}</span>
+      {%- endif %}
+      {%- if p.status %}
+      <span class="status status--{{ p.status }}">{% if p.status_label %}{{ p.status_label }}{% elif p.status == "live" %}Live{% elif p.status == "stable" %}Stable{% elif p.status == "dev" %}In development{% elif p.status == "early" %}Very early{% elif p.status == "progress" %}In progress{% else %}{{ p.status }}{% endif %}</span>
+      {%- endif %}
+    </div>
+    <h3 class="project__title">{{ p.title }}</h3>
+    {%- if p.description %}<p class="project__desc">{{ p.description }}</p>{%- endif %}
+    {%- if p.links %}
+    <div class="project__links">
+      {%- for l in p.links %}
+      <a class="button button--outline button--small" href="{{ l.url | safe }}">{{ l.name }}</a>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </div>
+  {%- if p.stack %}
+  <div class="project__bar">{% for t in p.stack %}<span>{{ t }}</span>{% endfor %}</div>
+  {%- endif %}
+</li>

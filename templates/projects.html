@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set_global total = 0 %}
+{%- for tier in section.extra.tiers %}{% set n = tier.projects | length %}{% set_global total = total + n %}{% endfor %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ total }} projects</p>
+  <h1 class="pagehead__title">{{ section.title }}</h1>
+  {%- if section.description %}
+  <p class="pagehead__deck">{{ section.description }}</p>
+  {%- endif %}
+</header>
+{{ section.content | safe }}
+{%- for tier in section.extra.tiers %}
+{%- if tier.projects | length > 0 %}
+<section class="tier tier--{{ tier.key }}" aria-labelledby="tier-{{ tier.key }}">
+  <header class="tier__head">
+    <h2 class="tier__title" id="tier-{{ tier.key }}">{{ tier.title }}</h2>
+    {%- if tier.deck %}<p class="tier__deck">{{ tier.deck }}</p>{%- endif %}
+  </header>
+  <ul class="projects projects--{{ tier.key }}">
+    {%- for slug in tier.projects %}
+    {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+    {% include "partials/project_card.html" %}
+    {%- endfor %}
+  </ul>
+</section>
+{%- endif %}
+{%- endfor %}
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ section.title }}</span>{% endblock crumbs %}

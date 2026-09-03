@@ -1,0 +1,17 @@
+<ul class="cards">
+  {%- for post in pages %}
+  <li class="card">
+    <div class="card__body">
+      {%- set mark_class = "card__mark" %}
+      {% include "partials/mark.html" %}
+      <h2 class="card__title"><a href="{{ post.permalink | safe }}">{{ post.title }}</a></h2>
+      {%- if post.description %}<p class="card__desc">{{ post.description }}</p>{%- endif %}
+      <a class="button button--outline card__cta" href="{{ post.permalink | safe }}" aria-label="Read {{ post.title }}">Read article</a>
+    </div>
+    <div class="card__bar">
+      <span><time datetime="{{ post.date }}">{{ post.date | date(format="%b %-d, %Y") }}</time>{% if post.reading_time %} · {{ post.reading_time }} min read{% endif %}</span>
+      {%- if post.taxonomies.tags %}<span class="card__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{{ tag }}</a>{% endfor %}</span>{%- endif %}
+    </div>
+  </li>
+  {%- endfor %}
+</ul>
