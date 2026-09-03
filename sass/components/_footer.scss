@@ -1,48 +1,72 @@
+// Structured footer in the Anthropic / ElevenLabs mould: framed closing band,
+// brand column beside small-type link groups, legal line. Light on paper,
+// charcoal in dark mode; the ring gradient rules the top and the champagne /
+// ice glows sit in the background.
 .footer {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(55% 48% at 18% 100%, rgba(47, 155, 158, 0.2), transparent 100%),
-    radial-gradient(48% 42% at 82% 100%, rgba(207, 155, 82, 0.16), transparent 100%),
-    #020706;
-  color: #fff;
-  font-size: 1rem;
+  border-top: 2px solid transparent;
+  border-image: var(--ring-gradient) 1;
+  background: var(--footer-bg);
+  color: var(--footer-ink);
+  font-size: 0.95rem;
 }
 
-// Two soft light leaks (champagne over ice) that carry the page colour into the
-// black footer. Blurred pseudo-elements are oversized and clipped so no
-// transparent halo shows at the edges.
-.footer__flare { position: relative; height: 5.5rem; overflow: hidden; }
-.footer__flare::before,
-.footer__flare::after { content: ""; position: absolute; inset-inline: -2rem; }
-.footer__flare::before { top: -0.75rem; height: 3.5rem; background: linear-gradient(270deg, var(--paper) 0%, #e8c27c 12%, #5e4a2c 40%, #020706 70%); filter: blur(9px); }
-.footer__flare::after { bottom: -0.5rem; height: 2.75rem; background: linear-gradient(270deg, var(--paper) 0%, var(--ice) 14%, #0e3d3c 42%, transparent 74%); filter: blur(11px); }
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 22rem at 10% 100%, var(--footer-glow-a), transparent 70%),
+    radial-gradient(52rem 20rem at 90% 100%, var(--footer-glow-b), transparent 70%);
+}
 
-.footer__lead { min-height: 26rem; padding: clamp(4rem, 8vw, 7rem) var(--gutter); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; text-align: center; }
-.footer__lead p { font-size: clamp(3rem, 7.2vw, 7rem); font-weight: 500; line-height: 0.9; letter-spacing: -0.075em; }
+.footer > * { position: relative; width: min(var(--shell), calc(100% - (var(--gutter) * 2))); margin-inline: auto; }
 
-.footer__columns { display: grid; grid-template-columns: 2fr 1fr 1fr; border-top: 1px solid rgba(255,255,255,0.14); }
-.footer__column { min-height: 12rem; padding: clamp(2rem, 4.5vw, 4rem); display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; border-right: 1px solid rgba(255,255,255,0.14); }
-.footer__column:last-child { border-right: 0; }
-.footer__column-title { margin-block-end: 1.2rem; background: var(--ring-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.5rem; }
-.footer__links, .youarehere { display: flex; flex-direction: column; gap: 0.9rem; }
-.youarehere { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.65rem; line-height: 1.4; }
-.footer a { color: #fff; }
-.footer a:visited { color: #fff; }
-.footer__meta { padding: 2.25rem var(--gutter); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; border-top: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.68); }
-.footer__brand { color: #fff; font-weight: 600; }
+.footer__grid {
+  padding-block: clamp(3.5rem, 7vw, 6rem) clamp(3rem, 6vw, 5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 2.2fr);
+  gap: 3rem clamp(2rem, 6vw, 6rem);
+}
+
+.footer__brand { display: flex; flex-direction: column; gap: 1rem; }
+.footer__logo { display: inline-flex; align-items: center; gap: 0.6rem; width: fit-content; color: inherit; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.05em; text-decoration: none; }
+.footer__logo:visited { color: inherit; }
+.footer__mark { width: 2rem; height: 2rem; }
+.footer__about { max-width: 30rem; color: var(--footer-ink); font-size: 0.95rem; line-height: 1.55; text-wrap: pretty; }
+.footer__about p { margin: 0; }
+.footer__about p + p { margin-block-start: 0.85em; }
+.footer__about a { color: inherit; }
+
+.youarehere { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.5rem; margin-block-start: auto; padding-block-start: 1.5rem; color: var(--footer-muted); font-size: 0.85rem; line-height: 1.5; }
+.youarehere__label { margin-inline-end: 0.35rem; }
+.youarehere__label::after { content: ":"; }
+.youarehere a { color: var(--footer-ink); text-decoration: none; }
+.youarehere a:visited { color: var(--footer-ink); }
+.youarehere a:hover { text-decoration: underline; }
+
+.footer__groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 2.5rem 2rem; }
+.footer__group { display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+.footer__group-title { margin-block-end: 0.35rem; color: var(--footer-muted); font-size: 0.8rem; font-weight: 500; }
+.footer__group a { color: inherit; text-decoration: none; }
+.footer__group a:visited { color: inherit; }
+.footer__group a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.16em; }
+
+.footer__meta { padding-block: 1.5rem 2.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; border-top: 1px solid var(--footer-line); color: var(--footer-muted); font-size: 0.8rem; }
+.footer__meta-end { margin-inline-start: auto; }
+
+// Optional colour-scheme control (config: scheme_toggle = true). Hidden until its script runs.
+.scheme { display: inline-flex; gap: 0.15rem; padding: 0.2rem; border: 1px solid var(--footer-line); border-radius: 100px; }
+.scheme button { appearance: none; margin: 0; padding: 0.35rem 0.8rem; border: 0; border-radius: 100px; background: transparent; color: var(--footer-muted); font: inherit; font-size: 0.78rem; font-weight: 500; line-height: 1; cursor: pointer; }
+.scheme button:hover { color: var(--footer-ink); }
+.scheme button[aria-pressed="true"] { background: var(--footer-ink); color: var(--footer-bg); }
+.scheme button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 @media (max-width: 48rem) {
-  .footer__columns { grid-template-columns: 1fr 1fr; }
-  .footer__column--wide { grid-column: 1 / -1; }
+  .footer__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .footer__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer__meta-end { margin-inline-start: 0; }
 }
 
-@media (max-width: 32rem) {
-  .footer__flare { height: 3.5rem; }
-  .footer__flare::before { height: 2.5rem; }
-  .footer__flare::after { height: 2rem; }
-  .footer__lead { min-height: 22rem; }
-  .footer__columns { grid-template-columns: 1fr; }
-  .footer__column--wide { grid-column: auto; }
-  .footer__column { min-height: 0; border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.14); }
-}

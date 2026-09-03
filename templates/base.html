@@ -35,6 +35,9 @@
   <link rel="alternate" type="application/rss+xml" title="{{ config.title }}" href="{{ get_url(path=feed) | safe }}">
   {%- endfor %}
   {%- endif %}
+  {%- if config.extra.seijaku.scheme_toggle %}
+  <script>(function(){try{var s=localStorage.getItem("seijaku-scheme");if(s==="light"||s==="dark"){document.documentElement.setAttribute("data-theme",s)}}catch(e){}})();</script>
+  {%- endif %}
   <link rel="stylesheet" href="{{ get_url(path="seijaku.css") | safe }}">
   {%- block extra_head %}{% endblock extra_head %}
 </head>
@@ -57,54 +60,68 @@
   </main>
 
   <footer class="footer">
-    <div class="footer__flare" aria-hidden="true"></div>
-    <div class="footer__lead">
-      <p>Keep thinking<br>beyond defaults.</p>
-      <a class="button button--dark" href="{{ get_url(path="/articles/") | safe }}">Enter the archive</a>
-    </div>
-    <div class="footer__columns">
-      <div class="footer__column footer__column--wide">
-        <span class="footer__column-title">Location</span>
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="footer__logo" href="{{ get_url(path="/") | safe }}">
+          {%- set mark_class = "footer__mark" %}{% set mark_play = true %}
+          {% include "partials/mark.html" %}
+          <span>{{ config.title }}</span>
+        </a>
+        {%- if config.extra.seijaku.footer_about %}
+        <div class="footer__about">{{ config.extra.seijaku.footer_about | markdown | safe }}</div>
+        {%- elif config.extra.seijaku.tagline %}
+        <p class="footer__about">{{ config.extra.seijaku.tagline }}</p>
+        {%- endif %}
         <nav class="youarehere" aria-label="You are here">
+          <span class="youarehere__label">You are here</span>
           <a href="{{ get_url(path="/") | safe }}">Home</a>{% block crumbs %}{% endblock crumbs %}
         </nav>
       </div>
-      <div class="footer__column">
-        <span class="footer__column-title">Explore</span>
-        <nav class="footer__links" aria-label="Footer">
-          {%- if config.extra.seijaku.nav %}
+      <div class="footer__groups">
+        {%- if config.extra.seijaku.nav %}
+        <nav class="footer__group" aria-label="Explore">
+          <span class="footer__group-title">Explore</span>
           {%- for item in config.extra.seijaku.nav %}
           <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
           {%- endfor %}
-          {%- endif %}
-          {%- if config.extra.seijaku.explore %}
+        </nav>
+        {%- endif %}
+        {%- if config.extra.seijaku.explore %}
+        <nav class="footer__group" aria-label="Index">
+          <span class="footer__group-title">Index</span>
           {%- for item in config.extra.seijaku.explore %}
           <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
           {%- endfor %}
-          {%- endif %}
         </nav>
-      </div>
-      <div class="footer__column">
+        {%- endif %}
         {%- if config.extra.seijaku.social %}
-        <span class="footer__column-title">Elsewhere</span>
-        <nav class="footer__links" aria-label="Elsewhere">
+        <nav class="footer__group" aria-label="Elsewhere">
+          <span class="footer__group-title">Elsewhere</span>
           {%- for item in config.extra.seijaku.social %}
           <a href="{{ item.url | safe }}" rel="me">{{ item.name }}</a>
           {%- endfor %}
         </nav>
-        {%- else %}
-        <span class="footer__column-title">System</span>
-        <span>zero javascript</span>
-        <span>local type</span>
-        <span>open web</span>
         {%- endif %}
       </div>
     </div>
     <div class="footer__meta">
-      <span class="footer__brand">{{ config.title }}{% if config.extra.seijaku.version %} · ver. {{ config.extra.seijaku.version }}{% endif %}</span>
-      {%- if config.extra.seijaku.footer_note %}<span class="footer__note">{{ config.extra.seijaku.footer_note }}</span>{%- endif %}
-      <span>© signal remains yours</span>
+      <span>© {{ now() | date(format="%Y") }} {{ config.title }}</span>
+      {%- if config.extra.seijaku.footer_note %}<span>{{ config.extra.seijaku.footer_note }}</span>{%- endif %}
+      {%- if config.extra.seijaku.version %}<span>ver. {{ config.extra.seijaku.version }}</span>{%- endif %}
+      {%- if config.extra.seijaku.scheme_toggle %}
+      <div class="scheme footer__meta-end" role="group" aria-label="Colour scheme" hidden>
+        <button type="button" data-scheme="system" aria-pressed="true">System</button>
+        <button type="button" data-scheme="light" aria-pressed="false">Light</button>
+        <button type="button" data-scheme="dark" aria-pressed="false">Dark</button>
+      </div>
+      <script>(function(){var g=document.querySelector(".scheme");if(!g){return}var k="seijaku-scheme",r=document.documentElement;function cur(){try{var s=localStorage.getItem(k);return s==="light"||s==="dark"?s:"system"}catch(e){return"system"}}function paint(){var c=cur();g.querySelectorAll("button").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-scheme")===c))})}g.addEventListener("click",function(e){var b=e.target.closest("button");if(!b){return}var v=b.getAttribute("data-scheme");try{if(v==="system"){localStorage.removeItem(k)}else{localStorage.setItem(k,v)}}catch(e){}if(v==="system"){r.removeAttribute("data-theme")}else{r.setAttribute("data-theme",v)}paint()});g.hidden=false;paint()})();</script>
+      {%- else %}
+      <span class="footer__meta-end">No JavaScript · local type · open web</span>
+      {%- endif %}
     </div>
   </footer>
+  {%- if config.extra.seijaku.mark and config.extra.seijaku.mark_play %}
+  <script>(function(){var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;var idle=["blink","blink","blink","left","right","happy","sleepy"],react=["wink","squint","dizzy"];document.querySelectorAll(".mark--play").forEach(function(el){var svg=el.querySelector("svg");if(!svg){return}var t;function face(f,ms){svg.setAttribute("data-face",f);clearTimeout(t);if(ms){t=setTimeout(function(){svg.setAttribute("data-face","oo")},ms)}}function tick(){setTimeout(function(){var f=idle[Math.floor(Math.random()*idle.length)];face(f,f==="blink"?150:1300);tick()},2600+Math.random()*4400)}if(!reduce){tick()}el.addEventListener("click",function(e){e.preventDefault();face(react[Math.floor(Math.random()*react.length)],1500);el.classList.remove("is-poked");void el.offsetWidth;el.classList.add("is-poked")})})})();</script>
+  {%- endif %}
 </body>
 </html>

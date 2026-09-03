@@ -1,7 +1,9 @@
-{#- Brand mark. Set mark_class before including to add a modifier class. -#}
+{#- Brand mark. Set mark_class before including to add a modifier class; set mark_play = true to make it react. -#}
 {%- set mc = mark_class | default(value="") %}
+{%- set play = mark_play | default(value=false) %}
 {%- if config.extra.seijaku.mark %}
-<span class="mark mark--svg {{ mc }}" aria-hidden="true">{{ load_data(path="static/" ~ config.extra.seijaku.mark, format="plain") | safe }}</span>
+{%- set mid = "tanuki-" ~ mc %}
+<span class="mark mark--svg {{ mc }}{% if play and config.extra.seijaku.mark_play %} mark--play{% endif %}" aria-hidden="true">{{ load_data(path="static/" ~ config.extra.seijaku.mark, format="plain") | replace(from="__id__", to=mid) | safe }}</span>
 {%- elif config.extra.seijaku.logo %}
 <img class="mark mark--img {{ mc }}" src="{{ get_url(path=config.extra.seijaku.logo) | safe }}" alt="">
 {%- else %}

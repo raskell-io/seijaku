@@ -69,8 +69,9 @@
 .interior .topnav__links { background: rgba(88, 90, 89, 0.8); }
 
 @media (prefers-color-scheme: dark) {
-  .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
+  :root:not([data-theme="light"]) .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
 }
+:root[data-theme="dark"] .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
 
 .topnav__action { justify-self: end; }
 

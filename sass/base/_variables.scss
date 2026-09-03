@@ -65,35 +65,54 @@
   --tint-5: #e1e0e7;
   --tint-6: #dfe4e8;
   --tint-bar: rgba(0, 0, 0, 0.06);
+  --footer-bg: #ebeae5;
+  --footer-ink: #101211;
+  --footer-muted: #616360;
+  --footer-line: rgba(0, 0, 0, 0.12);
+  --footer-glow-a: rgba(233, 189, 112, 0.26);
+  --footer-glow-b: rgba(98, 208, 213, 0.22);
   --text-deck: clamp(1.25rem, 1.95vw, 1.75rem);
   --shell: 72.875rem;
   --measure: 50rem;
   --gutter: clamp(1.25rem, 4vw, 3rem);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #111312;
-    --paper-deep: #080908;
-    --ink: #f6f5f2;
-    --muted: #aaa9a5;
-    --line: rgba(255, 255, 255, 0.16);
-    --line-strong: rgba(255, 255, 255, 0.34);
-    --surface: rgba(255, 255, 255, 0.06);
-    --faint: #8b8b87;
-    --cyan: #a9e8e9;
-    --cyan-bright: #72d7dc;
-    --violet: #a9e8e9;
-    --violet-bright: #72d7dc;
-    --glow-violet: rgba(114, 215, 220, 0.16);
-    --ring-gradient-ink: var(--ring-gradient);
-    --shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
-    --tint-1: #262219;
-    --tint-2: #232320;
-    --tint-3: #1b2625;
-    --tint-4: #1e241f;
-    --tint-5: #22212a;
-    --tint-6: #1e2427;
-    --tint-bar: rgba(255, 255, 255, 0.05);
-  }
+// Dark palette. Applied when the browser prefers dark (unless the visitor forced light)
+// and whenever the visitor forced dark via the optional footer toggle (data-theme).
+@mixin dark-tokens {
+  --paper: #111312;
+  --paper-deep: #080908;
+  --ink: #f6f5f2;
+  --muted: #aaa9a5;
+  --line: rgba(255, 255, 255, 0.16);
+  --line-strong: rgba(255, 255, 255, 0.34);
+  --surface: rgba(255, 255, 255, 0.06);
+  --faint: #8b8b87;
+  --cyan: #a9e8e9;
+  --cyan-bright: #72d7dc;
+  --violet: #a9e8e9;
+  --violet-bright: #72d7dc;
+  --glow-violet: rgba(114, 215, 220, 0.16);
+  --ring-gradient-ink: var(--ring-gradient);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+  --tint-1: #262219;
+  --tint-2: #232320;
+  --tint-3: #1b2625;
+  --tint-4: #1e241f;
+  --tint-5: #22212a;
+  --tint-6: #1e2427;
+  --tint-bar: rgba(255, 255, 255, 0.05);
+  --footer-bg: #0b0d0c;
+  --footer-ink: #f6f5f2;
+  --footer-muted: #9c9d99;
+  --footer-line: rgba(255, 255, 255, 0.12);
+  --footer-glow-a: rgba(207, 155, 82, 0.16);
+  --footer-glow-b: rgba(47, 155, 158, 0.2);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { @include dark-tokens; }
+}
+
+:root[data-theme="dark"] { @include dark-tokens; color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }

@@ -10,7 +10,7 @@
 {%- endif %}
 <nav class="topnav" aria-label="Main">
   <a href="{{ get_url(path="/") | safe }}" class="topnav__brand">
-    {%- set mark_class = "topnav__mark" %}
+    {%- set mark_class = "topnav__mark" %}{% set mark_play = true %}
     {% include "partials/mark.html" %}
     <span>{{ config.title }}</span>
     {%- if config.extra.seijaku.version %}<small>{{ config.extra.seijaku.version }}</small>{%- endif %}

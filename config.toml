@@ -27,8 +27,19 @@ anchors = "on"
 version = "aw26"
 tagline = "(tech web space curated by Raffael)"
 footer_note = "made in Basel with 静寂"
+footer_about = """
+Raskell is my corner of the web and the front door to everything I build.
+I write here about platform automation, edge systems, applied security, and
+what changes when AI writes most of the code.
+
+The projects that fascinate me, from a security-first reverse proxy to Haskell
+tooling written in Rust, start as notes on these pages before they become real
+things. The name is rascal × Haskell × Raffael.
+"""
+scheme_toggle = true             # System / Light / Dark control in the footer (adds ~20 lines of inline JS)
 portrait = "images/raffael.webp"   # circular portrait above the hero deck
 mark = "images/raskell-mark.svg"     # monochrome inline SVG mark; inherits text colour
+mark_play = true                 # the mark blinks and glances now and then, and pulls a face when clicked (~15 lines inline JS)
 main_section = "articles"        # listed on the homepage
 projects_section = "projects"    # featured projects strip on the homepage
 cta = { name = "Start here", url = "@/start-here.md" }

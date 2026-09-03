@@ -1,5 +1,5 @@
 name = "seijaku"
-description = "静寂 — a cinematic, hand-made theme: oversized grotesk type, full-bleed imagery, tinted editorial cards, and pill navigation. Zero JavaScript."
+description = "静寂 — a cinematic, hand-made theme: oversized grotesk type, full-bleed imagery, tinted editorial cards, and pill navigation. No JavaScript unless you enable the colour-scheme toggle."
 license = "MIT"
 homepage = "https://github.com/raskell-io/seijaku"
 min_version = "0.19.0"
@@ -13,7 +13,10 @@ demo = ""
 #   banner = "A quiet announcement."        # site notice above the nav (optional)
 #   tagline = "(a quiet corner of the web)" # small text next to the brand (optional)
 #   footer_note = "made with care"          # footer sign-off (optional)
+#   footer_about = """A short introduction shown under the brand in the footer. Markdown, paragraphs allowed."""   # optional; falls back to tagline
+#   scheme_toggle = true                    # System / Light / Dark control in the footer; the only JavaScript the theme ever emits, inline, no requests (optional)
 #   mark = "images/mark.svg"                # monochrome SVG, inlined so it inherits text colour; used in nav and cards (optional)
+#   mark_play = true                        # mark blinks / glances on its own and pulls a face on click; needs the expression groups in the SVG (optional, inline JS)
 #   logo = "images/logo.png"                # raster alternative to mark (optional)
 #   portrait = "images/me.webp"             # circular portrait above the hero deck (optional)
 #   og_image = "images/og.png"              # default social image (optional)
