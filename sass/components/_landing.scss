@@ -5,18 +5,39 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #070707 url("images/raskell-hero.webp") center / cover no-repeat;
+  background: #070707 url("images/raskell-hero.webp") 62% 50% / cover no-repeat;   // same crop as the video below
   color: #fff;
+}
+
+// Optional looping background video (config: extra.seijaku.hero_video). It sits
+// under the shade; the section's own background paints the poster before the
+// first frame decodes, under reduced motion, and when autoplay is refused.
+.hero-home__video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-home__video { display: none; }
 }
 
 .hero-home__shade {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  // The footage carries its own ice and champagne, so the two glows are faint accents now;
+  // the left ramp reaches further right to protect the deck where it meets the streaks.
   background:
-    radial-gradient(circle at 87% 33%, rgba(117, 222, 222, 0.14), transparent 24%),
-    radial-gradient(circle at 65% 86%, rgba(237, 191, 111, 0.1), transparent 25%),
-    linear-gradient(90deg, rgba(1, 10, 10, 0.5), rgba(0,0,0,0.02) 66%),
-    linear-gradient(0deg, rgba(0, 8, 7, 0.4), transparent 45%);
+    radial-gradient(circle at 87% 33%, rgba(117, 222, 222, 0.06), transparent 24%),
+    radial-gradient(circle at 65% 86%, rgba(237, 191, 111, 0.05), transparent 25%),
+    radial-gradient(ellipse 90% 60% at 0% 100%, rgba(0, 8, 7, 0.6), rgba(0, 8, 7, 0.45) 60%, transparent 100%),
+    linear-gradient(90deg, rgba(1, 10, 10, 0.55), rgba(1, 10, 10, 0.4) 45%, rgba(1, 10, 10, 0.12) 68%, rgba(0, 0, 0, 0.02) 80%),
+    linear-gradient(0deg, rgba(0, 8, 7, 0.45), rgba(0, 8, 7, 0.2) 30%, transparent 50%);
 }
 
 .hero-home__body,
@@ -111,6 +132,8 @@
 
 @media (max-width: 44rem) {
   .hero-home { min-height: max(100svh, 44rem); padding: 9.5rem 9.5vw 4rem; }
+  .hero-home { background-position: 40% 50%; }
+  .hero-home__video { object-position: 40% 50%; }   // phones see the frame's dark 30-56% band; the streaks only graze the right edge
   .hero-home__body h1 { max-width: 6.1em; padding-block-end: 2rem; font-size: clamp(3.6rem, 14vw, 5.6rem); line-height: 1; }
   .hero-home__buttons { gap: 1rem; }
   .hero-home__buttons .button { width: 100%; }

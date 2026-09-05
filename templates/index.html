@@ -4,6 +4,15 @@
 {%- set main = config.extra.seijaku.main_section | default(value="articles") %}
 {%- set sec = get_section(path=main ~ "/_index.md") %}
 <section class="hero-home">
+  {%- if config.extra.seijaku.hero_video %}
+  <video class="hero-home__video" autoplay muted loop playsinline disablepictureinpicture preload="auto" aria-hidden="true" tabindex="-1"
+         poster="{{ get_url(path=config.extra.seijaku.hero_poster | default(value="images/raskell-hero.webp")) | safe }}">
+    {%- if config.extra.seijaku.hero_video_webm %}
+    <source src="{{ get_url(path=config.extra.seijaku.hero_video_webm) | safe }}" type="video/webm">
+    {%- endif %}
+    <source src="{{ get_url(path=config.extra.seijaku.hero_video) | safe }}" type="video/mp4">
+  </video>
+  {%- endif %}
   <div class="hero-home__shade" aria-hidden="true"></div>
   <div class="hero-home__body">
     {%- if config.extra.seijaku.portrait %}
