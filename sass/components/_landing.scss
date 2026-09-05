@@ -12,18 +12,14 @@
 // Optional looping background video (config: extra.seijaku.hero_video). It sits
 // under the shade; the section's own background paints the poster before the
 // first frame decodes, under reduced motion, and when autoplay is refused.
-.hero-home__video {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 62% 50%;
-}
+// Animated AVIF loop under the shade; the section background (poster) paints first and is the
+// reduced-motion / no-AVIF fallback. A static SVG grain sits on top for the film texture.
+.hero-home__motion { position: absolute; inset: 0; z-index: 0; display: block; }
+.hero-home__motion img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; }
+.hero-home__grain { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.09; mix-blend-mode: screen; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); background-size: 220px 220px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-home__video { display: none; }
+  .hero-home__motion { display: none; }
 }
 
 .hero-home__shade {
@@ -133,7 +129,7 @@
 @media (max-width: 44rem) {
   .hero-home { min-height: max(100svh, 44rem); padding: 9.5rem 9.5vw 4rem; }
   .hero-home { background-position: 40% 50%; }
-  .hero-home__video { object-position: 40% 50%; }   // phones see the frame's dark 30-56% band; the streaks only graze the right edge
+  .hero-home__motion img { object-position: 40% 50%; }   // phones see the frame's dark 30-56% band; the streaks only graze the right edge
   .hero-home__body h1 { max-width: 6.1em; padding-block-end: 2rem; font-size: clamp(3.6rem, 14vw, 5.6rem); line-height: 1; }
   .hero-home__buttons { gap: 1rem; }
   .hero-home__buttons .button { width: 100%; }

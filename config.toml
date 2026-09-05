@@ -38,8 +38,7 @@ things. The name is rascal × Haskell × Raffael.
 """
 scheme_toggle = true             # System / Light / Dark control in the footer (adds ~20 lines of inline JS)
 portrait = "images/raffael.webp"   # circular portrait above the hero deck
-hero_video = "images/raskell-hero.mp4"        # optional looping hero background; unset keeps the still
-hero_video_webm = "images/raskell-hero.webm"  # optional, served first when set
+hero_motion = "images/raskell-hero.avif"      # optional animated AVIF loop behind the hero; unset keeps the still
 hero_poster = "images/raskell-hero.webp"      # optional; defaults to the still above
 mark = "images/raskell-mark.svg"     # monochrome inline SVG mark; inherits text colour
 mark_play = true                 # the mark blinks and glances now and then, and pulls a face when clicked (~15 lines inline JS)
