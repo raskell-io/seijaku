@@ -1,0 +1,93 @@
+// Map page: the graph sits on the same green-black ground as the hero and code blocks, in light and dark.
+.map {
+  position: relative;
+  height: clamp(30rem, 74svh, 52rem);
+  margin: 0;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(114, 215, 220, 0.09), transparent 34%),
+    radial-gradient(circle at 14% 88%, rgba(239, 208, 147, 0.07), transparent 32%),
+    #0b1412;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  color: #f4f0df;
+}
+
+.map__canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+
+.map__legend, .map__zoom { position: absolute; top: 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.map__legend { left: 1rem; right: 9rem; }
+.map__zoom { right: 1rem; }
+.map__legend button, .map__zoom button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.8rem;
+  border: 0;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: 500 0.8rem/1 var(--font-prose);
+  cursor: pointer;
+  transition: background 150ms ease, opacity 150ms ease;
+}
+.map__legend button:hover, .map__zoom button:hover { background: rgba(255, 255, 255, 0.16); }
+.map__legend button:focus-visible, .map__zoom button:focus-visible { outline: 2px solid #72d7dc; outline-offset: 2px; }
+.map__legend button[aria-pressed="false"] { opacity: 0.45; }
+.map__legend i { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: #f4f0df; }
+.map__legend [data-kind="tag"] i { background: #72d7dc; }
+.map__legend [data-kind="series"] i { background: #efd093; }
+.map__legend [data-kind="project"] i { background: transparent; box-shadow: inset 0 0 0 1.5px #efd093; }
+.map__zoom button { min-width: 2rem; justify-content: center; padding-inline: 0.6rem; font-family: var(--font-mono); }
+
+.map__card {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  width: min(24rem, calc(100% - 2rem));
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 1rem;
+  background: rgba(17, 22, 21, 0.86);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+.map__card[hidden] { display: none; }
+.map__card-kind { margin: 0 0 0.35rem; color: #aaa9a5; font: 0.72rem/1.3 var(--font-mono); }
+.map__card-title { margin: 0; font-size: 1.1rem; font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; }
+.map__card-desc { margin: 0.45rem 0 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; color: #c9c7bf; font-size: 0.9rem; line-height: 1.4; }
+.map__card-open { display: inline-block; margin-block-start: 0.7rem; color: #a9e8e9; font: 500 0.85rem/1 var(--font-mono); text-decoration: none; }
+.map__card-open:hover { text-decoration: underline; }
+.map__card-open[hidden] { display: none; }
+
+.map__hint { position: absolute; right: 1rem; bottom: 1rem; max-width: 20rem; margin: 0; color: rgba(244, 240, 223, 0.5); font-size: 0.78rem; line-height: 1.4; text-align: right; pointer-events: none; }
+.map__card:not([hidden]) ~ .map__hint { display: none; }
+.map__noscript { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 2rem; text-align: center; }
+
+@media (max-width: 44rem) {
+  .map { height: 78svh; margin-inline: calc(var(--gutter) * -1 + 0.5rem); border-radius: 1rem; }
+  .map__legend { right: 1rem; top: 0.75rem; left: 0.75rem; }
+  .map__zoom { top: auto; right: 0.75rem; bottom: 0.75rem; flex-direction: column; }
+  .map__hint { display: none; }
+  .map__card { left: 0.75rem; bottom: 0.75rem; width: calc(100% - 4.5rem); }
+}
+
+// The same index as plain lists, for skimming, keyboards and readers without JavaScript.
+.map-index {
+  margin-block-start: clamp(3.5rem, 7vw, 6rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  padding-block-start: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--line);
+}
+.map-index h2 { margin-block-end: 1.1rem; font-size: clamp(1.4rem, 2vw, 1.75rem); font-weight: 500; letter-spacing: -0.03em; }
+.map-index h3 { margin: 1.2rem 0 0.4rem; font-size: 1rem; font-weight: 500; }
+.map-index h3:first-of-type { margin-block-start: 0; }
+.map-index ol, .map-index ul:not(.pills) { margin: 0; padding-inline-start: 1.2rem; color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+.map-index ul:not(.pills) { list-style: none; padding: 0; }
+.map-index a { color: var(--ink); text-decoration-color: var(--line-strong); }
+.map-index a:hover { text-decoration-color: currentColor; }
+.pills--small { gap: 0.5rem; }
+.pills--small .pill { min-height: 2.25rem; padding: 0.45rem 0.9rem; font-size: 0.88rem; gap: 0.45rem; text-decoration: none; }
+@media (max-width: 58rem) { .map-index { grid-template-columns: 1fr; } }

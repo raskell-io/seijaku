@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{#- Map: every article, topic, series and project drawn as one graph (static/seijaku-map.js),
+    with the same index as plain lists underneath for readers without JavaScript.
+    Front matter: template = "map.html", extra.project_sections = ["projects", ...]. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set main = config.extra.seijaku.main_section | default(value="articles") %}
+{%- set sec = get_section(path=main ~ "/_index.md") %}
+{%- set tags = get_taxonomy(kind="tags", required=false) %}
+{%- set series = get_taxonomy(kind="series", required=false) %}
+{%- set psecs = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}
+{%- set_global projects = [] %}{% set_global pslugs = [] %}
+{%- for ps in psecs %}{% set psec = get_section(path=ps ~ "/_index.md", required=false) %}
+{%- if psec and psec.extra.tiers %}{% for tier in psec.extra.tiers %}{% for slug in tier.projects %}
+{%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+{%- set_global projects = projects | concat(with=p) %}{% set_global pslugs = pslugs | concat(with=slug) %}
+{%- endfor %}{% endfor %}{% endif %}{% endfor %}
+{%- set n_tags = 0 %}{% if tags %}{% set n_tags = tags.items | length %}{% endif %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ sec.pages | length }} articles · {{ n_tags }} topics · {{ projects | length }} projects</p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+</header>
+
+<figure class="map" data-map>
+  <canvas class="map__canvas" aria-hidden="true"></canvas>
+  <div class="map__legend" role="group" aria-label="Show on the map">
+    <button type="button" data-kind="article" aria-pressed="true"><i></i>Articles</button>
+    <button type="button" data-kind="tag" aria-pressed="true"><i></i>Topics</button>
+    <button type="button" data-kind="series" aria-pressed="true"><i></i>Series</button>
+    <button type="button" data-kind="project" aria-pressed="true"><i></i>Projects</button>
+  </div>
+  <div class="map__zoom">
+    <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+    <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+    <button type="button" data-zoom="fit" aria-label="Fit the whole map">fit</button>
+  </div>
+  <div class="map__card" hidden>
+    <p class="map__card-kind"></p>
+    <p class="map__card-title"></p>
+    <p class="map__card-desc"></p>
+    <a class="map__card-open" href="#">Open →</a>
+  </div>
+  <figcaption class="map__hint">Tap a dot to see what it is and what it connects to. Drag to move, pinch or ⌘ + scroll to zoom. Everything on the map is also listed below.</figcaption>
+  <noscript><p class="map__noscript">The map needs JavaScript. The full index is listed below.</p></noscript>
+</figure>
+<script type="application/json" id="map-data">{"nodes":[
+{%- for a in sec.pages %}
+{"id":"a:{{ a.path }}","kind":"article","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":"{{ a.date | date(format="%Y-%m-%d") }} · {{ a.reading_time }} min","desc":{{ a.description | default(value="") | json_encode | safe }}},
+{%- endfor %}
+{%- if tags %}{% for t in tags.items %}
+{"id":"t:{{ t.slug }}","kind":"tag","label":{{ t.name | json_encode | safe }},"url":{{ t.permalink | json_encode | safe }},"meta":"{{ t.pages | length }} articles","desc":""},
+{%- endfor %}{% endif %}
+{%- if series %}{% for s in series.items %}
+{"id":"s:{{ s.slug }}","kind":"series","label":{{ s.name | replace(from="-", to=" ") | title | json_encode | safe }},"url":{{ s.permalink | json_encode | safe }},"meta":"{{ s.pages | length }} parts","desc":""},
+{%- endfor %}{% endif %}
+{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
+{"id":"p:{{ pslug }}","kind":"project","label":{{ p.title | json_encode | safe }},"url":{% if p.links %}{{ p.links[0].url | json_encode | safe }}{% else %}""{% endif %},"meta":"Project","desc":{{ p.description | default(value="") | truncate(length=180) | json_encode | safe }}},
+{%- endfor %}
+null],"links":[
+{%- if tags %}{% for t in tags.items %}{% for a in t.pages %}["a:{{ a.path }}","t:{{ t.slug }}"],{% endfor %}{% endfor %}{% endif %}
+{%- if series %}{% for s in series.items %}{% for a in s.pages %}["a:{{ a.path }}","s:{{ s.slug }}"],{% endfor %}{% endfor %}{% endif %}
+{#- Article to article: the body links to the other article. -#}
+{%- for a in sec.pages %}{% for b in sec.pages %}{% if a.path != b.path and a.content is containing(b.path) %}["a:{{ a.path }}","a:{{ b.path }}"],{% endif %}{% endfor %}{% endfor %}
+{#- Article to project: the body links to one of the project's URLs, or names it (names under five letters are too ambiguous). -#}
+{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}{% for a in sec.pages %}
+{%- set_global hit = p.title | length >= 5 and a.content is containing(p.title) %}
+{%- if not hit and p.links %}{% for l in p.links %}{% set u = l.url | replace(from="https://", to="") | trim_end_matches(pat="/") %}{% if a.content is containing(u) %}{% set_global hit = true %}{% endif %}{% endfor %}{% endif %}
+{%- if hit %}["a:{{ a.path }}","p:{{ pslug }}"],{% endif %}
+{%- endfor %}{% endfor %}
+null]}</script>
+<script src="{{ get_url(path="seijaku-map.js", cachebust=true) | safe }}" defer></script>
+
+<div class="map-index">
+  {%- if tags %}
+  <section class="map-index__group" aria-labelledby="map-topics">
+    <h2 id="map-topics">Topics</h2>
+    <ul class="pills pills--small">
+      {%- for t in tags.items | sort(attribute="name") %}
+      <li><a class="pill" href="{{ t.permalink | safe }}">{{ t.name }} <small>{{ t.pages | length }}</small></a></li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endif %}
+  {%- if series and series.items | length > 0 %}
+  <section class="map-index__group" aria-labelledby="map-series">
+    <h2 id="map-series">Series</h2>
+    {%- for s in series.items %}
+    <h3><a href="{{ s.permalink | safe }}">{{ s.name | replace(from="-", to=" ") | title }}</a></h3>
+    <ol>
+      {%- for a in s.pages | sort(attribute="date") %}
+      <li><a href="{{ a.permalink | safe }}">{{ a.title }}</a></li>
+      {%- endfor %}
+    </ol>
+    {%- endfor %}
+  </section>
+  {%- endif %}
+  {%- if projects | length > 0 %}
+  <section class="map-index__group" aria-labelledby="map-projects">
+    <h2 id="map-projects">Projects</h2>
+    <ul>
+      {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
+      <li>{% if p.links %}<a href="{{ p.links[0].url | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endif %}
+</div>
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

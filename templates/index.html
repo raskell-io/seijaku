@@ -20,7 +20,11 @@
   </div>
   <div class="hero-home__buttons">
     <a class="button" href="{{ sec.permalink | safe }}">Read the writing</a>
+    {%- if config.extra.seijaku.map %}
+    <a class="button" href="{{ get_url(path=config.extra.seijaku.map) | safe }}">Explore the map</a>
+    {%- else %}
     <a class="button" href="{{ get_url(path="/tags/") | safe }}">Explore the index</a>
+    {%- endif %}
   </div>
 </section>
 
