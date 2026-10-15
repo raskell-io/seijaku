@@ -14,9 +14,10 @@
   font-display: swap;
 }
 
+// Mono fonts carry a slashed zero as their default 0 (cmap remapped); bump ?v= when the files change.
 @font-face {
   font-family: "Seijaku Mono";
-  src: url("fonts/ibm-plex-mono-regular.woff2") format("woff2");
+  src: url("fonts/ibm-plex-mono-regular.woff2?v=2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -24,7 +25,7 @@
 
 @font-face {
   font-family: "Seijaku Mono";
-  src: url("fonts/ibm-plex-mono-medium.woff2") format("woff2");
+  src: url("fonts/ibm-plex-mono-medium.woff2?v=2") format("woff2");
   font-style: normal;
   font-weight: 500 700;
   font-display: swap;
@@ -34,7 +35,7 @@
 // symbols (✓ ✗ ≠ ⚠). Its line glyphs are taller than the line, so boxes join up; no ligatures.
 @font-face {
   font-family: "Seijaku Diagram";
-  src: url("fonts/jetbrains-mono-diagram.woff2") format("woff2");
+  src: url("fonts/jetbrains-mono-diagram.woff2?v=2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
