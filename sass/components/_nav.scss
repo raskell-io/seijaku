@@ -12,7 +12,6 @@
 }
 
 .home .topnav { color: #fff; }
-.interior .topnav { background: color-mix(in srgb, var(--paper) 55%, transparent); backdrop-filter: blur(24px); }
 
 .topnav__brand {
   justify-self: start;
@@ -27,7 +26,6 @@
 }
 
 .topnav__brand:visited { color: inherit; }
-.topnav__brand small { margin-inline-start: 0.15rem; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.62; }
 
 // Borderless translucent pill; the active item wears the same bevelled white pill as the CTA.
 .topnav__links {
@@ -66,27 +64,45 @@
 }
 
 // Over paper the bar is a faint ink wash with ink links; over the hero and in dark it stays Cortical-light.
-.interior .topnav__links { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
+.interior .topnav__links, .is-past-hero .topnav__links { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
 // :not(.is-active) so hovering or pressing the current item keeps its white pill.
-.interior .topnav__links a:not(.is-active):hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.interior .topnav__links a:not(.is-active):hover, .is-past-hero .topnav__links a:not(.is-active):hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .interior .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
+  :root:not([data-theme="light"]) :is(.interior, .is-past-hero) .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
 }
-:root[data-theme="dark"] .interior .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
+:root[data-theme="dark"] :is(.interior, .is-past-hero) .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
 
 
+
+// Glass: a tinted, blurred and saturated pane with a hairline and a soft drop, so the bar reads as a
+// layer above the page rather than a hole in it. Paper glass on interior pages and below the hero,
+// dark glass while the home hero is behind it. Both fade in over the first few rems of scroll.
+.topnav { transition: background 220ms ease, box-shadow 220ms ease, color 220ms ease; }
+.interior .topnav, .is-past-hero .topnav {
+  background: color-mix(in srgb, var(--paper) 62%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: 0 1px 0 var(--line), 0 12px 32px -20px rgba(0, 0, 0, 0.35);
+}
+.is-past-hero .topnav { color: var(--ink); }
 
 @supports (animation-timeline: scroll()) {
-  .home .topnav {
-    animation: nav-glass linear both;
-    animation-timeline: scroll(root);
-    animation-range: 5rem 18rem;
-  }
+  .interior .topnav { animation: nav-glass-paper linear both; animation-timeline: scroll(root); animation-range: 0 4rem; }
+  .home:not(.is-past-hero) .topnav { animation: nav-glass-dark linear both; animation-timeline: scroll(root); animation-range: 3rem 14rem; }
 }
 
-@keyframes nav-glass {
-  to { background: rgba(14, 16, 16, 0.32); backdrop-filter: blur(28px); }
+@keyframes nav-glass-paper {
+  from { background: transparent; box-shadow: 0 1px 0 transparent, 0 12px 32px -20px transparent; -webkit-backdrop-filter: blur(0) saturate(100%); backdrop-filter: blur(0) saturate(100%); }
+}
+
+@keyframes nav-glass-dark {
+  to {
+    background: rgba(10, 16, 15, 0.38);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 32px -20px rgba(0, 0, 0, 0.6);
+  }
 }
 
 // Mobile: brand + hamburger; links and CTA move into a bevelled sheet. No JavaScript.
@@ -105,7 +121,7 @@
 
 // Open menu: a full-screen sheet under the nav row, so the brand and the close button stay put.
 // The nav drops its glass while open, since a backdrop-filter would trap the fixed sheet inside the bar.
-.topnav:has(.topnav__menu[open]) { color: var(--ink); background: none; backdrop-filter: none; animation: none; }
+.topnav:has(.topnav__menu[open]) { color: var(--ink); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; animation: none; }
 html:has(.topnav__menu[open]) { overflow: hidden; }
 .topnav__menu summary { position: relative; z-index: 1; }
 
@@ -161,6 +177,5 @@ html:has(.topnav__menu[open]) { overflow: hidden; }
 @media (max-width: 34rem) {
   .topnav { padding: 1.1rem 1.25rem; }
   .topnav__brand { font-size: 1.1rem; }
-  .topnav__brand small { display: none; }
   .topnav__brand .mark { scale: 0.86; transform-origin: left center; width: 2rem; }
 }

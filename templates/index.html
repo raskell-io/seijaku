@@ -74,4 +74,6 @@
 </section>
 {%- endif %}
 {%- endif %}
+{#- Past the hero the nav switches from dark glass to paper glass (body.is-past-hero). -#}
+<script>(function(){var h=document.querySelector(".hero-home");if(!h||!("IntersectionObserver" in window)){return}new IntersectionObserver(function(e){document.body.classList.toggle("is-past-hero",!e[0].isIntersecting)},{rootMargin:"-72px 0px 0px 0px"}).observe(h)})();</script>
 {% endblock content %}
