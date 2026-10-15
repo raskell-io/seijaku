@@ -35,6 +35,23 @@
   {%- endif %}
 </section>
 
+{#- Optional "now" list: [[extra.now]] blocks (name, text, url) in content/_index.md. -#}
+{%- if section.extra.now %}
+<section class="home-now">
+  <header class="home-head">
+    <h2>What I am working on</h2>
+  </header>
+  <ul class="nowlist">
+    {%- for item in section.extra.now %}
+    <li>
+      <h3>{% if item.url %}<a href="{{ item.url | safe }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}</h3>
+      <p>{{ item.text }}</p>
+    </li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endif %}
+
 {%- if config.extra.seijaku.projects_section %}
 {%- set psec = get_section(path=config.extra.seijaku.projects_section ~ "/_index.md") %}
 {%- set_global featured = [] %}

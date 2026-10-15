@@ -1,0 +1,33 @@
+{#- After an article: related reading, then the neighbouring posts in date order.
+    Related: front matter `extra.related = ["slug", ...]` wins; otherwise posts sharing
+    two or more tags come first, then posts sharing one. Missing slugs (drafts) are skipped. -#}
+{%- set sec = get_section(path=page.ancestors | last) %}
+{%- set_global related = [] %}
+{%- if page.extra.related %}
+  {%- for slug in page.extra.related %}{% for other in sec.pages %}{% if other.slug == slug %}{% set_global related = related | concat(with=other) %}{% endif %}{% endfor %}{% endfor %}
+{%- elif page.taxonomies.tags %}
+  {%- set_global weak = [] %}
+  {%- for other in sec.pages %}
+    {%- if other.permalink != page.permalink and other.taxonomies.tags %}
+      {%- set_global shared = 0 %}
+      {%- for tag in page.taxonomies.tags %}{% if other.taxonomies.tags is containing(tag) %}{% set_global shared = shared + 1 %}{% endif %}{% endfor %}
+      {%- if shared >= 2 %}{% set_global related = related | concat(with=other) %}{% elif shared == 1 %}{% set_global weak = weak | concat(with=other) %}{% endif %}
+    {%- endif %}
+  {%- endfor %}
+  {%- set_global related = related | concat(with=weak) %}
+{%- endif %}
+<footer class="post__footer">
+  {%- if related | length > 0 %}
+  <section class="related" aria-labelledby="related-label">
+    <h2 class="related__label" id="related-label">Related reading</h2>
+    {%- set pages = related | slice(end=3) %}
+    {% include "partials/post_list.html" %}
+  </section>
+  {%- endif %}
+  {%- if page.lower or page.higher %}
+  <nav class="neighbours" aria-label="More articles">
+    {%- if page.lower %}<a class="neighbours__prev" rel="prev" href="{{ page.lower.permalink | safe }}"><span>← Older</span>{{ page.lower.title }}</a>{% else %}<span></span>{% endif %}
+    {%- if page.higher %}<a class="neighbours__next" rel="next" href="{{ page.higher.permalink | safe }}"><span>Newer →</span>{{ page.higher.title }}</a>{% endif %}
+  </nav>
+  {%- endif %}
+</footer>

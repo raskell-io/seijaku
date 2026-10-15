@@ -3,7 +3,7 @@
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
 <article class="post">
-  <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% endif %}">
+  <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% endif %}">
     {%- if page.extra.portrait %}
     <img class="pagehead__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
     {%- endif %}
@@ -15,6 +15,12 @@
     {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
     {%- if page.date or page.updated or page.taxonomies.tags %}
     {% include "partials/meta_table.html" %}
+    {%- endif %}
+    {%- if page.extra.cover and not page.extra.portrait %}
+    {#- Optional cover beside the header (front matter: extra.cover, extra.cover_alt). -#}
+    <figure class="pagehead__cover">
+      <img src="{{ get_url(path=page.extra.cover) | safe }}" alt="{{ page.extra.cover_alt | default(value="") }}" decoding="async">
+    </figure>
     {%- endif %}
   </header>
   {#- Contents list for long reads; front matter `extra.toc = true/false` overrides. -#}
@@ -30,11 +36,15 @@
         {%- endfor %}
       </ol>
     </nav>
+    <script>(function(){var links=document.querySelectorAll(".toc a");if(!links.length||!("IntersectionObserver" in window)){return}var map={};links.forEach(function(a){map[decodeURIComponent(a.hash.slice(1))]=a});var heads=[].filter.call(document.querySelectorAll(".prose [id]"),function(h){return map[h.id]});var cur=null;function update(){var top=null;heads.forEach(function(h){if(h.getBoundingClientRect().top<innerHeight*0.3){top=h}});var a=top?map[top.id]:null;if(a===cur){return}if(cur){cur.removeAttribute("aria-current")}cur=a;if(a){a.setAttribute("aria-current","true")}}var io=new IntersectionObserver(update,{rootMargin:"0px 0px -70% 0px"});heads.forEach(function(h){io.observe(h)})})();</script>
     {%- endif %}
     <div class="prose">
       {{ page.content | safe }}
     </div>
   </div>
+  {%- if page.date and page.ancestors | length > 1 %}
+  {% include "partials/post_footer.html" %}
+  {%- endif %}
 </article>
 {% endblock content %}
 {% block crumbs %}

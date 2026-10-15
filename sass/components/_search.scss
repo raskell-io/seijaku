@@ -1,0 +1,30 @@
+// Search: a nav button and a centred dialog. Only rendered when config.build_search_index is on.
+.topnav__end { justify-self: end; display: flex; align-items: center; gap: 0.75rem; }
+.topnav__search {
+  display: grid; place-items: center; width: 2.5rem; height: 2.5rem; padding: 0;
+  border: 0; border-radius: 100px; background: color-mix(in srgb, currentColor 12%, transparent);
+  color: inherit; cursor: pointer; transition: background 150ms ease;
+}
+.topnav__search:hover { background: color-mix(in srgb, currentColor 22%, transparent); }
+.topnav__search:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.search {
+  width: min(42rem, calc(100% - 2rem)); max-height: min(36rem, 80svh); margin: 12svh auto auto; padding: 0;
+  border: 0; border-radius: 1.25rem; background: var(--paper); color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+.search::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(4px); }
+.search__bar { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+.search__bar input { flex: 1; min-width: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 1.2rem; outline: none; }
+.search__close { padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 0.4rem; background: none; color: var(--muted); font: 0.75rem var(--font-mono); cursor: pointer; }
+.search__status { padding: 0.75rem 1.25rem 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
+.search__status:empty { display: none; }
+.search__results { list-style: none; margin: 0; padding: 0.5rem; overflow-y: auto; max-height: calc(min(36rem, 80svh) - 6rem); }
+.search__results a { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.8rem 0.9rem; border-radius: 0.75rem; color: inherit; text-decoration: none; }
+.search__results a:hover, .search__results a:focus-visible { background: var(--tint-bar); outline: none; }
+.search__results strong { font-weight: 500; }
+.search__results span { color: var(--muted); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+
+@media (max-width: 58rem) {
+  .topnav__end { display: none; }
+}

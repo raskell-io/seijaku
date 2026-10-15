@@ -42,3 +42,36 @@
   .post__body--toc .prose { grid-row: 1; grid-column: 1; }
   .post__body--toc .toc { grid-row: 1; grid-column: 2; position: sticky; top: 7.5rem; align-self: start; max-height: calc(100svh - 9rem); overflow-y: auto; margin: 0; }
 }
+
+// Optional cover beside the article header: the left column carries title, deck, and metadata,
+// the cover sits beside the title and deck on wide screens and under the metadata on narrow ones.
+.pagehead__cover { margin: clamp(2rem, 4vw, 3rem) 0 0; }
+.pagehead__cover img { display: block; width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 0 0 1px var(--line), var(--shadow); }
+
+@media (min-width: 64rem) {
+  .pagehead--cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); column-gap: clamp(2.5rem, 5vw, 5rem); }
+  .pagehead--cover > * { grid-column: 1; }
+  .pagehead--cover .pagehead__cover { grid-column: 2; grid-row: 1 / span 3; align-self: center; margin: 0; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pagehead__cover img { filter: brightness(0.92); }
+}
+:root[data-theme="dark"] .pagehead__cover img { filter: brightness(0.92); }
+
+// After the article: related reading and the neighbouring posts.
+.post__footer { margin-block-start: clamp(3rem, 6vw, 5rem); }
+.related__label { margin-block-end: 1rem; font-size: clamp(1.4rem, 2vw, 1.75rem); font-weight: 500; letter-spacing: -0.03em; }
+.related .postlist { margin-block-end: clamp(2.5rem, 5vw, 4rem); }
+
+.neighbours { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding-block: 1.5rem; border-top: 1px solid var(--line); }
+.neighbours a { display: flex; flex-direction: column; gap: 0.35rem; color: inherit; font-size: 1.1rem; font-weight: 500; line-height: 1.3; text-decoration: none; text-wrap: balance; }
+.neighbours a:hover { text-decoration: underline; text-underline-offset: 0.16em; }
+.neighbours span { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 400; }
+.neighbours__next { text-align: right; align-items: flex-end; }
+
+@media (max-width: 40rem) {
+  .neighbours { grid-template-columns: 1fr; }
+  .neighbours__next { text-align: left; align-items: flex-start; }
+}
+.toc a[aria-current] { color: var(--ink); box-shadow: inset 2px 0 0 var(--ink); margin-inline-start: -1px; }

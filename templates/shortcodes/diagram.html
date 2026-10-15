@@ -1,1 +1,19 @@
-<pre class="giallo diagram"><code data-lang="diagram"{% if title %} data-title="{{ title }}"{% endif %}>{{ body }}</code></pre>
+{#- Zola trims a shortcode body, so a diagram whose first line was indented loses that indent.
+    Restore it from the second line when the first line starts at column 0 and the second does not. -#}
+{%- set fixed = body %}
+{%- set lines = body | split(pat="
+") %}
+{%- if lines | length > 1 %}
+  {%- set first = lines | first %}
+  {%- set second = lines | nth(n=1) %}
+  {%- set second_len = second | length %}
+  {%- set second_rest = second | trim_start | length %}
+  {%- set indent = second_len - second_rest %}
+  {%- set first_len = first | length %}
+  {%- set first_rest = first | trim_start | length %}
+  {%- if indent > 0 and first_len == first_rest %}
+    {%- set pad = "                                                                                " | truncate(length=indent, end="") %}
+    {%- set fixed = pad ~ body %}
+  {%- endif %}
+{%- endif -%}
+<pre class="giallo diagram"><code data-lang="diagram"{% if title %} data-title="{{ title }}"{% endif %}>{{ fixed }}</code></pre>

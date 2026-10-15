@@ -57,8 +57,47 @@
 
   pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; }
   // Nord's comment and attribute blues fall under 4.5:1 on this darker ground; lift them to pass AA.
-  pre [style*="color: #616E88"] { color: #8f9bb3 !important; }
-  pre [style*="color: #5E81AC"] { color: #81a1c8 !important; }
+  // Matched on the hex alone and case-insensitively, so it survives HTML minification.
+  pre [style*="616E88" i] { color: #8f9bb3 !important; }
+  pre [style*="5E81AC" i] { color: #81a1c8 !important; }
+
+  // Language label (or diagram title) as a quiet first line inside the block.
+  pre code[data-lang]::before,
+  pre code[data-title]::before {
+    content: attr(data-lang);
+    display: block;
+    margin-block-end: 0.9rem;
+    color: #8f9bb3;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+  }
+  pre code[data-title]::before { content: attr(data-title); text-transform: none; }
+  pre code[data-lang="plain"]:not([data-title])::before,
+  pre code[data-lang="diagram"]:not([data-title])::before { content: none; }
+  pre code[data-lang="shellscript"]::before { content: "shell"; }
+  pre code[data-lang="shellsession"]::before { content: "console"; }
+
+  // Copy button (config: extra.seijaku.code_copy); the script wraps each block in .codeblock.
+  .codeblock { position: relative; margin-block: 2em; }
+  .codeblock pre { margin: 0; }
+  .codeblock__copy {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    padding: 0.3rem 0.75rem;
+    border: 0;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #c9d2cf;
+    font: 0.72rem/1.2 var(--font-mono);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 150ms ease, background 150ms ease;
+  }
+  .codeblock:hover .codeblock__copy, .codeblock__copy:focus-visible { opacity: 1; }
+  .codeblock__copy:hover { background: rgba(255, 255, 255, 0.16); }
+  @media (hover: none) { .codeblock__copy { opacity: 1; } }
 
   hr { height: 0; margin-block: 3.5em; border: 0; border-top: 1px solid var(--line); }
 

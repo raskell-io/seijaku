@@ -29,6 +29,18 @@ technical publication rather than a product company.
 - **Structured footer** — a brand column with a short introduction, small-type
   link groups, and a legal line; light on paper, charcoal in dark mode,
   ring-gradient rule on top
+- **Article covers** — `extra.cover` (and `extra.cover_alt`) shows an image beside the
+  title on wide screens and under the metadata on phones
+- **After the article** — related reading (`extra.related = ["slug", ...]`, otherwise posts
+  that share tags) and links to the older and newer post
+- **Now list** — optional `[[extra.now]]` blocks (`name`, `text`, `url`) in
+  `content/_index.md` render a "What I am working on" section on the homepage
+- **Search** — with `build_search_index = true`, a nav button (and the `/` key) opens a
+  search dialog; the index and the elasticlunr library load on first open
+- **Code blocks** — language label (or diagram title) as a quiet first line;
+  `code_copy = true` adds a copy button (a few lines of inline JS)
+- **Site hooks** — create `templates/partials/head_extra.html` or
+  `templates/partials/body_end.html` in your site to add tags without overriding layouts
 - **"You are here"** — breadcrumb trail in the footer of every page
 - **Local type** — compact Geist and IBM Plex Mono subsets, with system-stack
   fallbacks and license notes in `static/fonts/`

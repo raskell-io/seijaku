@@ -101,3 +101,14 @@
 // Optional portrait above the hero deck (config: extra.seijaku.portrait).
 .hero-home__portrait { order: 1; width: clamp(4rem, 6vw, 5.5rem); height: auto; margin-block-end: 0.25rem; border-radius: 50%; }
 .hero-home__body p { order: 2; }
+
+// "What I am working on": a short ruled list between the writing and the projects.
+.home-now { padding: 0 var(--gutter) clamp(3.5rem, 6vw, 5.5rem); background: var(--paper); color: var(--ink); }
+.home-now > * { width: min(var(--shell), 100%); margin-inline: auto; }
+.home-now .home-head { padding-block-start: clamp(2.5rem, 5vw, 4rem); border-top: 1px solid var(--line); }
+.nowlist { list-style: none; margin-block: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 0 2.5rem; }
+.nowlist li { padding: 1.1rem 0; border-top: 1px solid var(--line); }
+.nowlist h3 { font-size: 1.2rem; font-weight: 500; letter-spacing: -0.02em; }
+.nowlist h3 a { color: inherit; text-decoration: none; }
+.nowlist h3 a:hover { text-decoration: underline; text-underline-offset: 0.16em; }
+.nowlist p { margin-block-start: 0.35rem; color: var(--muted); line-height: 1.45; text-wrap: pretty; }

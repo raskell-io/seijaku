@@ -74,7 +74,7 @@
 }
 :root[data-theme="dark"] .interior .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
 
-.topnav__action { justify-self: end; }
+
 
 @supports (animation-timeline: scroll()) {
   .home .topnav {
@@ -125,7 +125,7 @@
 
 @media (max-width: 58rem) {
   .topnav { grid-template-columns: 1fr auto; padding: 1.25rem 1.5rem; }
-  .topnav__links, .topnav__action { display: none; }
+  .topnav__links { display: none; }
   .topnav__menu { display: block; }
 }
 
