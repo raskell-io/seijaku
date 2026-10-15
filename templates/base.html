@@ -101,7 +101,8 @@
         <nav class="footer__group" aria-label="Explore">
           <span class="footer__group-title">Explore</span>
           {%- for item in config.extra.seijaku.nav %}
-          <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
+          {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+          <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ item.name }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
         {%- endif %}
@@ -109,7 +110,8 @@
         <nav class="footer__group" aria-label="Index">
           <span class="footer__group-title">Index</span>
           {%- for item in config.extra.seijaku.explore %}
-          <a href="{% if item.url is starting_with("@/") %}{{ get_url(path=item.url) | safe }}{% else %}{{ item.url | safe }}{% endif %}">{{ item.name }}</a>
+          {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+          <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ item.name }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
         {%- endif %}
@@ -117,7 +119,8 @@
         <nav class="footer__group" aria-label="Elsewhere">
           <span class="footer__group-title">Elsewhere</span>
           {%- for item in config.extra.seijaku.social %}
-          <a href="{{ item.url | safe }}" rel="me">{{ item.name }}</a>
+          {%- set href = item.url %}{% set_global is_ext = href is starting_with("http") %}
+          <a class="footer__social" href="{{ href | safe }}" rel="me noopener">{% include "partials/social_icon.html" %}<span>{{ item.name }}</span>{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
         {%- endif %}
