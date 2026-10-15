@@ -146,7 +146,13 @@ html:has(.topnav__menu[open]) { overflow: hidden; }
   from { opacity: 0; transform: translateY(-0.75rem); }
 }
 
-@media (max-width: 58rem) {
+// Mid widths: tighten the pill so five items still clear the brand and the CTA.
+@media (max-width: 82rem) {
+  .topnav__links { gap: 0.25rem; }
+  .topnav__links a { padding-inline: 1.15rem; }
+}
+
+@media (max-width: 64rem) {
   .topnav { grid-template-columns: 1fr auto; padding: 1.25rem 1.5rem; }
   .topnav__links { display: none; }
   .topnav__menu { display: block; }

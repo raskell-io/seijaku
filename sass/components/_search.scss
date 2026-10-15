@@ -25,6 +25,6 @@
 .search__results strong { font-weight: 500; }
 .search__results span { color: var(--muted); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 
-@media (max-width: 58rem) {
+@media (max-width: 64rem) {
   .topnav__end { display: none; }
 }

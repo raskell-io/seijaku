@@ -5,7 +5,7 @@
 {%- set_global total = 0 %}
 {%- for tier in section.extra.tiers %}{% set n = tier.projects | length %}{% set_global total = total + n %}{% endfor %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{{ total }} projects</p>
+  <p class="pagehead__eyebrow">{{ total }} {{ section.extra.count_label | default(value="projects") }}</p>
   <h1 class="pagehead__title">{{ section.title }}</h1>
   {%- if section.description %}
   <p class="pagehead__deck">{{ section.description }}</p>
@@ -19,7 +19,7 @@
     <h2 class="tier__title" id="tier-{{ tier.key }}">{{ tier.title }}</h2>
     {%- if tier.deck %}<p class="tier__deck">{{ tier.deck }}</p>{%- endif %}
   </header>
-  <ul class="projects projects--{{ tier.key }}">
+  <ul class="projects projects--{{ tier.key }}{% if tier.size %} projects--{{ tier.size }}{% endif %}">
     {%- for slug in tier.projects %}
     {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
     {% include "partials/project_card.html" %}
