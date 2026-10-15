@@ -80,9 +80,7 @@
 // Homepage strip.
 .home-projects { padding: 0 var(--gutter) clamp(5rem, 9vw, 9rem); background: var(--paper); color: var(--ink); }
 .home-projects > * { width: min(var(--shell), 100%); margin-inline: auto; }
-.home-projects__head { margin-block-end: clamp(2.5rem, 5vw, 4rem); padding-block-start: clamp(4rem, 7vw, 6rem); border-top: 1px solid var(--line); }
-.home-projects__head .pagehead__title { max-width: 13ch; }
-.home-projects__more { display: flex; width: fit-content; margin: clamp(2.5rem, 5vw, 4rem) auto 0; padding-inline: 2.5rem; }
+.home-projects .home-head { padding-block-start: clamp(2.5rem, 5vw, 4rem); border-top: 1px solid var(--line); }
 
 @media (max-width: 44rem) {
   .tier__head { grid-template-columns: 1fr; }

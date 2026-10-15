@@ -1,5 +1,5 @@
 name = "seijaku"
-description = "静寂 — a cinematic, hand-made theme: oversized grotesk type, full-bleed imagery, tinted editorial cards, and pill navigation. No JavaScript unless you enable the colour-scheme toggle."
+description = "静寂 — a cinematic, hand-made theme: oversized grotesk type, a cinematic hero, dense dated post indexes, and pill navigation. No JavaScript unless you enable the colour-scheme toggle."
 license = "MIT"
 homepage = "https://github.com/raskell-io/seijaku"
 min_version = "0.19.0"
@@ -15,7 +15,7 @@ demo = ""
 #   footer_note = "made with care"          # footer sign-off (optional)
 #   footer_about = """A short introduction shown under the brand in the footer. Markdown, paragraphs allowed."""   # optional; falls back to tagline
 #   scheme_toggle = true                    # System / Light / Dark control in the footer; the only JavaScript the theme ever emits, inline, no requests (optional)
-#   mark = "images/mark.svg"                # monochrome SVG, inlined so it inherits text colour; used in nav and cards (optional)
+#   mark = "images/mark.svg"                # monochrome SVG, inlined so it inherits text colour; used in nav (optional)
 #   mark_play = true                        # mark blinks / glances on its own and pulls a face on click; needs the expression groups in the SVG (optional, inline JS)
 #   logo = "images/logo.png"                # raster alternative to mark (optional)
 #   portrait = "images/me.webp"             # circular portrait above the hero deck (optional)

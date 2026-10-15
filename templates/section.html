@@ -11,10 +11,13 @@
   {%- endif %}
 </header>
 {{ section.content | safe }}
+{%- set group_years = true %}
 {%- if paginator %}
 {%- set pages = paginator.pages %}
 {% include "partials/post_list.html" %}
+{%- if paginator.number_pagers > 1 %}
 {% include "partials/pagination.html" %}
+{%- endif %}
 {%- else %}
 {%- set pages = section.pages %}
 {% include "partials/post_list.html" %}

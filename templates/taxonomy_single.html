@@ -8,6 +8,7 @@
   <p class="pagehead__deck">{{ term.pages | length }} {% if term.pages | length == 1 %}entry{% else %}entries{% endif %} filed under “{{ pretty }}”.</p>
 </header>
 {%- set pages = term.pages %}
+{%- set group_years = true %}
 {% include "partials/post_list.html" %}
 {% endblock content %}
 {% block crumbs %} → <a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{{ taxonomy.name | capitalize }}</a> → <span aria-current="page">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %}</span>{% endblock crumbs %}

@@ -1,8 +1,8 @@
 # seijaku 静寂
 
 A cinematic, hand-made [Zola](https://www.getzola.org) theme. Oversized modern
-typography, full-bleed scientific imagery, product-scale editorial cards, and
-quiet technical detail. Dark and light palettes follow the system preference, with an optional
+typography, a cinematic homepage hero, dense dated post indexes, and quiet
+technical detail. Dark and light palettes follow the system preference, with an optional
 System / Light / Dark control in the footer. No external requests, and no
 JavaScript unless you enable that control (about twenty inline lines).
 
@@ -17,21 +17,22 @@ technical publication rather than a product company.
   fashion collection
 - **Pill navigation** — floating translucent nav with a bevelled active state,
   and a CSS-only hamburger sheet on phones
-- **Tinted cards** — archive, tag, and homepage listings share one rotating
-  palette of soft champagne / pearl / ice cards
+- **Dense post index** — archive, tag, and homepage listings are dated rows
+  (title, one-line deck, tags, read time); archive and tag pages group by year
 - **Projects** — a tiered projects page (ventures, flagship, labs) driven by
   small TOML files, with status pills, product visuals, and a homepage strip
 - **Metadata table** — a spec-sheet header on every article (duration /
   updated / topics)
+- **Contents list** — automatic on long reads (8+ minutes, 3+ headings): a
+  sticky rail beside the text on wide screens, a short list above it on phones;
+  `extra.toc = true/false` in front matter overrides
 - **Structured footer** — a brand column with a short introduction, small-type
   link groups, and a legal line; light on paper, charcoal in dark mode,
   ring-gradient rule on top
 - **"You are here"** — breadcrumb trail in the footer of every page
-- **RASKELL–01** — an original fictional biological edge appliance used as the
-  homepage product object
 - **Local type** — compact Geist and IBM Plex Mono subsets, with system-stack
   fallbacks and license notes in `static/fonts/`
-- **Original campaign imagery** — four project-local, compressed WebP assets;
+- **Original hero imagery** — project-local, compressed AVIF/WebP assets;
   no third-party imagery or network requests
 - **Colour-scheme control** — optional System / Light / Dark toggle in the
   footer, remembered per browser; the only script the theme can emit
