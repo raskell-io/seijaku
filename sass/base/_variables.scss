@@ -30,6 +30,16 @@
   font-display: swap;
 }
 
+// Diagrams: JetBrains Mono, subsetted to ASCII, box drawing, arrows, shapes and the common
+// symbols (✓ ✗ ≠ ⚠). Its line glyphs are taller than the line, so boxes join up; no ligatures.
+@font-face {
+  font-family: "Seijaku Diagram";
+  src: url("fonts/jetbrains-mono-diagram.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light dark;
   --font-prose: "Seijaku Sans", system-ui, -apple-system, "Helvetica Neue", sans-serif;

@@ -56,6 +56,11 @@
   }
 
   pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; }
+  // ASCII diagrams (the diagram shortcode and untagged fences): a font whose box-drawing glyphs
+  // connect, and a line height under their glyph height so verticals meet. Set on the pre too,
+  // because the line box comes from the block's strut, not the code element.
+  pre.diagram, pre:has(> code[data-lang="plain"]) { font-family: "Seijaku Diagram", var(--font-mono); line-height: 1.4; }
+  pre.diagram code, pre > code[data-lang="plain"] { font-family: inherit; letter-spacing: 0; font-variant-ligatures: none; }
   // Nord's comment and attribute blues fall under 4.5:1 on this darker ground; lift them to pass AA.
   // Matched on the hex alone and case-insensitively, so it survives HTML minification.
   pre [style*="616E88" i] { color: #8f9bb3 !important; }
