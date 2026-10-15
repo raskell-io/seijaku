@@ -11,15 +11,17 @@
   {%- set site_desc = config.description | default(value="") %}
   {%- if page is defined %}
   {%- set og_title = page.title %}{% set og_desc = page.description | default(value=site_desc) %}{% set og_type = "article" %}
-  {%- elif section is defined %}
+  {%- elif section is defined and section.path != "/" %}
   {%- set og_title = section.title %}{% set og_desc = section.description | default(value=site_desc) %}{% set og_type = "website" %}
   {%- else %}
   {%- set og_title = config.title %}{% set og_desc = site_desc %}{% set og_type = "website" %}
   {%- endif %}
   {%- set og_image = "" %}
   {%- if page is defined %}{% if page.extra.og_image %}{% set og_image = get_url(path=page.extra.og_image) %}{% elif page.extra.image %}{% set og_image = get_url(path=page.extra.image) %}{% endif %}{% endif %}
-  {%- if og_image == "" and config.extra.seijaku.og_image %}{% set og_image = get_url(path=config.extra.seijaku.og_image) %}{% endif %}
+  {%- set og_default = false %}
+  {%- if og_image == "" and config.extra.seijaku.og_image %}{% set og_image = get_url(path=config.extra.seijaku.og_image) %}{% set og_default = true %}{% endif %}
   <meta property="og:site_name" content="{{ config.title }}">
+  {%- if config.extra.seijaku.og_locale %}<meta property="og:locale" content="{{ config.extra.seijaku.og_locale }}">{% endif %}
   <meta property="og:type" content="{{ og_type }}">
   <meta property="og:title" content="{{ og_title }}">
   <meta property="og:description" content="{{ og_desc }}">
@@ -32,6 +34,9 @@
   {#- extra.og_image is the dedicated social card; declare its size so LinkedIn renders it. #}
   <meta property="og:image:width" content="{{ page.extra.og_image_width | default(value=1200) }}">
   <meta property="og:image:height" content="{{ page.extra.og_image_height | default(value=630) }}">
+  {%- elif og_default %}
+  <meta property="og:image:width" content="{{ config.extra.seijaku.og_image_width | default(value=1200) }}">
+  <meta property="og:image:height" content="{{ config.extra.seijaku.og_image_height | default(value=630) }}">
   {%- endif %}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{{ og_image | safe }}">
