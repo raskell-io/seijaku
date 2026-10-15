@@ -1,0 +1,54 @@
+// Reading tracks (template tracks.html): numbered chapters of cover cards.
+.tracks-toc { margin-block: calc(clamp(3rem, 6vw, 5rem) * -0.4) clamp(3rem, 6vw, 5rem); }
+.tracks-toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 0.75rem; }
+.tracks-toc a {
+  display: flex; align-items: baseline; gap: 0.9rem; height: 100%;
+  padding: 1rem 1.25rem; border-radius: 1rem; background: var(--tint-bar);
+  color: var(--ink); font-size: 1.05rem; font-weight: 500; letter-spacing: -0.01em; text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.tracks-toc a:hover { background: color-mix(in srgb, var(--ink) 9%, transparent); transform: translateY(-1px); }
+.tracks-toc a span { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
+.tracks-toc__map { margin: 1rem 0 0; color: var(--muted); font-size: 0.95rem; }
+.tracks-toc__map a { display: inline; padding: 0; background: none; font-size: inherit; text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 0.18em; }
+.tracks-toc__map a:hover { background: none; transform: none; text-decoration-color: currentColor; }
+.tracks-intro { margin-block-end: clamp(2rem, 4vw, 3rem); }
+
+.track { margin-block-start: clamp(3.5rem, 7vw, 6rem); padding-block-start: clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid var(--line); scroll-margin-top: 6rem; }
+.track__head { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(1rem, 2.5vw, 2rem); align-items: baseline; margin-block-end: clamp(1.75rem, 3.5vw, 2.75rem); }
+.track__num { grid-row: 1 / span 2; font-family: var(--font-mono); font-size: clamp(2.5rem, 5vw, 4.25rem); line-height: 1; letter-spacing: -0.04em; background: var(--ring-gradient-ink); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.track__title { font-size: clamp(1.9rem, 3.4vw, 3rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; text-wrap: balance; }
+.track__deck { max-width: 40rem; margin-block-start: 0.7rem; color: var(--muted); font-size: clamp(1.05rem, 1.4vw, 1.25rem); font-weight: 500; line-height: 1.35; text-wrap: pretty; }
+
+.track__items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: clamp(1rem, 2.5vw, 2rem); }
+.trackcard__link {
+  display: flex; flex-direction: column; height: 100%;
+  overflow: hidden; border-radius: 1rem; background: var(--tint-2); color: var(--ink); text-decoration: none;
+  box-shadow: 0 0 0 1px var(--line);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms ease;
+}
+.track__items > :nth-child(3n+1) .trackcard__link { background: var(--tint-3); }
+.track__items > :nth-child(3n+2) .trackcard__link { background: var(--tint-1); }
+.track__items > :nth-child(3n+3) .trackcard__link { background: var(--tint-5); }
+.trackcard__link:hover, .trackcard__link:focus-visible { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--line-strong), var(--shadow); outline: none; }
+.trackcard__link:focus-visible { box-shadow: 0 0 0 2px var(--ink), var(--shadow); }
+
+// Cover: the original under a tritone copy (same grade as article covers); the card's hover reveals the colour.
+.trackcard__cover { position: relative; display: block; aspect-ratio: 2 / 1; overflow: hidden; background: #0b1412; }
+.trackcard__cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1); }
+.trackcard__grade { z-index: 1; filter: url(#seijaku-grade); transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.4, 0, 0.2, 1) !important; }
+.trackcard__link:hover .trackcard__grade, .trackcard__link:focus-visible .trackcard__grade { opacity: 0; }
+.trackcard__link:hover .trackcard__cover img { transform: scale(1.03); }
+.trackcard__cover--blank { display: grid; place-items: center; color: #f4f0df; background: radial-gradient(circle at 80% 20%, rgba(114, 215, 220, 0.14), transparent 45%), #0b1412; }
+.trackcard__mark.mark--svg { width: 3.5rem; height: 3.5rem; }
+
+.trackcard__body { flex: 1; display: flex; flex-direction: column; gap: 0.55rem; padding: 1.25rem 1.35rem 1.4rem; }
+.trackcard__step { color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
+.trackcard__title { font-size: clamp(1.2rem, 1.6vw, 1.4rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; text-wrap: balance; }
+.trackcard__note { color: var(--muted); font-size: 0.98rem; line-height: 1.45; text-wrap: pretty; }
+.trackcard__meta { margin-block-start: auto; padding-block-start: 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .trackcard__link, .trackcard__cover img, .trackcard__grade { transition: none !important; }
+  .trackcard__link:hover { transform: none; }
+}

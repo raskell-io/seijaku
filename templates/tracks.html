@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{#- Curated reading tracks: numbered chapters of cover cards.
+    Front matter: template = "tracks.html", and per track
+      [[extra.tracks]] title, deck, items = [{ path = "articles/x.md", note = "..." }, ...]
+    The cover, date and reading time come from each page; `note` overrides its description. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set tracks = page.extra.tracks | default(value=[]) %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ tracks | length }} reading tracks</p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+</header>
+
+{%- if tracks | length > 1 %}
+<nav class="tracks-toc" aria-label="Tracks">
+  <ol>
+    {%- for t in tracks %}
+    <li><a href="#track-{{ loop.index }}"><span>{% if loop.index < 10 %}0{% endif %}{{ loop.index }}</span>{{ t.title }}</a></li>
+    {%- endfor %}
+  </ol>
+  {%- if config.extra.seijaku.map %}
+  <p class="tracks-toc__map">Or wander instead: <a href="{{ get_url(path=config.extra.seijaku.map) | safe }}">explore the map →</a></p>
+  {%- endif %}
+</nav>
+{%- endif %}
+
+{%- if page.content %}<div class="prose tracks-intro">{{ page.content | safe }}</div>{%- endif %}
+
+<svg class="pagehead__cover-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="seijaku-grade" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues=".043 .24 .92 .98"/>
+      <feFuncG type="table" tableValues=".078 .46 .84 .96"/>
+      <feFuncB type="table" tableValues=".071 .47 .64 .91"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+{%- for t in tracks %}
+<section class="track" id="track-{{ loop.index }}" aria-labelledby="track-{{ loop.index }}-title">
+  <header class="track__head">
+    <span class="track__num" aria-hidden="true">{% if loop.index < 10 %}0{% endif %}{{ loop.index }}</span>
+    <h2 class="track__title" id="track-{{ loop.index }}-title">{{ t.title }}</h2>
+    {%- if t.deck %}<p class="track__deck">{{ t.deck }}</p>{%- endif %}
+  </header>
+  <ol class="track__items">
+    {%- for item in t.items %}
+    {%- set p = get_page(path=item.path) %}
+    <li class="trackcard">
+      <a class="trackcard__link" href="{{ p.permalink | safe }}">
+        {%- if p.extra.cover %}
+        <span class="trackcard__cover">
+          <img src="{{ get_url(path=p.extra.cover) | safe }}" alt="" loading="lazy" decoding="async">
+          <img class="trackcard__grade" src="{{ get_url(path=p.extra.cover) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+        </span>
+        {%- else %}
+        <span class="trackcard__cover trackcard__cover--blank" aria-hidden="true">{% set mark_class = "trackcard__mark" %}{% include "partials/mark.html" %}</span>
+        {%- endif %}
+        <span class="trackcard__body">
+          <span class="trackcard__step">{{ loop.index }} of {{ t.items | length }}</span>
+          <span class="trackcard__title">{{ p.title }}</span>
+          <span class="trackcard__note">{{ item.note | default(value=p.description) }}</span>
+          <span class="trackcard__meta">{{ p.date | date(format="%b %Y") }} · {{ p.reading_time }} min read</span>
+        </span>
+      </a>
+    </li>
+    {%- endfor %}
+  </ol>
+</section>
+{%- endfor %}
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}
