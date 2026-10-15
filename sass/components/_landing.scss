@@ -102,11 +102,11 @@
 .hero-home__portrait { order: 1; width: clamp(4rem, 6vw, 5.5rem); height: auto; margin-block-end: 0.25rem; border-radius: 50%; }
 .hero-home__body p { order: 2; }
 
-// Wide landscape screens: the portrait moves to the right edge, larger, its foot level with the deck's last line.
+// Wide landscape screens: the portrait moves to the top right, larger, its top level with the headline.
 @media (min-width: 64rem) and (orientation: landscape) {
   .hero-home__body { --portrait: clamp(10rem, 14vw, 15rem); }
-  .hero-home__portrait { position: absolute; right: 0; bottom: 0; width: var(--portrait); margin: 0; box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.35); }
-  .hero-home__body p { max-width: min(46rem, 100% - var(--portrait) - 3rem); }
+  .hero-home__portrait { position: absolute; top: 0.4em; right: 0; width: var(--portrait); margin: 0; box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.35); }
+  .hero-home__body h1 { max-width: min(10.5em, 100% - var(--portrait) - 3rem); }
 }
 
 // "What I am working on": a short ruled list between the writing and the projects.
