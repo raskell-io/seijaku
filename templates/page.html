@@ -18,8 +18,24 @@
     {%- endif %}
     {%- if page.extra.cover and not page.extra.portrait %}
     {#- Optional cover beside the header (front matter: extra.cover, extra.cover_alt). -#}
-    <figure class="pagehead__cover">
-      <img src="{{ get_url(path=page.extra.cover) | safe }}" alt="{{ page.extra.cover_alt | default(value="") }}" decoding="async">
+    {%- set cover_src = get_url(path=page.extra.cover) %}
+    {%- set graded = page.extra.cover_grade | default(value=config.extra.seijaku.cover_grade | default(value=true)) %}
+    <figure class="pagehead__cover{% if graded %} pagehead__cover--graded{% endif %}"{% if graded %} tabindex="0"{% endif %}>
+      <img src="{{ cover_src | safe }}" alt="{{ page.extra.cover_alt | default(value="") }}" decoding="async">
+      {%- if graded %}
+      {#- Tritone grade in the theme palette (green-black, sea teal, champagne, pearl); hover or focus fades back to the original. -#}
+      <svg class="pagehead__cover-defs" width="0" height="0" aria-hidden="true" focusable="false">
+        <filter id="seijaku-grade" color-interpolation-filters="sRGB">
+          <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/>
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues=".043 .24 .92 .98"/>
+            <feFuncG type="table" tableValues=".078 .46 .84 .96"/>
+            <feFuncB type="table" tableValues=".071 .47 .64 .91"/>
+          </feComponentTransfer>
+        </filter>
+      </svg>
+      <img class="pagehead__cover-grade" src="{{ cover_src | safe }}" alt="" aria-hidden="true" decoding="async">
+      {%- endif %}
     </figure>
     {%- endif %}
   </header>

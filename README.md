@@ -30,7 +30,10 @@ technical publication rather than a product company.
   link groups, and a legal line; light on paper, charcoal in dark mode,
   ring-gradient rule on top
 - **Article covers** — `extra.cover` (and `extra.cover_alt`) shows an image beside the
-  title on wide screens and under the metadata on phones
+  title on wide screens and under the metadata on phones. Covers get a tritone grade in the
+  theme palette, film grain, and a ring border, so mixed imagery reads as one series; hover or
+  focus fades back to the original. Opt out per page with `extra.cover_grade = false` or
+  site-wide with `cover_grade = false` under `[extra.seijaku]`
 - **After the article** — related reading (`extra.related = ["slug", ...]`, otherwise posts
   that share tags) and links to the older and newer post
 - **Now list** — optional `[[extra.now]]` blocks (`name`, `text`, `url`) in

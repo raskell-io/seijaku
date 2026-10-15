@@ -45,8 +45,29 @@
 
 // Optional cover beside the article header: the left column carries title, deck, and metadata,
 // the cover sits beside the title and deck on wide screens and under the metadata on narrow ones.
-.pagehead__cover { margin: clamp(2rem, 4vw, 3rem) 0 0; }
-.pagehead__cover img { display: block; width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 0 0 1px var(--line), var(--shadow); }
+.pagehead__cover { position: relative; margin: clamp(2rem, 4vw, 3rem) 0 0; border-radius: 1rem; overflow: hidden; isolation: isolate; box-shadow: 0 0 0 1px var(--line), var(--shadow); }
+.pagehead__cover img { display: block; width: 100%; height: auto; }
+
+// Graded covers: the original underneath, a tritone copy on top, film grain over both, and a
+// thin champagne-to-ice ring. Hover or keyboard focus fades the grade away to show the original.
+.pagehead__cover--graded { box-shadow: var(--shadow); outline: none; }
+.pagehead__cover--graded::before {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; padding: 1px;
+  background: var(--ring-gradient);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0.85;
+}
+.pagehead__cover--graded::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0.16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.pagehead__cover-defs { position: absolute; width: 0; height: 0; }
+.pagehead__cover-grade { position: absolute; inset: 0; z-index: 1; height: 100% !important; object-fit: cover; filter: url(#seijaku-grade); transition: opacity 600ms cubic-bezier(0.4, 0, 0.2, 1); }
+.pagehead__cover--graded:hover .pagehead__cover-grade,
+.pagehead__cover--graded:focus-visible .pagehead__cover-grade { opacity: 0; }
+.pagehead__cover--graded:focus-visible { box-shadow: 0 0 0 2px var(--ink), var(--shadow); }
+@media (prefers-reduced-motion: reduce) { .pagehead__cover-grade { transition: none; } }
 
 @media (min-width: 64rem) {
   .pagehead--cover { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); column-gap: clamp(2.5rem, 5vw, 5rem); }
@@ -55,9 +76,9 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .pagehead__cover img { filter: brightness(0.92); }
+  :root:not([data-theme="light"]) .pagehead__cover:not(.pagehead__cover--graded) img { filter: brightness(0.92); }
 }
-:root[data-theme="dark"] .pagehead__cover img { filter: brightness(0.92); }
+:root[data-theme="dark"] .pagehead__cover:not(.pagehead__cover--graded) img { filter: brightness(0.92); }
 
 // After the article: related reading and the neighbouring posts.
 .post__footer { margin-block-start: clamp(3rem, 6vw, 5rem); }
