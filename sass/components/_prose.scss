@@ -56,6 +56,9 @@
   }
 
   pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; }
+  // Nord's comment and attribute blues fall under 4.5:1 on this darker ground; lift them to pass AA.
+  pre [style*="color: #616E88"] { color: #8f9bb3 !important; }
+  pre [style*="color: #5E81AC"] { color: #81a1c8 !important; }
 
   hr { height: 0; margin-block: 3.5em; border: 0; border-top: 1px solid var(--line); }
 

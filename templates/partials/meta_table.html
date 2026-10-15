@@ -11,7 +11,9 @@
     {%- if page.taxonomies.categories %}
     <tr><th scope="row">Category</th><td>{% for c in page.taxonomies.categories %}<a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{{ c | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
-    {%- if page.taxonomies.series %}
+    {%- set series_key = page.taxonomies.series | default(value=[]) | join(sep=",") %}
+    {%- set category_key = page.taxonomies.categories | default(value=[]) | join(sep=",") %}
+    {%- if series_key and series_key != category_key %}
     <tr><th scope="row">Series</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
     {%- if page.taxonomies.tags %}

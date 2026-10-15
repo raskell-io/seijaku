@@ -17,7 +17,20 @@
     {% include "partials/meta_table.html" %}
     {%- endif %}
   </header>
-  <div class="post__body">
+  {#- Contents list for long reads; front matter `extra.toc = true/false` overrides. -#}
+  {%- if page.extra.toc is defined %}{% set show_toc = page.extra.toc and page.toc | length > 0 %}
+  {%- else %}{% set show_toc = page.toc | length >= 3 and page.reading_time and page.reading_time >= 8 %}{% endif %}
+  <div class="post__body{% if show_toc %} post__body--toc{% endif %}">
+    {%- if show_toc %}
+    <nav class="toc" aria-labelledby="toc-label">
+      <p class="toc__label" id="toc-label">Contents</p>
+      <ol>
+        {%- for h in page.toc %}
+        <li><a href="{{ h.permalink | safe }}">{{ h.title }}</a></li>
+        {%- endfor %}
+      </ol>
+    </nav>
+    {%- endif %}
     <div class="prose">
       {{ page.content | safe }}
     </div>

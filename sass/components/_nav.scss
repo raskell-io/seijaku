@@ -65,13 +65,14 @@
   color: #000;
 }
 
-// Over paper the grey is deepened until white links pass AA; over the hero and in dark it stays Cortical-light.
-.interior .topnav__links { background: rgba(88, 90, 89, 0.8); }
+// Over paper the bar is a faint ink wash with ink links; over the hero and in dark it stays Cortical-light.
+.interior .topnav__links { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
+.interior .topnav__links a:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
+  :root:not([data-theme="light"]) .interior .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
 }
-:root[data-theme="dark"] .interior .topnav__links { background: rgba(128, 130, 129, 0.45); }
+:root[data-theme="dark"] .interior .topnav__links { background: rgba(128, 130, 129, 0.45); color: #fff; }
 
 .topnav__action { justify-self: end; }
 

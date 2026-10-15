@@ -8,33 +8,10 @@
 
 .pagehead--post .pagehead__title { max-width: 14ch; }
 
-// Hairline-framed article body with corner ticks, as on Cortical's text sections.
+// Article body: a hairline rule under the header, then the text on the page itself.
 .post__body {
-  position: relative;
-  padding: clamp(2rem, 5vw, 4.5rem) clamp(0rem, 5vw, 4.5rem) clamp(2rem, 5vw, 4rem);
+  padding-block: clamp(2rem, 5vw, 4rem);
   border-top: 1px solid var(--line);
-}
-
-.post__body::before,
-.post__body::after {
-  content: "";
-  position: absolute;
-  top: -3px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--ink);
-}
-
-.post__body::before { left: -2px; }
-.post__body::after { right: -2px; }
-
-@media (min-width: 56rem) {
-  .post__body { border-inline: 1px solid var(--line); }
-}
-
-@media (max-width: 56rem) {
-  .post__body::before, .post__body::after { display: none; }
 }
 
 @media (max-width: 38rem) {
@@ -48,4 +25,20 @@
 @media (max-width: 44rem) {
   .pagehead--portrait { grid-template-columns: 1fr; }
   .pagehead__portrait { grid-column: 1; grid-row: 1; width: 8rem; margin-block-end: 1.5rem; }
+}
+
+// Contents list for long reads: a quiet mono index above the text, a sticky rail beside it on wide screens.
+.toc { margin-block-end: clamp(2rem, 4vw, 3rem); font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.45; }
+.toc__label { margin-block-end: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+.toc ol { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--line); }
+.toc li + li { margin-block-start: 0.4rem; }
+.toc a { display: block; padding-inline-start: 0.9rem; color: var(--muted); text-decoration: none; }
+.toc a:hover { color: var(--ink); text-decoration: underline; }
+
+.prose :is(h2, h3, h4)[id] { scroll-margin-top: 7rem; }
+
+@media (min-width: 80rem) {
+  .post__body--toc { display: grid; grid-template-columns: minmax(0, var(--measure)) 13rem; justify-content: space-between; gap: 3rem; }
+  .post__body--toc .prose { grid-row: 1; grid-column: 1; }
+  .post__body--toc .toc { grid-row: 1; grid-column: 2; position: sticky; top: 7.5rem; align-self: start; max-height: calc(100svh - 9rem); overflow-y: auto; margin: 0; }
 }
