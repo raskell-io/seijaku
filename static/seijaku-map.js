@@ -16,9 +16,10 @@
     article: { fill: "#f4f0df", base: 2.6, grow: 0.9 },
     tag: { fill: "#72d7dc", base: 3.2, grow: 1.45 },
     series: { fill: "#efd093", base: 5, grow: 1.1 },
-    project: { fill: null, ring: "#efd093", base: 4.4, grow: 1.1 }
+    project: { fill: null, ring: "#efd093", base: 4.4, grow: 1.1 },
+    hub: { fill: null, ring: "#f4f0df", base: 6, grow: 0.5 }
   };
-  var REST = { tag: 46, series: 40, project: 58, article: 64 };
+  var REST = { tag: 46, series: 40, project: 58, article: 64, hub: 70 };
 
   // Nodes and links ---------------------------------------------------------
   var nodes = [], byId = {};
@@ -35,7 +36,7 @@
     if (!a || !b || a === b || seen[key]) { return; }
     seen[key] = true;
     a.deg++; b.deg++; a.nb.push(b); b.nb.push(a);
-    var k = a.kind === "article" ? b.kind : a.kind;
+    var k = a.kind === "hub" || b.kind === "hub" ? "hub" : a.kind === "article" ? b.kind : a.kind;
     links.push({ a: a, b: b, rest: REST[k] || 50 });
   });
   // Orphans (an unlinked project, a topic with no articles) would only drift; leave them out.
@@ -84,7 +85,8 @@
   // View --------------------------------------------------------------------
   var W = 0, H = 0, dpr = 1, scale = 1, tx = 0, ty = 0, touched = false;
   var hidden = {}, hover = null, sel = null;
-  function visible(n) { return !hidden[n.kind]; }
+  // Group hubs travel with the projects toggle.
+  function visible(n) { return !hidden[n.kind === "hub" ? "project" : n.kind]; }
   function fit(animate) {
     var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     nodes.forEach(function (n) {
@@ -168,17 +170,17 @@
       if (clash && n !== hover && n !== sel) { return; }
       boxes.push(box);
       ctx.fillStyle = "rgba(11, 20, 18, 0.72)"; ctx.fillRect(box[0], box[1], box[2] - box[0], box[3] - box[1]);
-      ctx.fillStyle = n.kind === "tag" ? "#a9e8e9" : n.kind === "article" ? "rgba(244, 240, 223, 0.86)" : "#efd093";
+      ctx.fillStyle = n.kind === "tag" ? "#a9e8e9" : n.kind === "article" ? "rgba(244, 240, 223, 0.86)" : n.kind === "hub" ? "#f4f0df" : "#efd093";
       ctx.textBaseline = "top"; ctx.fillText(text, x, y);
     });
   }
 
   // Selection card -----------------------------------------------------------
-  var KIND_NAME = { article: "Article", tag: "Topic", series: "Series", project: "Project" };
+  var KIND_NAME = { article: "Article", tag: "Topic", series: "Series", project: "Project", hub: "Group" };
   function select(n) {
     sel = n;
     if (!n) { card.hidden = true; draw(); return; }
-    card.querySelector(".map__card-kind").textContent = KIND_NAME[n.kind] + (n.meta && n.kind !== "project" ? " · " + n.meta : "") + " · " + n.deg + " links";
+    card.querySelector(".map__card-kind").textContent = KIND_NAME[n.kind] + (n.meta && n.kind !== "project" && n.kind !== "hub" ? " · " + n.meta : "") + " · " + n.deg + " links";
     card.querySelector(".map__card-title").textContent = n.label;
     var desc = card.querySelector(".map__card-desc");
     desc.textContent = n.desc || ""; desc.hidden = !n.desc;
