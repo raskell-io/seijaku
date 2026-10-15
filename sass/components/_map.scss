@@ -16,7 +16,7 @@
 .map__canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
 
 .map__legend, .map__zoom { position: absolute; top: 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.map__legend { left: 1rem; right: 9rem; }
+.map__legend { left: 1rem; right: 16rem; }
 .map__zoom { right: 1rem; }
 .map__legend button, .map__zoom button {
   display: inline-flex;
@@ -40,6 +40,25 @@
 .map__legend [data-kind="series"] i { background: #efd093; }
 .map__legend [data-kind="project"] i { background: transparent; box-shadow: inset 0 0 0 1.5px #efd093; }
 .map__zoom button { min-width: 2rem; justify-content: center; padding-inline: 0.6rem; font-family: var(--font-mono); }
+
+// Export: a small menu under the zoom controls (PNG of the whole graph, or the graph as JSON).
+.map__export { position: relative; }
+.map__export summary {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2rem; padding: 0.3rem 0.75rem;
+  border-radius: 100px; background: rgba(255, 255, 255, 0.08); font: 0.8rem/1 var(--font-mono); list-style: none; cursor: pointer;
+  transition: background 150ms ease;
+}
+.map__export summary::-webkit-details-marker { display: none; }
+.map__export summary:hover, .map__export[open] summary { background: rgba(255, 255, 255, 0.16); }
+.map__export summary:focus-visible { outline: 2px solid #72d7dc; outline-offset: 2px; }
+.map__export-menu {
+  position: absolute; top: calc(100% + 0.4rem); right: 0; z-index: 2; min-width: 12rem; padding: 0.35rem;
+  display: flex; flex-direction: column; border-radius: 0.9rem; background: rgba(17, 22, 21, 0.94); backdrop-filter: blur(14px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+.map__zoom .map__export-menu button { justify-content: space-between; min-height: 2.25rem; padding: 0.45rem 0.7rem; border-radius: 0.6rem; background: none; font-family: var(--font-prose); font-size: 0.85rem; }
+.map__zoom .map__export-menu button:hover { background: rgba(255, 255, 255, 0.1); }
+.map__export-menu small { color: #aaa9a5; font: 0.7rem/1 var(--font-mono); }
 
 .map__card {
   position: absolute;
@@ -67,7 +86,8 @@
 @media (max-width: 44rem) {
   .map { height: 78svh; margin-inline: calc(var(--gutter) * -1 + 0.5rem); border-radius: 1rem; }
   .map__legend { right: 1rem; top: 0.75rem; left: 0.75rem; }
-  .map__zoom { top: auto; right: 0.75rem; bottom: 0.75rem; flex-direction: column; }
+  .map__zoom { top: auto; right: 0.75rem; bottom: 0.75rem; flex-direction: column; align-items: flex-end; }
+  .map__export-menu { top: auto; bottom: calc(100% + 0.4rem); }
   .map__hint { display: none; }
   .map__card { left: 0.75rem; bottom: 0.75rem; width: calc(100% - 4.5rem); }
 }

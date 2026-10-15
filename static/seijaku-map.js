@@ -83,7 +83,7 @@
   }
 
   // View --------------------------------------------------------------------
-  var W = 0, H = 0, dpr = 1, scale = 1, tx = 0, ty = 0, touched = false;
+  var W = 0, H = 0, dpr = 1, scale = 1, tx = 0, ty = 0, touched = false, view = { padTop: 64, bg: null };
   var hidden = {}, hover = null, sel = null;
   // Group hubs travel with the projects toggle.
   function visible(n) { return !hidden[n.kind === "hub" ? "project" : n.kind]; }
@@ -94,7 +94,7 @@
       x0 = Math.min(x0, n.x - n.r); y0 = Math.min(y0, n.y - n.r); x1 = Math.max(x1, n.x + n.r); y1 = Math.max(y1, n.y + n.r);
     });
     if (x0 === Infinity) { return; }
-    var padTop = 64, pad = 28;
+    var padTop = view.padTop, pad = 28;
     var s = Math.min((W - pad * 2) / (x1 - x0), (H - padTop - pad) / (y1 - y0), 2.4);
     var nx = W / 2 - ((x0 + x1) / 2) * s, ny = padTop + (H - padTop - pad) / 2 - ((y0 + y1) / 2) * s;
     if (!animate || reduce) { scale = s; tx = nx; ty = ny; return; }
@@ -124,6 +124,7 @@
   function draw() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
+    if (view.bg) { ctx.fillStyle = view.bg; ctx.fillRect(0, 0, W, H); }
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * tx, dpr * ty);
     ctx.lineWidth = 1 / scale;
     links.forEach(function (l) {
@@ -275,6 +276,45 @@
     });
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sel) { select(null); } });
+
+  // Export -----------------------------------------------------------------
+  function save(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  var base = (location.hostname || "site").replace(/^www\./, "").replace(/\W+/g, "-") + "-map";
+  // The whole graph, fitted, on the map's own ground at 3200 x 2000; filters and selection apply as shown.
+  function exportPng() {
+    var keep = { ctx: ctx, W: W, H: H, dpr: dpr, scale: scale, tx: tx, ty: ty, view: view };
+    var off = document.createElement("canvas");
+    off.width = 3200; off.height = 2000;
+    ctx = off.getContext("2d"); W = 1600; H = 1000; dpr = 2; view = { padTop: 36, bg: "#0b1412" };
+    fit(false); draw();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = "500 13px " + font; ctx.fillStyle = "rgba(244, 240, 223, 0.55)"; ctx.textBaseline = "alphabetic";
+    ctx.fillText(location.host + location.pathname + " · " + new Date().toISOString().slice(0, 10), 24, H - 20);
+    ctx = keep.ctx; W = keep.W; H = keep.H; dpr = keep.dpr; scale = keep.scale; tx = keep.tx; ty = keep.ty; view = keep.view;
+    draw();
+    off.toBlob(function (b) { if (b) { save(b, base + ".png"); } }, "image/png");
+  }
+  // Everything on the map (not just what is shown): nodes with their degree, and links as source/target pairs.
+  function exportJson() {
+    var out = {
+      source: location.href,
+      generated: new Date().toISOString(),
+      nodes: nodes.map(function (n) { return { id: n.id, kind: n.kind, label: n.label, url: n.url, meta: n.meta, description: n.desc || undefined, degree: n.deg }; }),
+      links: links.map(function (l) { return { source: l.a.id, target: l.b.id }; })
+    };
+    save(new Blob([JSON.stringify(out, null, 2) + "\n"], { type: "application/json" }), base + ".json");
+  }
+  fig.querySelectorAll("[data-export]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (b.getAttribute("data-export") === "png") { exportPng(); } else { exportJson(); }
+      var d = b.closest("details"); if (d) { d.open = false; }
+    });
+  });
 
   // Run --------------------------------------------------------------------
   var running = false;

@@ -36,6 +36,13 @@
     <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
     <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
     <button type="button" data-zoom="fit" aria-label="Fit the whole map">fit</button>
+    <details class="map__export">
+      <summary aria-label="Export the map"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>export</summary>
+      <div class="map__export-menu">
+        <button type="button" data-export="png">Image <small>PNG</small></button>
+        <button type="button" data-export="json">Graph data <small>JSON</small></button>
+      </div>
+    </details>
   </div>
   <div class="map__card" hidden>
     <p class="map__card-kind"></p>
@@ -48,7 +55,7 @@
 </figure>
 <script type="application/json" id="map-data">{"nodes":[
 {%- for a in sec.pages %}
-{"id":"a:{{ a.path }}","kind":"article","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":"{{ a.date | date(format="%Y-%m-%d") }} · {{ a.reading_time }} min","desc":{{ a.description | default(value="") | json_encode | safe }}},
+{"id":"a:{{ a.path | safe }}","kind":"article","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":"{{ a.date | date(format="%Y-%m-%d") }} · {{ a.reading_time }} min","desc":{{ a.description | default(value="") | json_encode | safe }}},
 {%- endfor %}
 {%- if tags %}{% for t in tags.items %}
 {"id":"t:{{ t.slug }}","kind":"tag","label":{{ t.name | json_encode | safe }},"url":{{ t.permalink | json_encode | safe }},"meta":"{{ t.pages | length }} articles","desc":""},
@@ -63,15 +70,15 @@
 {"id":"h:{{ h }}","kind":"hub","label":{{ hubnames[loop.index0] | json_encode | safe }},"url":{{ huburls[loop.index0] | json_encode | safe }},"meta":"Group","desc":""},
 {%- endfor %}
 null],"links":[
-{%- if tags %}{% for t in tags.items %}{% for a in t.pages %}["a:{{ a.path }}","t:{{ t.slug }}"],{% endfor %}{% endfor %}{% endif %}
-{%- if series %}{% for s in series.items %}{% for a in s.pages %}["a:{{ a.path }}","s:{{ s.slug }}"],{% endfor %}{% endfor %}{% endif %}
+{%- if tags %}{% for t in tags.items %}{% for a in t.pages %}["a:{{ a.path | safe }}","t:{{ t.slug }}"],{% endfor %}{% endfor %}{% endif %}
+{%- if series %}{% for s in series.items %}{% for a in s.pages %}["a:{{ a.path | safe }}","s:{{ s.slug }}"],{% endfor %}{% endfor %}{% endif %}
 {#- Article to article: the body links to the other article. -#}
-{%- for a in sec.pages %}{% for b in sec.pages %}{% if a.path != b.path and a.content is containing(b.path) %}["a:{{ a.path }}","a:{{ b.path }}"],{% endif %}{% endfor %}{% endfor %}
+{%- for a in sec.pages %}{% for b in sec.pages %}{% if a.path != b.path and a.content is containing(b.path) %}["a:{{ a.path | safe }}","a:{{ b.path | safe }}"],{% endif %}{% endfor %}{% endfor %}
 {#- Article to project: the body links to one of the project's URLs, or names it (names under five letters are too ambiguous). -#}
 {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}{% for a in sec.pages %}
 {%- set_global hit = p.title | length >= 5 and a.content is containing(p.title) %}
 {%- if not hit and p.links %}{% for l in p.links %}{% set u = l.url | replace(from="https://", to="") | trim_end_matches(pat="/") %}{% if a.content is containing(u) %}{% set_global hit = true %}{% endif %}{% endfor %}{% endif %}
-{%- if hit %}["a:{{ a.path }}","p:{{ pslug }}"],{% endif %}
+{%- if hit %}["a:{{ a.path | safe }}","p:{{ pslug }}"],{% endif %}
 {%- endfor %}{% endfor %}
 {#- Project to its group on the projects page, to the topics it is filed under, and to related projects (data: topics, related). -#}
 {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}["p:{{ pslug }}","h:{{ phubs[loop.index0] }}"],
