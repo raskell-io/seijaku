@@ -5,7 +5,7 @@
   <div class="project__body">
     <div class="project__top">
       {%- if p.logo %}
-      <img class="project__logo" src="{{ get_url(path=p.logo) | safe }}" alt="" loading="lazy">
+      <img class="project__logo{% if p.logo_wide %} project__logo--wide{% endif %}" src="{{ get_url(path=p.logo) | safe }}" alt="" loading="lazy">
       {%- else %}
       <span class="project__monogram" aria-hidden="true">{{ p.title | truncate(length=1, end="") }}</span>
       {%- endif %}

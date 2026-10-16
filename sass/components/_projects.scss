@@ -53,6 +53,8 @@
 .project__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-block-end: 0.25rem; }
 .project__logo, .project__monogram { width: 3.5rem; height: 3.5rem; flex: none; }
 .project__logo { object-fit: contain; border-radius: 0.9rem; }
+// Wordmark logos (data: logo_wide = true) keep their proportions at the logo's height.
+.project .project__logo.project__logo--wide { width: min(100%, 12rem); height: auto; border-radius: 0.6rem; }
 .project__monogram { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
 .project__title { font-size: clamp(1.45rem, 1.9vw, 1.75rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
 .project__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; color: var(--muted); font-size: 1.05rem; line-height: 1.45; text-wrap: pretty; }
