@@ -97,3 +97,30 @@
   .neighbours__next { text-align: left; align-items: flex-start; }
 }
 .toc a[aria-current] { color: var(--ink); box-shadow: inset 2px 0 0 var(--ink); margin-inline-start: -1px; }
+
+// Banner header: a wide photo card, the h1 set live over its dark side, the portrait overlapping
+// the card's lower edge (LinkedIn-style), then the eyebrow and deck beside the portrait.
+.pagehead--banner { margin-block-end: clamp(2.5rem, 5vw, 4rem); }
+.banner { position: relative; overflow: hidden; border-radius: 1.25rem; background: #05090a; color: #f4f0df; box-shadow: var(--shadow); isolation: isolate; }
+.banner__media img { display: block; width: 100%; height: clamp(18rem, 44vw, 34rem); object-fit: cover; object-position: 30% 50%; }
+.banner__headline {
+  position: absolute; inset: 0 4% 0 auto; z-index: 1; width: 38%;
+  display: flex; flex-direction: column; justify-content: center;
+  font-size: clamp(1.6rem, 3.1vw, 2.9rem); font-weight: 400; line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance;
+}
+.banner--left .banner__headline { inset: 0 auto 0 4%; }
+.banner__headline .term { color: #72d7dc; }
+.banner__foot { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(1.25rem, 3vw, 2.5rem); align-items: end; padding-inline: clamp(1rem, 3vw, 2.5rem); }
+.banner__portrait { width: clamp(7rem, 13vw, 10.5rem); height: auto; margin-block-start: calc(clamp(7rem, 13vw, 10.5rem) * -0.5); border-radius: 50%; box-shadow: 0 0 0 5px var(--paper), var(--shadow); position: relative; z-index: 1; }
+.banner__intro { padding-block-start: clamp(1rem, 2vw, 1.5rem); }
+.banner__intro .pagehead__eyebrow { margin-block-end: 0.5rem; }
+.banner__intro .pagehead__deck { margin-block-start: 0; max-width: 44rem; font-size: clamp(1.1rem, 1.6vw, 1.4rem); }
+
+// Narrow screens: the photo keeps the figures, the headline moves under it on paper.
+@media (max-width: 44rem) {
+  .banner__media img { height: 15rem; object-position: 28% 50%; }
+  .banner__headline { position: static; width: auto; padding: 1.25rem 1.25rem 1.5rem; font-size: 1.85rem; }
+  .banner__foot { grid-template-columns: 1fr; padding-inline: 0; }
+  .banner__portrait { margin-block-start: 1.25rem; width: 6.5rem; }
+  .banner__intro { margin-block-start: 1rem; }
+}

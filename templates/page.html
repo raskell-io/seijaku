@@ -3,6 +3,28 @@
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
 <article class="post">
+  {%- if page.extra.banner %}
+  {#- Banner header (extra.banner, banner_fallback, banner_alt): a wide image card with the headline set live
+      over its darker side (extra.banner_side = "right" or "left"), and the portrait overlapping its lower edge. -#}
+  <header class="pagehead pagehead--banner">
+    <div class="banner banner--{{ page.extra.banner_side | default(value="right") }}">
+      <picture class="banner__media">
+        <source type="image/avif" srcset="{{ get_url(path=page.extra.banner) | safe }}">
+        <img src="{{ get_url(path=page.extra.banner_fallback | default(value=page.extra.banner)) | safe }}" alt="{{ page.extra.banner_alt | default(value="") }}" fetchpriority="high" decoding="async">
+      </picture>
+      <h1 class="banner__headline">{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</h1>
+    </div>
+    <div class="banner__foot">
+      {%- if page.extra.portrait %}
+      <img class="banner__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
+      {%- endif %}
+      <div class="banner__intro">
+        <p class="pagehead__eyebrow">{{ page.title }}</p>
+        {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+      </div>
+    </div>
+  </header>
+  {%- else %}
   <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% endif %}">
     {%- if page.extra.portrait %}
     <img class="pagehead__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
@@ -42,6 +64,7 @@
     </figure>
     {%- endif %}
   </header>
+  {%- endif %}
   {#- Contents list for long reads; front matter `extra.toc = true/false` overrides. -#}
   {%- if page.extra.toc is defined %}{% set show_toc = page.extra.toc and page.toc | length > 0 %}
   {%- else %}{% set show_toc = page.toc | length >= 3 and page.reading_time and page.reading_time >= 8 %}{% endif %}
