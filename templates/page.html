@@ -13,6 +13,14 @@
         <source type="image/avif" srcset="{{ get_url(path=page.extra.banner) | safe }}">
         <img src="{{ get_url(path=page.extra.banner_fallback | default(value=page.extra.banner)) | safe }}" alt="{{ page.extra.banner_alt | default(value="") }}" fetchpriority="high" decoding="async">
       </picture>
+      {%- if page.extra.banner_video %}
+      {#- Optional looping video over the still (extra.banner_video = [webm, mp4]); started by script, never with reduced motion. -#}
+      <video class="banner__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">
+        {%- for v in page.extra.banner_video %}
+        <source src="{{ get_url(path=v) | safe }}" type="video/{% if v is ending_with(".webm") %}webm{% else %}mp4{% endif %}">
+        {%- endfor %}
+      </video>
+      {%- endif %}
       <h1 class="banner__headline"><span>{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</span></h1>
     </div>
     <div class="banner__foot">
@@ -26,6 +34,7 @@
     </div>
   </header>
   {#- Past the banner the nav switches from dark glass to paper glass, as on the homepage. -#}
+  <script>(function(){var v=document.querySelector(".banner__video");if(!v||matchMedia("(prefers-reduced-motion: reduce)").matches){return}v.addEventListener("playing",function(){v.classList.add("is-playing")});v.play().catch(function(){})})();</script>
   <script>(function(){var h=document.querySelector(".pagehead--banner .banner");if(!h||!("IntersectionObserver" in window)){return}new IntersectionObserver(function(e){document.body.classList.toggle("is-past-hero",!e[0].isIntersecting)},{rootMargin:"-72px 0px 0px 0px"}).observe(h)})();</script>
   {%- else %}
   <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% endif %}">
