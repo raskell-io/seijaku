@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block body_class %}interior{% if page.extra.banner %} has-banner{% endif %}{% endblock body_class %}
 {% block content %}
 <article class="post">
   {%- if page.extra.banner %}
@@ -24,6 +25,8 @@
       </div>
     </div>
   </header>
+  {#- Past the banner the nav switches from dark glass to paper glass, as on the homepage. -#}
+  <script>(function(){var h=document.querySelector(".pagehead--banner .banner");if(!h||!("IntersectionObserver" in window)){return}new IntersectionObserver(function(e){document.body.classList.toggle("is-past-hero",!e[0].isIntersecting)},{rootMargin:"-72px 0px 0px 0px"}).observe(h)})();</script>
   {%- else %}
   <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% endif %}">
     {%- if page.extra.portrait %}

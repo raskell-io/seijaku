@@ -11,7 +11,7 @@
   font-size: 1rem;
 }
 
-.home .topnav { color: #fff; }
+.home .topnav, .has-banner:not(.is-past-hero) .topnav { color: #fff; }
 
 .topnav__brand {
   justify-self: start;
@@ -87,7 +87,13 @@
 }
 .is-past-hero .topnav { color: var(--ink); }
 
+// Over a page banner the nav behaves like the homepage's: clear, light, then dark glass.
+.has-banner:not(.is-past-hero) .topnav { background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.has-banner:not(.is-past-hero) .topnav__links { background: rgba(128, 130, 129, 0.6); color: #fff; }
+.has-banner:not(.is-past-hero) .topnav__links a:not(.is-active):hover { background: rgba(255, 255, 255, 0.14); }
+
 @supports (animation-timeline: scroll()) {
+  .has-banner:not(.is-past-hero) .topnav { animation: nav-glass-dark linear both; animation-timeline: scroll(root); animation-range: 3rem 14rem; }
   .interior .topnav { animation: nav-glass-paper linear both; animation-timeline: scroll(root); animation-range: 0 4rem; }
   .home:not(.is-past-hero) .topnav { animation: nav-glass-dark linear both; animation-timeline: scroll(root); animation-range: 3rem 14rem; }
 }
