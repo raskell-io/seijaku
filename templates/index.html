@@ -13,7 +13,7 @@
   <div class="hero-home__grain" aria-hidden="true"></div>
   <div class="hero-home__shade" aria-hidden="true"></div>
   <div class="hero-home__body">
-    {%- if config.extra.seijaku.portrait %}
+    {%- if config.extra.seijaku.portrait and config.extra.seijaku.hero_portrait | default(value=true) %}
     <img class="hero-home__portrait" src="{{ get_url(path=config.extra.seijaku.portrait) | safe }}" alt="" width="96" height="96">
     {%- endif %}
     {{ section.content | safe }}
