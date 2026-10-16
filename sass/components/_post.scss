@@ -7,6 +7,7 @@
 .pagehead__deck { max-width: 52rem; margin-block-start: clamp(1.5rem, 3vw, 2.5rem); font-size: var(--text-deck); font-weight: 500; line-height: 1.3; text-wrap: pretty; }
 
 .pagehead--post .pagehead__title { max-width: 14ch; }
+.pagehead__title--headline { max-width: 15ch; }
 
 // Article body: a hairline rule under the header, then the text on the page itself.
 .post__body {

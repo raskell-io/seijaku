@@ -7,11 +7,14 @@
     {%- if page.extra.portrait %}
     <img class="pagehead__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
     {%- endif %}
+    {#- Optional `extra.headline` (inline HTML allowed) replaces the title in the h1; the title becomes the eyebrow. -#}
     {%- if page.ancestors | length > 1 %}
     {%- set sec = get_section(path=page.ancestors | last) %}
     <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ sec.title }}</a></p>
+    {%- elif page.extra.headline %}
+    <p class="pagehead__eyebrow">{{ page.title }}</p>
     {%- endif %}
-    <h1 class="pagehead__title">{{ page.title }}</h1>
+    <h1 class="pagehead__title{% if page.extra.headline %} pagehead__title--headline{% endif %}">{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</h1>
     {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
     {%- if page.date or page.updated or page.taxonomies.tags %}
     {% include "partials/meta_table.html" %}
