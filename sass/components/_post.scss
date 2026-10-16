@@ -107,10 +107,6 @@
 .banner { position: relative; margin-inline: calc(50% - 50vw); overflow: hidden; background: #05090a; color: #f4f0df; isolation: isolate; }
 .banner::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 9rem; z-index: 0; pointer-events: none; background: linear-gradient(rgba(3, 7, 7, 0.55), transparent); }
 .banner__media img { display: block; width: 100%; height: clamp(34rem, 74svh, 52rem); object-fit: cover; object-position: 30% 50%; }
-// The loop fades in over the still once it is actually playing, so a slow network never shows a blank frame.
-.banner__video { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; opacity: 0; transition: opacity 600ms ease; pointer-events: none; }
-.banner__video.is-playing { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .banner__video { display: none; } }
 .banner__headline {
   position: absolute; z-index: 1; top: 0; bottom: 0;
   right: max(var(--gutter), calc((100vw - var(--shell)) / 2)); width: min(32rem, 40%);
@@ -127,7 +123,6 @@
 // Narrow screens: the photo keeps the figures, the headline sits under them on the same dark ground.
 @media (max-width: 44rem) {
   .banner__media img { height: 22rem; object-position: 28% 50%; }
-  .banner__video { height: 22rem; inset: 0 0 auto 0; object-position: 28% 50%; }
   .banner__headline { position: static; width: auto; padding: 1.25rem var(--gutter) 4.25rem; font-size: 1.9rem; }   // room at the bottom for the portrait overlap
   .banner__foot { grid-template-columns: 1fr; }
   .banner__portrait { width: 6.5rem; margin-block-start: -3.25rem; }
