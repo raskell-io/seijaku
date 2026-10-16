@@ -133,7 +133,7 @@
     </div>
     <div class="footer__meta">
       <span>© {{ now() | date(format="%Y") }} {{ config.title }}</span>
-      {%- if config.extra.seijaku.footer_note %}<span>{{ config.extra.seijaku.footer_note }}</span>{%- endif %}
+      {%- if config.extra.seijaku.footer_note %}<span class="footer__note">{{ config.extra.seijaku.footer_note | safe }}</span>{%- endif %}{#- inline HTML allowed #}
       {%- if config.extra.seijaku.version %}<span>ver. {{ config.extra.seijaku.version }}</span>{%- endif %}
       {%- if config.extra.seijaku.scheme_toggle %}
       <div class="scheme footer__meta-end" role="group" aria-label="Colour scheme" hidden>
