@@ -13,7 +13,7 @@
         <source type="image/avif" srcset="{{ get_url(path=page.extra.banner) | safe }}">
         <img src="{{ get_url(path=page.extra.banner_fallback | default(value=page.extra.banner)) | safe }}" alt="{{ page.extra.banner_alt | default(value="") }}" fetchpriority="high" decoding="async">
       </picture>
-      <h1 class="banner__headline">{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</h1>
+      <h1 class="banner__headline"><span>{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</span></h1>
     </div>
     <div class="banner__foot">
       {%- if page.extra.portrait %}
