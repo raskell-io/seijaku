@@ -57,6 +57,9 @@
 .project .project__logo.project__logo--wide { flex: 0 1 12rem; min-width: 9rem; width: 12rem; max-width: 100%; height: auto; border-radius: 0.6rem; }
 // A wordmark keeps a readable size; in a narrow card the status badge moves under it instead.
 .project__top:has(.project__logo--wide) { flex-wrap: wrap; row-gap: 0.75rem; }
+// One-colour logos (data: logo_mono = true, drawn in black) follow the text colour: black on paper, white in dark.
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .project__logo--mono { filter: invert(1); } }
+:root[data-theme="dark"] .project__logo--mono { filter: invert(1); }
 .project__monogram { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
 .project__title { font-size: clamp(1.45rem, 1.9vw, 1.75rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
 .project__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; color: var(--muted); font-size: 1.05rem; line-height: 1.45; text-wrap: pretty; }
