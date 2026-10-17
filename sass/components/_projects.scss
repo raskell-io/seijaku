@@ -115,10 +115,22 @@
 // No pill inside: the notch itself takes the status colour and carries the label.
 .project__notch { padding: 0.6rem 1.05rem 0.65rem 1.15rem; font-size: 0.8rem; font-weight: 500; line-height: 1; white-space: nowrap; }
 .project__notch .status { display: inline; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; }
-.project__notch:has(.status--live) { --notch-bg: var(--ice); color: #071110; }
-.project__notch:has(.status--stable) { --notch-bg: var(--champagne); color: #1f1607; }
-.project__notch:has(.status--dev) { --notch-bg: var(--ink); color: var(--paper); }
-.project__notch:has(.status--early), .project__notch:has(.status--progress) { --notch-bg: var(--paper-deep); color: var(--muted); }
+// Status colours say what they mean: green is out there and used, gold is mature, amber is being built,
+// blue is shipping while parts are still being built, grey is barely started. Live and shipping get a dot.
+.project__notch:has(.status--live) { --notch-bg: #bfeccb; color: #06210f; }
+.project__notch:has(.status--shipping) { --notch-bg: #bfe3f2; color: #061a23; }
+.project__notch:has(.status--stable) { --notch-bg: #f2cf7a; color: #2a1c02; }
+.project__notch:has(.status--dev) { --notch-bg: #f7b86b; color: #2a1503; }
+.project__notch:has(.status--early), .project__notch:has(.status--progress) { --notch-bg: #d9d6cf; color: #34322c; }
+.project__notch .status--live::before, .project__notch .status--shipping::before {
+  content: ""; display: inline-block; width: 0.5em; height: 0.5em; margin-inline-end: 0.45em; vertical-align: 0.06em;
+  border-radius: 50%; background: #17a24a; box-shadow: 0 0 0 0 rgba(23, 162, 74, 0.5);
+  animation: status-pulse 2.4s ease-out infinite;
+}
+.project__notch .status--shipping::before { background: #1683b8; box-shadow: 0 0 0 0 rgba(22, 131, 184, 0.5); animation-name: status-pulse-blue; }
+@keyframes status-pulse { 0% { box-shadow: 0 0 0 0 rgba(23, 162, 74, 0.55); } 70%, 100% { box-shadow: 0 0 0 0.45em rgba(23, 162, 74, 0); } }
+@keyframes status-pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(22, 131, 184, 0.55); } 70%, 100% { box-shadow: 0 0 0 0.45em rgba(22, 131, 184, 0); } }
+@media (prefers-reduced-motion: reduce) { .project__notch .status::before { animation: none; } }
 // The top row no longer holds the status, so the logo can take the full width.
 .project__top { padding-inline-end: 6.5rem; }
 // A wide wordmark would run under the notch in narrow cards; start it just below the notch instead.
