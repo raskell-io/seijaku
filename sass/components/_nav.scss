@@ -185,3 +185,18 @@ html:has(.topnav__menu[open]) { overflow: hidden; }
   .topnav__brand { font-size: 1.1rem; }
   .topnav__brand .mark { scale: 0.86; transform-origin: left center; width: 2rem; }
 }
+
+// Collapsed (html.nav-collapsed, set by the scroll script in base.html): the links, search and call to action
+// slide up and fade; the bar's glass goes away and only the brand stays, on a small glass pill of its own.
+.topnav__links, .topnav__end, .topnav__menu { transition: opacity 260ms ease, transform 320ms cubic-bezier(0.4, 0, 0.2, 1); }
+.topnav__brand { transition: background 260ms ease, box-shadow 260ms ease, color 260ms ease; border-radius: 100px; }
+.nav-collapsed .topnav__links, .nav-collapsed .topnav__end, .nav-collapsed .topnav__menu { opacity: 0; transform: translateY(-160%); pointer-events: none; }
+.nav-collapsed .topnav { background: none !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; animation: none !important; }
+.nav-collapsed .topnav__brand {
+  margin: -0.45rem -0.9rem; padding: 0.45rem 0.9rem;
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 0 0 1px var(--line), 0 10px 26px -14px rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+}
+@media (prefers-reduced-motion: reduce) { .topnav__links, .topnav__end, .topnav__menu, .topnav__brand { transition: none; } }
