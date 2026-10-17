@@ -120,6 +120,16 @@
           {%- endfor %}
         </nav>
         {%- endif %}
+        {#- Further link groups: extra.seijaku.footer_groups = [{ title, items = [{ name, url }] }]. -#}
+        {%- for g in config.extra.seijaku.footer_groups | default(value=[]) %}
+        <nav class="footer__group" aria-label="{{ g.title }}">
+          <span class="footer__group-title">{{ g.title }}</span>
+          {%- for item in g.items %}
+          {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% elif item.url is starting_with("/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+          <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ item.name }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
+          {%- endfor %}
+        </nav>
+        {%- endfor %}
         {%- if config.extra.seijaku.social %}
         <nav class="footer__group" aria-label="Elsewhere">
           <span class="footer__group-title">Elsewhere</span>
