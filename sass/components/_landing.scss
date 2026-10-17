@@ -77,7 +77,17 @@
   transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .button__icon svg { width: 1.15rem; height: 1.15rem; }
-.button--hero:hover .button__icon { transform: translateX(3px); }
+.button--hero { position: relative; overflow: hidden; isolation: isolate; }
+.button--hero > span:not(.button__icon) { position: relative; z-index: 1; }
+.button__icon { position: relative; z-index: 1; overflow: hidden; }
+// Arrow: on hover or press it slides out to the right and a fresh one slides in from the left.
+.button--hero:not(.button--graph):is(:hover, :focus-visible, :active) .button__icon svg { animation: arrow-through 520ms cubic-bezier(0.6, 0, 0.3, 1); }
+@keyframes arrow-through {
+  0% { transform: translateX(0); }
+  45% { transform: translateX(170%); }
+  45.01% { transform: translateX(-170%); }
+  100% { transform: translateX(0); }
+}
 .button--glass, .button--glass:visited {
   background: linear-gradient(180deg, #17201e 0%, #0c1312 100%) padding-box, var(--ring-gradient) border-box;
   box-shadow: 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 12px 30px rgba(0, 0, 0, 0.25);
@@ -85,8 +95,23 @@
 }
 .button--glass:hover { box-shadow: 0 0 1px rgba(255, 255, 255, 0.6) inset, 0 18px 36px rgba(0, 0, 0, 0.3); }
 .button--glass .button__icon { background: var(--ring-gradient); color: #0b1412; }
-.button--glass:hover .button__icon { transform: rotate(-12deg) scale(1.04); }
-@media (prefers-reduced-motion: reduce) { .button__icon { transition: none; } }
+.button--glass:is(:hover, :focus-visible, :active) .button__icon { transform: rotate(-12deg) scale(1.04); }
+// Map button: a small graph draws itself behind the label on hover or press, edges first, then the dots.
+.button__graph { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 300ms ease; pointer-events: none; }
+.button__graph line { stroke: rgba(200, 240, 239, 0.32); stroke-width: 1; stroke-dasharray: 60; stroke-dashoffset: 60; }
+.button__graph circle { fill: #c8f0ef; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.2); }
+.button__graph circle:nth-child(3n) { fill: #efd093; }
+.button--graph:is(:hover, :focus-visible, :active) .button__graph { opacity: 0.6; }
+.button--graph:is(:hover, :focus-visible, :active) .button__graph line { animation: graph-edge 700ms ease-out forwards; animation-delay: calc(var(--i) * 22ms); }
+.button--graph:is(:hover, :focus-visible, :active) .button__graph circle { animation: graph-dot 420ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: calc(160ms + var(--i) * 28ms); }
+@keyframes graph-edge { to { stroke-dashoffset: 0; } }
+@keyframes graph-dot { to { opacity: 0.9; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .button__icon { transition: none; }
+  .button--hero .button__icon svg, .button__graph line, .button__graph circle { animation: none !important; }
+  .button--graph:is(:hover, :focus-visible) .button__graph line { stroke-dashoffset: 0; }
+  .button--graph:is(:hover, :focus-visible) .button__graph circle { opacity: 0.9; transform: none; }
+}
 
 .home-latest {
   padding: clamp(5rem, 9vw, 9rem) var(--gutter);
