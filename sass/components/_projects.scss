@@ -64,7 +64,29 @@
 .project__monogram { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
 .project__title { font-size: clamp(1.45rem, 1.9vw, 1.75rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
 .project__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; color: var(--muted); font-size: 1.05rem; line-height: 1.45; text-wrap: pretty; }
-.project__links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: auto; padding-block-start: 0.75rem; }
+.project__links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-block-start: auto; padding-block-start: 0.75rem; }
+// Card actions: one filled main pill (ink on paper, paper on ink) with an arrow that lifts on hover, then
+// round icon buttons. On glowing cards the main pill picks up the brand colour as a soft halo on hover.
+.cardcta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+  min-height: 2.6rem; padding: 0.55rem 1.05rem; border-radius: 100px;
+  border: 1px solid var(--line-strong); color: var(--ink); background: transparent;
+  font-size: 0.92rem; font-weight: 500; text-decoration: none; white-space: nowrap;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 220ms ease, transform 180ms ease;
+}
+.cardcta:visited { color: var(--ink); }
+.cardcta:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); border-color: var(--ink); }
+.cardcta:active { transform: translateY(1px); }
+.cardcta:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cardcta svg { width: 0.75rem; height: 0.75rem; flex: none; transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.cardcta--main, .cardcta--main:visited { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.cardcta--main:hover { background: var(--ink); color: var(--paper); box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.45); transform: translateY(-1px); }
+.cardcta--main:hover svg { transform: translate(2px, -2px); }
+.project--glow .cardcta--main:hover { box-shadow: 0 0 0 4px color-mix(in srgb, var(--acc-a) 28%, transparent), 0 10px 24px -10px color-mix(in srgb, var(--acc-a) 70%, transparent); }
+.cardcta--icon { width: 2.6rem; padding: 0; }
+.cardcta--icon svg { width: 1.1rem; height: 1.1rem; }
+.cardcta--icon:hover svg { transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) { .cardcta, .cardcta svg { transition: none; } }
 .project__bar { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; padding: 0.9rem clamp(1.5rem, 3vw, 2.5rem); background: var(--tint-bar); color: var(--muted); font-size: 0.85rem; font-weight: 500; }
 
 .projects--venture .project__body { padding: clamp(1.75rem, 3.5vw, 3rem); }
@@ -78,7 +100,8 @@
 .projects--lab .project__logo, .projects--lab .project__monogram, .projects--compact .project__logo, .projects--compact .project__monogram { width: 2.5rem; height: 2.5rem; border-radius: 0.6rem; font-size: 1.1rem; }
 .projects--lab .project__title, .projects--compact .project__title { font-size: 1.2rem; }
 .projects--lab .project__desc, .projects--compact .project__desc { font-size: 0.95rem; -webkit-line-clamp: 4; }
-.projects--lab .project__links .button, .projects--compact .project__links .button { min-height: 2.2rem; padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+.projects--lab .project__links .cardcta, .projects--compact .project__links .cardcta { min-height: 2.25rem; padding: 0.45rem 0.85rem; font-size: 0.85rem; }
+.projects--lab .project__links .cardcta--icon, .projects--compact .project__links .cardcta--icon { width: 2.25rem; padding: 0; }
 .projects--lab .project__bar { padding: 0.7rem 1.4rem; font-size: 0.8rem; }
 
 // Status pills.
