@@ -80,3 +80,6 @@
   .footer__meta-end { margin-inline-start: 0; }
 }
 
+
+.footer__license a { color: inherit; text-decoration: none; }
+.footer__license a:hover { color: var(--footer-ink); text-decoration: underline; text-underline-offset: 0.18em; }
