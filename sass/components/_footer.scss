@@ -64,7 +64,7 @@
 .footer__group a:hover .footer__ext { color: currentColor; transform: translate(1px, -1px); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
-.footer__meta { padding-block: 1.5rem 2.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; border-top: 1px solid var(--footer-line); color: var(--footer-muted); font-size: 0.9rem; }
+.footer__meta { padding-block: 1.5rem clamp(5.5rem, 9vw, 7rem); display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; border-top: 1px solid var(--footer-line); color: var(--footer-muted); font-size: 0.9rem; }
 .footer__meta-end { margin-inline-start: auto; }
 
 // Optional colour-scheme control (config: scheme_toggle = true). Hidden until its script runs.
