@@ -19,9 +19,9 @@
     {{ section.content | safe }}
   </div>
   <div class="hero-home__buttons">
-    <a class="button" href="{{ sec.permalink | safe }}">Read the writing</a>
+    <a class="button button--hero" href="{{ sec.permalink | safe }}"><span>Read the writing</span><span class="button__icon" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span></a>
     {%- if config.extra.seijaku.map %}
-    <a class="button" href="{{ get_url(path=config.extra.seijaku.map) | safe }}">Explore the map</a>
+    <a class="button button--hero button--glass" href="{{ get_url(path=config.extra.seijaku.map) | safe }}"><span>Explore the map</span><span class="button__icon" aria-hidden="true"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4.2 11.2 7.4 5.4M8.6 5.6l3.3 4.6M5 12.3h6"/><circle cx="8" cy="4" r="1.9" fill="currentColor"/><circle cx="3.6" cy="12.3" r="1.6"/><circle cx="12.4" cy="12.3" r="1.6" fill="currentColor"/></svg></span></a>
     {%- else %}
     <a class="button" href="{{ get_url(path="/tags/") | safe }}">Explore the index</a>
     {%- endif %}
