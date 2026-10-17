@@ -135,3 +135,15 @@
 .project__top { padding-inline-end: 6.5rem; }
 // A wide wordmark would run under the notch in narrow cards; start it just below the notch instead.
 .project__top:has(.project__logo--wide) { padding-inline-end: 0; margin-block-start: 1.6rem; }
+
+// Brand glow (data: accents = [a, b]): two soft light sources in the project's own colours, the same
+// treatment as the header and footer washes. They sit over the card tint and fade toward the text.
+// (Higher specificity than the .project:nth-child tints, whose background shorthand would reset the image.)
+.projects .project.project--glow:nth-child(n) {
+  --glow: 30%;
+  background-image:
+    radial-gradient(120% 70% at 0% 100%, color-mix(in srgb, var(--acc-a) var(--glow), transparent), transparent 70%),
+    radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--acc-b) var(--glow), transparent), transparent 70%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .projects .project.project--glow:nth-child(n) { --glow: 22%; } }
+:root[data-theme="dark"] .projects .project.project--glow:nth-child(n) { --glow: 22%; }
