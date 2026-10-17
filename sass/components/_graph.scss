@@ -1,0 +1,65 @@
+// "On the map" at the end of articles, notes, and topic pages: a quiet closed bar that opens into
+// the page's neighbourhood on the same dark ground as the full map, plus plain link lists.
+.localmap { margin-block: clamp(2.5rem, 5vw, 3.5rem); border-block: 1px solid var(--line); }
+.localmap > summary {
+  display: flex; align-items: baseline; gap: 1rem; padding-block: 1.1rem;
+  list-style: none; cursor: pointer;
+}
+.localmap > summary::-webkit-details-marker { display: none; }
+.localmap > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 0.25rem; }
+.localmap__title { font-size: clamp(1.15rem, 1.6vw, 1.35rem); font-weight: 500; letter-spacing: -0.02em; }
+.localmap__sum { flex: 1; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
+.localmap__toggle { width: 1.6rem; height: 1.6rem; flex: none; align-self: center; border-radius: 50%; background: var(--tint-bar); position: relative; transition: background 150ms ease; }
+.localmap__toggle::before, .localmap__toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 0.6rem; height: 1.5px; margin: -0.75px 0 0 -0.3rem; background: currentColor; transition: transform 200ms ease; }
+.localmap__toggle::after { transform: rotate(90deg); }
+.localmap[open] .localmap__toggle::after { transform: rotate(0deg); }
+.localmap > summary:hover .localmap__toggle { background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.localmap__body { padding-block-end: 1.5rem; }
+.map.map--local { height: clamp(20rem, 46vh, 28rem); }
+.map--local.is-empty::after { content: "Nothing connects here yet."; position: absolute; inset: 0; display: grid; place-items: center; color: rgba(244, 240, 223, 0.6); font-size: 0.9rem; }
+.localmap__hint { position: absolute; right: 1rem; bottom: 0.9rem; margin: 0; color: rgba(244, 240, 223, 0.45); font-size: 0.75rem; pointer-events: none; }
+.localmap__full { margin: 0.8rem 0 0; font-family: var(--font-mono); font-size: 0.82rem; }
+.localmap__full a { color: var(--muted); text-decoration: none; }
+.localmap__full a:hover { color: var(--ink); text-decoration: underline; }
+.localmap__lists { margin-block-start: 1.75rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1.5rem 3rem; }
+.localmap__lists h3 { margin: 0 0 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 400; letter-spacing: 0.04em; text-transform: uppercase; }
+.localmap__lists ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.45rem; }
+.localmap__lists a { color: var(--ink); text-decoration-color: var(--line-strong); }
+.localmap__lists a:hover { text-decoration-color: currentColor; }
+.localmap__lists small, .postlist__kind {
+  display: inline-block; padding: 0.05rem 0.4rem; border-radius: 0.3rem; background: var(--tint-bar);
+  color: var(--muted); font: 0.68rem/1.4 var(--font-mono); letter-spacing: 0.04em; vertical-align: 0.15em;
+}
+.postlist__kind { margin-inline-end: 0.5rem; }
+
+// Notes: a lighter header than articles (no cover, no meta table) and topics as a quiet line.
+.pagehead--note { margin-block-end: clamp(1.5rem, 3vw, 2.5rem); }
+.pagehead--note .pagehead__title { max-width: 22ch; font-size: clamp(2.2rem, 4.6vw, 3.8rem); }
+.note__tags { margin: 1.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.note__tags a { padding: 0.2rem 0.6rem; border-radius: 100px; background: var(--tint-bar); color: var(--ink); font-size: 0.85rem; text-decoration: none; }
+.note__tags a:hover { background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.post--note .post__body { border-top: 1px solid var(--line); }
+
+// Topics index: the vocabulary, grouped by kind, each with its definition.
+.topics { margin-block-start: clamp(2.5rem, 5vw, 4rem); padding-block-start: clamp(1.25rem, 2.5vw, 2rem); border-top: 1px solid var(--line); }
+.topics__kind { margin-block-end: 1.25rem; font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 500; letter-spacing: -0.03em; }
+.topics__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 1.5rem 2.5rem; }
+.topic { scroll-margin-top: 6rem; }
+.topic:target .topic__name { color: var(--cyan); }
+.topic__name { margin: 0; font-size: 1.1rem; font-weight: 500; letter-spacing: -0.015em; }
+.topic__name a { color: var(--ink); text-decoration: none; }
+.topic__name a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
+.topic__name small { margin-inline-start: 0.35rem; color: var(--muted); font: 0.75rem var(--font-mono); }
+.topic__desc { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; text-wrap: pretty; }
+.topic__broader { margin: 0.35rem 0 0; color: var(--muted); font: 0.75rem/1.5 var(--font-mono); }
+.topic__broader a { color: inherit; }
+
+// Topic page: where the topic sits in the vocabulary.
+.topicrel { margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.75rem 2.5rem; font-size: 0.95rem; }
+.topicrel div { display: flex; gap: 0.6rem; }
+.topicrel dt { color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; padding-block-start: 0.15rem; }
+.topicrel dd { margin: 0; }
+.topicrel a { color: var(--ink); }
+
+// Map legend: notes are drawn as small squares.
+.map__legend [data-kind="note"] i { border-radius: 1px; background: #f4f0df; width: 0.5rem; height: 0.5rem; }

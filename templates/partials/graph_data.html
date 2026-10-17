@@ -1,0 +1,59 @@
+{#- The site graph as JSON: every page in the graph sections, every tag (with its description and its
+    broader tags from the tag vocabulary), every series, project, and project group, and the links
+    between them. Rendered by map.html; the end-of-page maps fetch it from there.
+    Config (extra.seijaku): graph_sections = ["articles", "notes"] (pages in "notes" become note
+    nodes), projects_section / map project_sections, tag_data = "data/tags.toml". -#}
+{%- set gsecs = config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")]) %}
+{%- set_global gpages = [] %}
+{%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global gpages = gpages | concat(with=s.pages) %}{% endif %}{% endfor %}
+{%- set tags = get_taxonomy(kind="tags", required=false) %}
+{%- set series = get_taxonomy(kind="series", required=false) %}
+{%- set_global tslugs = [] %}{% if tags %}{% for t in tags.items %}{% set_global tslugs = tslugs | concat(with=t.slug) %}{% endfor %}{% endif %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set psecs = project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}
+{%- set_global projects = [] %}{% set_global pslugs = [] %}{% set_global phubs = [] %}{% set_global hubs = [] %}{% set_global hubnames = [] %}{% set_global huburls = [] %}
+{%- for ps in psecs %}{% set psec = get_section(path=ps ~ "/_index.md", required=false) %}
+{%- if psec and psec.extra.tiers %}{% for tier in psec.extra.tiers %}{% set hub = ps ~ "-" ~ tier.key %}
+{%- if tier.projects | length > 0 %}{% set_global hubs = hubs | concat(with=hub) %}{% set_global hubnames = hubnames | concat(with=tier.title) %}{% set_global huburls = huburls | concat(with=psec.permalink ~ "#tier-" ~ tier.key) %}{% endif %}{% for slug in tier.projects %}
+{%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+{%- set_global projects = projects | concat(with=p) %}{% set_global pslugs = pslugs | concat(with=slug) %}{% set_global phubs = phubs | concat(with=hub) %}
+{%- endfor %}{% endfor %}{% endif %}{% endfor -%}
+{"nodes":[
+{%- for a in gpages %}{% set isnote = a.components | first == "notes" %}
+{"id":"a:{{ a.path | safe }}","kind":"{% if isnote %}note{% else %}article{% endif %}","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":"{{ a.date | date(format="%Y-%m-%d") }}{% if not isnote %} · {{ a.reading_time }} min{% endif %}","desc":{{ a.description | default(value="") | json_encode | safe }}},
+{%- endfor %}
+{%- if tags %}{% for t in tags.items %}{% set td = false %}{% if tagdata and t.slug in tagdata %}{% set td = tagdata[t.slug] %}{% endif %}
+{"id":"t:{{ t.slug }}","kind":"tag","label":{% if td %}{{ td.name | json_encode | safe }}{% else %}{{ t.name | json_encode | safe }}{% endif %},"url":{{ t.permalink | json_encode | safe }},"meta":"{% if td %}{{ td.kind | capitalize }} · {% endif %}{{ t.pages | length }} {% if t.pages | length == 1 %}page{% else %}pages{% endif %}","desc":{% if td %}{{ td.description | json_encode | safe }}{% else %}""{% endif %}},
+{%- endfor %}{% endif %}
+{#- Vocabulary tags nothing is filed under yet still belong to the graph, linked through their broader tags. -#}
+{%- if tagdata %}{% for slug, td in tagdata %}{% if slug not in tslugs %}
+{"id":"t:{{ slug }}","kind":"tag","label":{{ td.name | json_encode | safe }},"url":{% set turl = get_url(path="/tags/") ~ "#" ~ slug %}{{ turl | json_encode | safe }},"meta":"{{ td.kind | capitalize }} · no pages yet","desc":{{ td.description | json_encode | safe }}},
+{%- endif %}{% endfor %}{% endif %}
+{%- if series %}{% for s in series.items %}
+{"id":"s:{{ s.slug }}","kind":"series","label":{{ s.name | replace(from="-", to=" ") | title | json_encode | safe }},"url":{{ s.permalink | json_encode | safe }},"meta":"{{ s.pages | length }} parts","desc":""},
+{%- endfor %}{% endif %}
+{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
+{"id":"p:{{ pslug }}","kind":"project","label":{{ p.title | json_encode | safe }},"url":{% if p.links %}{{ p.links[0].url | json_encode | safe }}{% else %}""{% endif %},"meta":"Project","desc":{{ p.description | default(value="") | truncate(length=180) | json_encode | safe }}},
+{%- endfor %}
+{%- for h in hubs %}
+{"id":"h:{{ h }}","kind":"hub","label":{{ hubnames[loop.index0] | json_encode | safe }},"url":{{ huburls[loop.index0] | json_encode | safe }},"meta":"Group","desc":""},
+{%- endfor %}
+null],"links":[
+{%- if tags %}{% for t in tags.items %}{% for a in t.pages %}["a:{{ a.path | safe }}","t:{{ t.slug }}"],{% endfor %}
+{%- if tagdata and t.slug in tagdata %}{% for b in tagdata[t.slug].broader | default(value=[]) %}["t:{{ t.slug }}","t:{{ b }}"],{% endfor %}{% endif %}{% endfor %}{% endif %}
+{%- if tagdata %}{% for slug, td in tagdata %}{% if slug not in tslugs %}{% for b in td.broader | default(value=[]) %}["t:{{ slug }}","t:{{ b }}"],{% endfor %}{% endif %}{% endfor %}{% endif %}
+{%- if series %}{% for s in series.items %}{% for a in s.pages %}["a:{{ a.path | safe }}","s:{{ s.slug }}"],{% endfor %}{% endfor %}{% endif %}
+{#- Page to page: the body links to the other page (articles and notes alike). -#}
+{%- for a in gpages %}{% for b in gpages %}{% if a.path != b.path and a.content is containing(b.path) %}["a:{{ a.path | safe }}","a:{{ b.path | safe }}"],{% endif %}{% endfor %}{% endfor %}
+{#- Page to project: the body links to one of the project's URLs, or names it (names under five letters are too ambiguous). -#}
+{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}{% for a in gpages %}
+{%- set_global hit = p.title | length >= 5 and a.content is containing(p.title) %}
+{%- if not hit and p.links %}{% for l in p.links %}{% set u = l.url | replace(from="https://", to="") | trim_end_matches(pat="/") %}{% if a.content is containing(u) %}{% set_global hit = true %}{% endif %}{% endfor %}{% endif %}
+{%- if hit %}["a:{{ a.path | safe }}","p:{{ pslug }}"],{% endif %}
+{%- endfor %}{% endfor %}
+{#- Project to its group, to the topics it is filed under, and to related projects (data: topics, related). -#}
+{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}["p:{{ pslug }}","h:{{ phubs[loop.index0] }}"],
+{%- for t in p.topics | default(value=[]) %}["p:{{ pslug }}","t:{{ t }}"],{% endfor %}
+{%- for r in p.related | default(value=[]) %}["p:{{ pslug }}","p:{{ r }}"],{% endfor %}
+{%- endfor %}
+null]}

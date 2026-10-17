@@ -1,14 +1,27 @@
 {% extends "base.html" %}
-{% block title %}{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} | {{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
+{%- block title %}{% set td = false %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{% set td = tagdata[term.slug] %}{% endif %}{% endif %}{% if td %}{{ td.name }}{% elif taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} | {{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
+{%- block description %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{{ tagdata[term.slug].description }}{% else %}{{ config.description }}{% endif %}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
-{%- if taxonomy.name == "tags" %}{% set pretty = term.name %}{% else %}{% set pretty = term.name | replace(from="-", to=" ") | title %}{% endif %}
+{%- set td = false %}{% set tagdata = false %}
+{%- if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{% set td = tagdata[term.slug] %}{% endif %}{% endif %}
+{%- if td %}{% set pretty = td.name %}{% elif taxonomy.name == "tags" %}{% set pretty = term.name %}{% else %}{% set pretty = term.name | replace(from="-", to=" ") | title %}{% endif %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow"><a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{{ taxonomy.name | capitalize }}</a></p>
+  <p class="pagehead__eyebrow"><a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{% if taxonomy.name == "tags" %}Topics{% else %}{{ taxonomy.name | capitalize }}{% endif %}</a>{% if td %} · {{ td.kind | capitalize }}{% endif %}</p>
   <h1 class="pagehead__title">{{ pretty }}</h1>
-  <p class="pagehead__deck">{{ term.pages | length }} {% if term.pages | length == 1 %}entry{% else %}entries{% endif %} filed under “{{ pretty }}”.</p>
+  <p class="pagehead__deck">{% if td %}{{ td.description }}{% else %}{{ term.pages | length }} {% if term.pages | length == 1 %}entry{% else %}entries{% endif %} filed under “{{ pretty }}”.{% endif %}</p>
+  {%- if td %}
+  {%- set_global narrower = [] %}{% for slug, other in tagdata %}{% if other.broader and term.slug in other.broader %}{% set_global narrower = narrower | concat(with=slug) %}{% endif %}{% endfor %}
+  {%- set tags_tax = get_taxonomy(kind="tags") %}{% set_global used = [] %}{% for t in tags_tax.items %}{% set_global used = used | concat(with=t.slug) %}{% endfor %}
+  <dl class="topicrel">
+    {%- if td.broader %}<div><dt>Within</dt><dd>{% for b in td.broader %}<a href="{% if b in used %}{{ get_taxonomy_url(kind="tags", name=b) | safe }}{% else %}{{ get_url(path="/tags/") | safe }}#{{ b }}{% endif %}">{{ tagdata[b].name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+    {%- if narrower | length > 0 %}<div><dt>Includes</dt><dd>{% for n in narrower %}<a href="{% if n in used %}{{ get_taxonomy_url(kind="tags", name=n) | safe }}{% else %}{{ get_url(path="/tags/") | safe }}#{{ n }}{% endif %}">{{ tagdata[n].name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+    <div><dt>Pages</dt><dd>{{ term.pages | length }}</dd></div>
+  </dl>
+  {%- endif %}
 </header>
+{%- if taxonomy.name == "tags" %}{% set focus_tag = term %}{% include "partials/local_map.html" %}{% endif %}
 {%- set pages = term.pages %}
 {%- set group_years = true %}
 {% include "partials/post_list.html" %}
 {% endblock content %}
-{% block crumbs %} → <a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{{ taxonomy.name | capitalize }}</a> → <span aria-current="page">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %}</span>{% endblock crumbs %}
+{% block crumbs %} → <a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{% if taxonomy.name == "tags" %}Topics{% else %}{{ taxonomy.name | capitalize }}{% endif %}</a> → <span aria-current="page">{{ term.name }}</span>{% endblock crumbs %}

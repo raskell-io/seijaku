@@ -19,7 +19,7 @@
 {%- endfor %}{% endfor %}{% endif %}{% endfor %}
 {%- set n_tags = 0 %}{% if tags %}{% set n_tags = tags.items | length %}{% endif %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{{ sec.pages | length }} articles · {{ n_tags }} topics · {{ projects | length }} projects</p>
+  {%- set nsec = get_section(path="notes/_index.md", required=false) %}<p class="pagehead__eyebrow">{{ sec.pages | length }} articles{% if nsec and nsec.pages | length > 0 %} · {{ nsec.pages | length }} notes{% endif %} · {{ n_tags }} topics · {{ projects | length }} projects</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -28,6 +28,7 @@
   <canvas class="map__canvas" aria-hidden="true"></canvas>
   <div class="map__legend" role="group" aria-label="Show on the map">
     <button type="button" data-kind="article" aria-pressed="true"><i></i>Articles</button>
+    <button type="button" data-kind="note" aria-pressed="true"><i></i>Notes</button>
     <button type="button" data-kind="tag" aria-pressed="true"><i></i>Topics</button>
     <button type="button" data-kind="series" aria-pressed="true"><i></i>Series</button>
     <button type="button" data-kind="project" aria-pressed="true"><i></i>Projects</button>
@@ -53,39 +54,7 @@
   <figcaption class="map__hint">Tap a dot to see what it is and what it connects to. Drag to move, pinch or ⌘ + scroll to zoom. Everything on the map is also listed below.</figcaption>
   <noscript><p class="map__noscript">The map needs JavaScript. The full index is listed below.</p></noscript>
 </figure>
-<script type="application/json" id="map-data">{"nodes":[
-{%- for a in sec.pages %}
-{"id":"a:{{ a.path | safe }}","kind":"article","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":"{{ a.date | date(format="%Y-%m-%d") }} · {{ a.reading_time }} min","desc":{{ a.description | default(value="") | json_encode | safe }}},
-{%- endfor %}
-{%- if tags %}{% for t in tags.items %}
-{"id":"t:{{ t.slug }}","kind":"tag","label":{{ t.name | json_encode | safe }},"url":{{ t.permalink | json_encode | safe }},"meta":"{{ t.pages | length }} articles","desc":""},
-{%- endfor %}{% endif %}
-{%- if series %}{% for s in series.items %}
-{"id":"s:{{ s.slug }}","kind":"series","label":{{ s.name | replace(from="-", to=" ") | title | json_encode | safe }},"url":{{ s.permalink | json_encode | safe }},"meta":"{{ s.pages | length }} parts","desc":""},
-{%- endfor %}{% endif %}
-{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
-{"id":"p:{{ pslug }}","kind":"project","label":{{ p.title | json_encode | safe }},"url":{% if p.links %}{{ p.links[0].url | json_encode | safe }}{% else %}""{% endif %},"meta":"Project","desc":{{ p.description | default(value="") | truncate(length=180) | json_encode | safe }}},
-{%- endfor %}
-{%- for h in hubs %}
-{"id":"h:{{ h }}","kind":"hub","label":{{ hubnames[loop.index0] | json_encode | safe }},"url":{{ huburls[loop.index0] | json_encode | safe }},"meta":"Group","desc":""},
-{%- endfor %}
-null],"links":[
-{%- if tags %}{% for t in tags.items %}{% for a in t.pages %}["a:{{ a.path | safe }}","t:{{ t.slug }}"],{% endfor %}{% endfor %}{% endif %}
-{%- if series %}{% for s in series.items %}{% for a in s.pages %}["a:{{ a.path | safe }}","s:{{ s.slug }}"],{% endfor %}{% endfor %}{% endif %}
-{#- Article to article: the body links to the other article. -#}
-{%- for a in sec.pages %}{% for b in sec.pages %}{% if a.path != b.path and a.content is containing(b.path) %}["a:{{ a.path | safe }}","a:{{ b.path | safe }}"],{% endif %}{% endfor %}{% endfor %}
-{#- Article to project: the body links to one of the project's URLs, or names it (names under five letters are too ambiguous). -#}
-{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}{% for a in sec.pages %}
-{%- set_global hit = p.title | length >= 5 and a.content is containing(p.title) %}
-{%- if not hit and p.links %}{% for l in p.links %}{% set u = l.url | replace(from="https://", to="") | trim_end_matches(pat="/") %}{% if a.content is containing(u) %}{% set_global hit = true %}{% endif %}{% endfor %}{% endif %}
-{%- if hit %}["a:{{ a.path | safe }}","p:{{ pslug }}"],{% endif %}
-{%- endfor %}{% endfor %}
-{#- Project to its group on the projects page, to the topics it is filed under, and to related projects (data: topics, related). -#}
-{%- for p in projects %}{% set pslug = pslugs[loop.index0] %}["p:{{ pslug }}","h:{{ phubs[loop.index0] }}"],
-{%- for t in p.topics | default(value=[]) %}["p:{{ pslug }}","t:{{ t }}"],{% endfor %}
-{%- for r in p.related | default(value=[]) %}["p:{{ pslug }}","p:{{ r }}"],{% endfor %}
-{%- endfor %}
-null]}</script>
+<script type="application/json" id="map-data">{% set project_sections = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}{% include "partials/graph_data.html" %}</script>
 <script src="{{ get_url(path="seijaku-map.js", cachebust=true) | safe }}" defer></script>
 
 <div class="map-index">

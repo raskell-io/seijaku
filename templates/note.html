@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{#- A note: a short page with a title, a date, topics, and its place on the map. No cover, no reading time. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+<article class="post post--note">
+  <header class="pagehead pagehead--note">
+    {%- set sec = get_section(path=page.ancestors | last) %}
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">Note</a> · <time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time>{% if page.updated %} · updated <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>{% endif %}</p>
+    <h1 class="pagehead__title">{{ page.title }}</h1>
+    {%- if page.taxonomies.tags %}
+    <p class="note__tags">{% for tag in page.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>
+    {%- endif %}
+  </header>
+  <div class="post__body">
+    <div class="prose">
+      {{ page.content | safe }}
+    </div>
+  </div>
+  <footer class="post__footer">
+    {% include "partials/local_map.html" %}
+    {%- if page.lower or page.higher %}
+    <nav class="neighbours" aria-label="More notes">
+      {%- if page.lower %}<a class="neighbours__prev" rel="prev" href="{{ page.lower.permalink | safe }}"><span>← Older note</span>{{ page.lower.title }}</a>{% else %}<span></span>{% endif %}
+      {%- if page.higher %}<a class="neighbours__next" rel="next" href="{{ page.higher.permalink | safe }}"><span>Newer note →</span>{{ page.higher.title }}</a>{% endif %}
+    </nav>
+    {%- endif %}
+  </footer>
+</article>
+{% endblock content %}
+{% block crumbs %}
+{%- set sec = get_section(path=page.ancestors | last) %} → <a href="{{ sec.permalink | safe }}">{{ sec.title }}</a> → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

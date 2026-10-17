@@ -33,8 +33,11 @@
     <h2>Latest writing</h2>
     <a href="{{ sec.permalink | safe }}">All {{ sec.title | default(value=main) | lower }} →</a>
   </header>
-  {%- if sec.pages %}
-  {%- set pages = sec.pages | slice(end=8) %}
+  {%- set_global latest = sec.pages %}
+  {%- set nsec = get_section(path="notes/_index.md", required=false) %}
+  {%- if nsec %}{% set_global latest = latest | concat(with=nsec.pages) | sort(attribute="date") | reverse %}{% endif %}
+  {%- if latest | length > 0 %}
+  {%- set pages = latest | slice(end=8) %}
   {% include "partials/post_list.html" %}
   {%- endif %}
 </section>

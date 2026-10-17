@@ -1,5 +1,6 @@
 {#- Dense dated rows. Set `group_years = true` before including to break the list by year. -#}
 {%- set grouped = group_years | default(value=false) %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
 {%- set_global current_year = "" %}
 <ol class="postlist">
   {%- for post in pages %}
@@ -11,13 +12,14 @@
   <li class="postlist__item">
     <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format="%b %d") }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
     <div class="postlist__main">
-      <h3 class="postlist__title"><a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
+      {%- set isnote = post.components | first == "notes" %}
+      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
       {%- if post.taxonomies.tags %}
-      <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{{ tag }}</a>{% endfor %}</p>
+      <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>
       {%- endif %}
     </div>
-    {%- if post.reading_time %}<span class="postlist__time">{{ post.reading_time }} min</span>{%- endif %}
+    {%- if post.reading_time and not isnote %}<span class="postlist__time">{{ post.reading_time }} min</span>{%- endif %}
   </li>
   {%- endfor %}
 </ol>

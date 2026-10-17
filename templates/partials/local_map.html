@@ -1,0 +1,55 @@
+{#- "On the map": where this page (or tag) sits in the site graph. A closed <details> with a one-line
+    summary; opening it loads seijaku-map.js and draws the node's neighbourhood from the map page's
+    graph data. The links-to / linked-from lists are plain HTML, so they work without JavaScript.
+    Set `focus_tag` before including to centre on a tag instead of the current page. -#}
+{%- set mapurl = get_url(path=config.extra.seijaku.map | default(value="@/map.md")) %}
+{%- set gsecs = config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")]) %}
+{%- set_global lpages = [] %}
+{%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global lpages = lpages | concat(with=s.pages) %}{% endif %}{% endfor %}
+{%- set_global outlinks = [] %}{% set_global backlinks = [] %}
+{%- if focus_tag is defined and focus_tag %}
+  {%- set focus_id = "t:" ~ focus_tag.slug %}
+  {%- set n_topics = 0 %}
+{%- else %}
+  {%- set focus_id = "a:" ~ page.path %}
+  {%- for b in lpages %}{% if b.path != page.path %}
+    {%- if page.content is containing(b.path) %}{% set_global outlinks = outlinks | concat(with=b) %}{% endif %}
+    {%- if b.content is containing(page.path) %}{% set_global backlinks = backlinks | concat(with=b) %}{% endif %}
+  {%- endif %}{% endfor %}
+  {%- set n_topics = page.taxonomies.tags | default(value=[]) | length %}
+{%- endif %}
+{%- set n_pages = outlinks | length + backlinks | length %}
+<details class="localmap" data-localmap>
+  <summary>
+    <span class="localmap__title">On the map</span>
+    <span class="localmap__sum">
+      {%- if focus_tag is defined and focus_tag %}{{ focus_tag.pages | length }} {% if focus_tag.pages | length == 1 %}page{% else %}pages{% endif %} and the topics around it
+      {%- else %}{{ n_topics }} {% if n_topics == 1 %}topic{% else %}topics{% endif %}{% if outlinks | length > 0 %} · links to {{ outlinks | length }}{% endif %}{% if backlinks | length > 0 %} · linked from {{ backlinks | length }}{% endif %}{% endif -%}
+    </span>
+    <span class="localmap__toggle" aria-hidden="true"></span>
+  </summary>
+  <div class="localmap__body">
+    <figure class="map map--local" data-focus="{{ focus_id }}" data-src="{{ mapurl | safe }}">
+      <canvas class="map__canvas" aria-hidden="true"></canvas>
+      <figcaption class="localmap__hint">Tap a dot to select it, tap again to open it.</figcaption>
+    </figure>
+    <p class="localmap__full"><a href="{{ mapurl | safe }}#{{ focus_id }}">Open in the full map →</a></p>
+    {%- if outlinks | length > 0 or backlinks | length > 0 %}
+    <div class="localmap__lists">
+      {%- if outlinks | length > 0 %}
+      <section>
+        <h3>Links to</h3>
+        <ul>{% for b in outlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>note</small>{% endif %}</li>{% endfor %}</ul>
+      </section>
+      {%- endif %}
+      {%- if backlinks | length > 0 %}
+      <section>
+        <h3>Linked from</h3>
+        <ul>{% for b in backlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>note</small>{% endif %}</li>{% endfor %}</ul>
+      </section>
+      {%- endif %}
+    </div>
+    {%- endif %}
+  </div>
+</details>
+<script>(function(){var src={{ get_url(path="seijaku-map.js", cachebust=true) | json_encode | safe }};document.querySelectorAll("[data-localmap]").forEach(function(d){d.addEventListener("toggle",function(){if(d.open&&!window.SeijakuMap&&!document.getElementById("seijaku-map-js")){var s=document.createElement("script");s.id="seijaku-map-js";s.src=src;document.head.appendChild(s)}})})})();</script>
