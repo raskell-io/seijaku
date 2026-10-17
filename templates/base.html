@@ -142,12 +142,15 @@
       </div>
     </div>
     <div class="footer__meta">
-      <span>© {{ now() | date(format="%Y") }} {{ config.title }}</span>
+      {#- Copyright line; extra.seijaku.copyright = false hides it (e.g. when the licence line says enough). -#}
+      {%- if config.extra.seijaku.copyright | default(value=true) %}<span>© {{ now() | date(format="%Y") }} {{ config.title }}</span>{%- endif %}
       {%- if config.extra.seijaku.footer_note %}<span class="footer__note">{{ config.extra.seijaku.footer_note | safe }}</span>{%- endif %}{#- inline HTML allowed #}
       {%- if config.extra.seijaku.version %}<span>ver. {{ config.extra.seijaku.version }}</span>{%- endif %}
-      {#- Licence line (extra.seijaku.license = { name, url, page?, code_name?, code_url? }). -#}
+      {#- Licence line (extra.seijaku.license = { name, url, page?, code_name?, code_url? }), plus a privacy link
+          (extra.seijaku.privacy = "@/privacy.md"). -#}
       {%- set lic = config.extra.seijaku.license | default(value=false) %}
-      {%- if lic %}<span class="footer__license">{% if lic.page %}<a href="{{ get_url(path=lic.page) | safe }}">{% endif %}Text {{ lic.name }}{% if lic.code_name %} · code {{ lic.code_name }}{% endif %}{% if lic.page %}</a>{% endif %}</span>{%- endif %}
+      {%- if lic %}<span class="footer__license">{% if lic.page %}<a href="{{ get_url(path=lic.page) | safe }}">{% endif %}Text {{ lic.name }}{% if lic.code_name %} · code {{ lic.code_name }}{% endif %}{% if lic.page %}</a>{% endif %}{% if config.extra.seijaku.privacy %} · <a href="{{ get_url(path=config.extra.seijaku.privacy) | safe }}">Privacy</a>{% endif %}</span>
+      {%- elif config.extra.seijaku.privacy %}<span class="footer__license"><a href="{{ get_url(path=config.extra.seijaku.privacy) | safe }}">Privacy</a></span>{%- endif %}
       {%- if config.extra.seijaku.scheme_toggle %}
       <div class="scheme footer__meta-end" role="group" aria-label="Colour scheme" hidden>
         <button type="button" data-scheme="system" aria-pressed="true">System</button>
