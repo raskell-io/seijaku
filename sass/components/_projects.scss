@@ -99,7 +99,7 @@
 
 // The status notch: the top-right corner of the card is cut away in the page colour and holds the
 // status pill. Its left side meets the card's top edge in a lying S (an inverse curve at the top, the
-// notch's own rounded corner below), and its foot meets the card's right edge with another inverse curve.
+// notch's own rounded corner below); its foot runs straight into the card's right edge.
 .project__notch {
   --r: 1rem;
   position: absolute; top: 0; right: 0; z-index: 2;
@@ -107,12 +107,11 @@
   background: var(--notch-bg, var(--paper));
   border-bottom-left-radius: var(--r);
 }
-.project__notch::before, .project__notch::after {
+.project__notch::before {
   content: ""; position: absolute; width: var(--r); height: var(--r);
   background: radial-gradient(circle at 0 100%, transparent calc(var(--r) - 0.5px), var(--notch-bg, var(--paper)) var(--r));
 }
 .project__notch::before { top: 0; right: 100%; }
-.project__notch::after { top: 100%; right: 0; }
 // No pill inside: the notch itself takes the status colour and carries the label.
 .project__notch { padding: 0.6rem 1.05rem 0.65rem 1.15rem; font-size: 0.8rem; font-weight: 500; line-height: 1; white-space: nowrap; }
 .project__notch .status { display: inline; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; }
