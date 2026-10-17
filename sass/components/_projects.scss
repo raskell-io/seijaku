@@ -30,6 +30,7 @@
 .projects--strip { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
 
 .project {
+  position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -95,3 +96,25 @@
 @media (max-width: 44rem) {
   .tier__head { grid-template-columns: 1fr; }
 }
+
+// The status notch: the top-right corner of the card is cut away in the page colour and holds the
+// status pill. Its left side meets the card's top edge in a lying S (an inverse curve at the top, the
+// notch's own rounded corner below), and its foot meets the card's right edge with another inverse curve.
+.project__notch {
+  --r: 1rem;
+  position: absolute; top: 0; right: 0; z-index: 2;
+  padding: 0.55rem 0.55rem 0.6rem 0.7rem;
+  background: var(--notch-bg, var(--paper));
+  border-bottom-left-radius: var(--r);
+}
+.project__notch::before, .project__notch::after {
+  content: ""; position: absolute; width: var(--r); height: var(--r);
+  background: radial-gradient(circle at 0 100%, transparent calc(var(--r) - 0.5px), var(--notch-bg, var(--paper)) var(--r));
+}
+.project__notch::before { top: 0; right: 100%; }
+.project__notch::after { top: 100%; right: 0; }
+.project__notch .status { min-height: 1.75rem; }
+// The top row no longer holds the status, so the logo can take the full width.
+.project__top { padding-inline-end: 6.5rem; }
+// A wide wordmark would run under the notch in narrow cards; start it just below the notch instead.
+.project__top:has(.project__logo--wide) { padding-inline-end: 0; margin-block-start: 1.6rem; }

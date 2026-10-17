@@ -1,4 +1,8 @@
 <li class="project{% if p.featured %} project--featured{% endif %}">
+  {#- Status sits in a notch cut into the top-right corner of the card. -#}
+  {%- if p.status %}
+  <span class="project__notch"><span class="status status--{{ p.status }}">{% if p.status_label %}{{ p.status_label }}{% elif p.status == "live" %}Live{% elif p.status == "stable" %}Stable{% elif p.status == "dev" %}In development{% elif p.status == "early" %}Very early{% elif p.status == "progress" %}In progress{% else %}{{ p.status }}{% endif %}</span></span>
+  {%- endif %}
   {%- if p.image %}
   <div class="project__visual"><img src="{{ get_url(path=p.image) | safe }}" alt="" loading="lazy"></div>
   {%- endif %}
@@ -9,9 +13,7 @@
       {%- else %}
       <span class="project__monogram" aria-hidden="true">{{ p.title | truncate(length=1, end="") }}</span>
       {%- endif %}
-      {%- if p.status %}
-      <span class="status status--{{ p.status }}">{% if p.status_label %}{{ p.status_label }}{% elif p.status == "live" %}Live{% elif p.status == "stable" %}Stable{% elif p.status == "dev" %}In development{% elif p.status == "early" %}Very early{% elif p.status == "progress" %}In progress{% else %}{{ p.status }}{% endif %}</span>
-      {%- endif %}
+
     </div>
     <h3 class="project__title">{{ p.title }}</h3>
     {%- if p.description %}<p class="project__desc">{{ p.description }}</p>{%- endif %}
