@@ -113,7 +113,13 @@
 }
 .project__notch::before { top: 0; right: 100%; }
 .project__notch::after { top: 100%; right: 0; }
-.project__notch .status { min-height: 1.75rem; }
+// No pill inside: the notch itself takes the status colour and carries the label.
+.project__notch { padding: 0.6rem 1.05rem 0.65rem 1.15rem; font-size: 0.8rem; font-weight: 500; line-height: 1; white-space: nowrap; }
+.project__notch .status { display: inline; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; }
+.project__notch:has(.status--live) { --notch-bg: var(--ice); color: #071110; }
+.project__notch:has(.status--stable) { --notch-bg: var(--champagne); color: #1f1607; }
+.project__notch:has(.status--dev) { --notch-bg: var(--ink); color: var(--paper); }
+.project__notch:has(.status--early), .project__notch:has(.status--progress) { --notch-bg: var(--paper-deep); color: var(--muted); }
 // The top row no longer holds the status, so the logo can take the full width.
 .project__top { padding-inline-end: 6.5rem; }
 // A wide wordmark would run under the notch in narrow cards; start it just below the notch instead.
