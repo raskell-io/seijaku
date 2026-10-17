@@ -17,6 +17,7 @@
   {%- set_global related = related | concat(with=weak) %}
 {%- endif %}
 <footer class="post__footer">
+  {% include "partials/cite.html" %}
   {% include "partials/local_map.html" %}
   {%- if related | length > 0 %}
   <section class="related" aria-labelledby="related-label">

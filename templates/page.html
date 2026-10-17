@@ -29,7 +29,7 @@
       {%- endif %}
       <div class="banner__intro">
         <p class="pagehead__eyebrow">{{ page.title }}</p>
-        {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+        {%- if page.description %}<p class="pagehead__deck" data-ai-summary>{{ page.description }}</p>{%- endif %}
       </div>
     </div>
   </header>
@@ -48,7 +48,7 @@
     <p class="pagehead__eyebrow">{{ page.title }}</p>
     {%- endif %}
     <h1 class="pagehead__title{% if page.extra.headline %} pagehead__title--headline{% endif %}">{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</h1>
-    {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+    {%- if page.description %}<p class="pagehead__deck" data-ai-summary>{{ page.description }}</p>{%- endif %}
     {%- if page.date or page.updated or page.taxonomies.tags %}
     {% include "partials/meta_table.html" %}
     {%- endif %}

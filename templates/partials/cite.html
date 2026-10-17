@@ -1,0 +1,48 @@
+{#- "Cite this": APA, MLA, BibTeX and a plain line, for readers and for agents (data-ai-cite).
+    Author from config.extra.author_full (or author), site from config.title. -#}
+{%- set who = config.extra.author_full | default(value=config.extra.author) %}
+{%- set parts = who | split(pat=" ") %}{% set last = parts | last %}{% set first = parts | first %}
+{%- set initial = first | truncate(length=1, end="") %}
+{%- set d = page.date %}{% set y = d | date(format="%Y") %}
+{%- set d_apa = d | date(format="%Y, %B %-d") %}{% set d_mla = d | date(format="%-d %b. %Y") %}{% set d_iso = d | date(format="%Y-%m-%d") %}
+{%- set mon = d | date(format="%b") | lower %}
+{%- set slug1 = page.slug | split(pat="-") | first %}{% set lastl = last | lower %}
+{%- set key = lastl ~ y ~ slug1 %}
+{%- set host = config.base_url | replace(from="https://", to="") %}{% set url_bare = page.permalink | replace(from="https://", to="") %}
+{%- set kind = "article" %}{% if page.components | first == "notes" %}{% set kind = "note" %}{% endif %}
+<details class="cite" data-ai-cite>
+  <summary><span class="cite__title">Cite this {{ kind }}</span><span class="cite__toggle" aria-hidden="true"></span></summary>
+  <div class="cite__body">
+    {%- set apa = last ~ ", " ~ initial ~ ". (" ~ d_apa ~ "). " ~ page.title ~ ". " ~ config.title ~ ". " ~ page.permalink %}
+    {%- set mla = last ~ ", " ~ first ~ ". “" ~ page.title ~ ".” " ~ config.title ~ ", " ~ d_mla ~ ", " ~ url_bare ~ "." %}
+    {%- set plain = who ~ ", “" ~ page.title ~ "”, " ~ host ~ ", " ~ d_iso ~ ", " ~ page.permalink %}
+    <div class="cite__row">
+      <span class="cite__fmt">APA</span>
+      <pre class="cite__text">{{ apa }}</pre>
+      <button class="cite__copy" type="button" data-copy>Copy</button>
+    </div>
+    <div class="cite__row">
+      <span class="cite__fmt">MLA</span>
+      <pre class="cite__text">{{ mla }}</pre>
+      <button class="cite__copy" type="button" data-copy>Copy</button>
+    </div>
+    <div class="cite__row">
+      <span class="cite__fmt">Plain</span>
+      <pre class="cite__text">{{ plain }}</pre>
+      <button class="cite__copy" type="button" data-copy>Copy</button>
+    </div>
+    <div class="cite__row">
+      <span class="cite__fmt">BibTeX</span>
+      <pre class="cite__text" data-format="bibtex">@misc{{ "{" }}{{ key }},
+  author       = {{ "{" }}{{ who }}{{ "}" }},
+  title        = {{ "{" }}{{ page.title }}{{ "}" }},
+  year         = {{ "{" }}{{ y }}{{ "}" }},
+  month        = {{ "{" }}{{ mon }}{{ "}" }},
+  howpublished = {{ "{" }}{{ host }}{{ "}" }},
+  url          = {{ "{" }}{{ page.permalink }}{{ "}" }}
+}</pre>
+      <button class="cite__copy" type="button" data-copy>Copy</button>
+    </div>
+  </div>
+</details>
+<script>(function(){document.querySelectorAll(".cite [data-copy]").forEach(function(b){if(b.dataset.bound){return}b.dataset.bound=1;b.addEventListener("click",function(){var t=b.parentNode.querySelector(".cite__text").textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1400)},function(){})})})})();</script>

@@ -63,3 +63,22 @@
 
 // Map legend: notes are drawn as small squares.
 .map__legend [data-kind="note"] i { border-radius: 1px; background: #f4f0df; width: 0.5rem; height: 0.5rem; }
+
+// "Cite this": the same quiet closed bar as "On the map", opening into copyable formats.
+.cite { margin-block-start: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid var(--line); }
+.cite + .localmap { margin-block-start: 0; border-top: 0; }
+.cite > summary { display: flex; align-items: baseline; gap: 1rem; padding-block: 1.1rem; list-style: none; cursor: pointer; }
+.cite > summary::-webkit-details-marker { display: none; }
+.cite > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 0.25rem; }
+.cite__title { flex: 1; font-size: clamp(1.15rem, 1.6vw, 1.35rem); font-weight: 500; letter-spacing: -0.02em; }
+.cite__toggle { width: 1.6rem; height: 1.6rem; flex: none; align-self: center; border-radius: 50%; background: var(--tint-bar); position: relative; }
+.cite__toggle::before, .cite__toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 0.6rem; height: 1.5px; margin: -0.75px 0 0 -0.3rem; background: currentColor; transition: transform 200ms ease; }
+.cite__toggle::after { transform: rotate(90deg); }
+.cite[open] .cite__toggle::after { transform: rotate(0deg); }
+.cite__body { display: grid; gap: 0.75rem; padding-block-end: 1.5rem; }
+.cite__row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) auto; gap: 0.75rem 1rem; align-items: start; padding: 0.85rem 1rem; border-radius: 0.75rem; background: var(--tint-bar); }
+.cite__fmt { padding-block-start: 0.15rem; color: var(--muted); font: 0.75rem/1.4 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+.cite__text { margin: 0; overflow-x: auto; white-space: pre-wrap; word-break: break-word; font: 0.85rem/1.55 var(--font-mono); color: var(--ink); }
+.cite__copy { padding: 0.25rem 0.7rem; border: 1px solid var(--line-strong); border-radius: 100px; background: none; color: var(--ink); font: 0.75rem/1.4 var(--font-mono); cursor: pointer; }
+.cite__copy:hover { border-color: var(--ink); }
+@media (max-width: 44rem) { .cite__row { grid-template-columns: 1fr auto; } .cite__text { grid-column: 1 / -1; grid-row: 2; } }
