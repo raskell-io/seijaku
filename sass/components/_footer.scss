@@ -51,7 +51,6 @@
 // lengths settle into two loose rows instead of a rigid table. The middle column starts a touch lower.
 .footer__groups { columns: 3 10rem; column-gap: clamp(1.75rem, 3.5vw, 3.5rem); }
 .footer__group { break-inside: avoid; margin-block-end: clamp(2.25rem, 4vw, 3.25rem); }
-.footer__group:last-child { padding-block-start: clamp(1.5rem, 3vw, 2.75rem); }   // the last column sits a little lower, so the columns do not line up like a table
 .footer__group { display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem; }
 .footer__group:last-child { margin-block-end: 0; }
 .footer__group-title { margin-block-end: 0.35rem; color: var(--footer-muted); font-family: var(--font-mono); font-size: 0.78rem; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; }
