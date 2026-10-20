@@ -89,11 +89,15 @@
         {%- endfor %}
       </ol>
     </nav>
-    <script>(function(){var links=document.querySelectorAll(".toc a");if(!links.length||!("IntersectionObserver" in window)){return}var map={};links.forEach(function(a){map[decodeURIComponent(a.hash.slice(1))]=a});var heads=[].filter.call(document.querySelectorAll(".prose [id]"),function(h){return map[h.id]});var cur=null;function update(){var top=null;heads.forEach(function(h){if(h.getBoundingClientRect().top<innerHeight*0.3){top=h}});var a=top?map[top.id]:null;if(a===cur){return}if(cur){cur.removeAttribute("aria-current")}cur=a;if(a){a.setAttribute("aria-current","true")}}var io=new IntersectionObserver(update,{rootMargin:"0px 0px -70% 0px"});heads.forEach(function(h){io.observe(h)})})();</script>
     {%- endif %}
     <div class="prose">
       {{ page.content | safe }}
     </div>
+    {%- if show_toc %}
+    {#- Highlights the section being read. After the prose, so the headings exist when it runs; listens to scroll
+        in the capture phase because the page scrolls inside .interior, not the window. -#}
+    <script>(function(){var links=document.querySelectorAll(".toc a");if(!links.length){return}var map={};links.forEach(function(a){map[decodeURIComponent(a.hash.slice(1))]=a});var prose=document.querySelector(".prose");var heads=[].filter.call(prose.querySelectorAll("[id]"),function(h){return map[h.id]});var cur=null,queued=false;function update(){queued=false;var line=innerHeight*0.3,top=null;var end=prose.getBoundingClientRect().bottom<=innerHeight+2;heads.forEach(function(h){var t=h.getBoundingClientRect().top;if(t<line||(end&&t<innerHeight)){top=h}});var a=top?map[top.id]:null;if(a===cur){return}if(cur){cur.removeAttribute("aria-current")}cur=a;if(a){a.setAttribute("aria-current","true")}}function queue(){if(!queued){queued=true;requestAnimationFrame(update)}}addEventListener("scroll",queue,{capture:true,passive:true});addEventListener("resize",queue);update()})();</script>
+    {%- endif %}
   </div>
   {%- if page.date and page.ancestors | length > 1 %}
   {% include "partials/post_footer.html" %}
