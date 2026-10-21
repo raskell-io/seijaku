@@ -23,8 +23,8 @@
     {% include "partials/local_map.html" %}
     {%- if page.lower or page.higher %}
     <nav class="neighbours" aria-label="More notes">
-      {%- if page.lower %}<a class="neighbours__prev" rel="prev" href="{{ page.lower.permalink | safe }}"><span>← Older note</span>{{ page.lower.title }}</a>{% else %}<span></span>{% endif %}
-      {%- if page.higher %}<a class="neighbours__next" rel="next" href="{{ page.higher.permalink | safe }}"><span>Newer note →</span>{{ page.higher.title }}</a>{% endif %}
+      {%- if page.higher %}<a class="neighbours__prev" rel="prev" href="{{ page.higher.permalink | safe }}"><span>← Older note</span>{{ page.higher.title }}</a>{% else %}<span></span>{% endif %}
+      {%- if page.lower %}<a class="neighbours__next" rel="next" href="{{ page.lower.permalink | safe }}"><span>Newer note →</span>{{ page.lower.title }}</a>{% endif %}
     </nav>
     {%- endif %}
   </footer>
