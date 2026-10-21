@@ -1,0 +1,42 @@
+{#- Social card data for this page, read after `zola build` by a renderer that draws og/<path>.png (1200x630).
+    Enabled with extra.seijaku.og_cards = true. Fields: kind, eyebrow, title, description, meta, cover. -#}
+{%- set kind = "page" %}{% set eyebrow = "" %}{% set title = config.title %}{% set desc = config.description | default(value="") %}{% set meta = "" %}{% set cover = "" %}
+{%- if page is defined %}
+  {%- set title = page.title %}{% set desc = page.description | default(value=desc) %}
+  {%- if page.extra.cover %}{% set cover = get_url(path=page.extra.cover) %}{% endif %}
+  {%- set top = page.components | first | default(value="") %}
+  {%- if top == "articles" %}
+    {%- set kind = "article" %}{% set eyebrow = "Article" %}
+    {%- if page.taxonomies.series %}
+      {%- set sname = page.taxonomies.series | first %}{% set part = 0 %}
+      {%- set sterm = get_taxonomy_term(kind="series", term=sname, required=false) %}
+      {%- if sterm %}{% for p in sterm.pages | sort(attribute="date") %}{% if p.path == page.path %}{% set_global part = loop.index %}{% endif %}{% endfor %}{% endif %}
+      {%- set sname = sname | replace(from="-", to=" ") | title %}
+      {%- if part > 0 %}{% set eyebrow = "Part " ~ part ~ " · " ~ sname %}{% else %}{% set eyebrow = sname %}{% endif %}
+    {%- endif %}
+  {%- elif top == "notes" %}{% set kind = "note" %}{% set eyebrow = "Note" %}
+  {%- endif %}
+  {%- if page.date %}{% set meta = page.date | date(format="%-d %B %Y") %}{% endif %}
+  {%- if kind == "article" and page.reading_time %}{% set meta = meta ~ " · " ~ page.reading_time ~ " min read" %}{% endif %}
+{%- elif term is defined %}
+  {%- set n = term.pages | length %}
+  {%- if taxonomy.name == "tags" %}
+    {%- set kind = "topic" %}{% set eyebrow = "Topic" %}{% set title = term.name %}
+    {%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+    {%- if tagdata and term.slug in tagdata %}{% set title = tagdata[term.slug].name %}{% set desc = tagdata[term.slug].description %}{% endif %}
+    {%- if n == 1 %}{% set meta = "1 article or note" %}{% else %}{% set meta = n ~ " articles and notes" %}{% endif %}
+  {%- else %}
+    {%- set kind = "series" %}{% set eyebrow = "Series" %}{% set title = term.name | replace(from="-", to=" ") | title %}
+    {%- set sdesc = config.extra.seijaku.series_descriptions | default(value=false) %}
+    {%- if sdesc and term.slug in sdesc %}{% set desc = sdesc[term.slug] %}{% endif %}
+    {%- set meta = n ~ " parts" %}
+  {%- endif %}
+{%- elif taxonomy is defined %}
+  {%- set title = taxonomy.name | capitalize %}{% set n = terms | length %}{% set meta = n ~ " " ~ taxonomy.name %}
+  {%- if taxonomy.name == "tags" %}{% set title = "Topics" %}{% set meta = n ~ " topics" %}{% set desc = "Every domain, concept, and technology the writing covers, and how they connect." %}
+  {%- elif taxonomy.name == "series" %}{% set desc = "Writing meant to be read in order, one part after another." %}{% endif %}
+{%- elif section is defined %}
+  {%- if section.path == "/" %}{% set kind = "home" %}{% set title = config.extra.seijaku.og_home_title | default(value=config.title) %}{% set meta = config.extra.seijaku.og_home_meta | default(value="") %}
+  {%- else %}{% set kind = "section" %}{% set title = section.title %}{% set desc = section.description | default(value=desc) %}{% endif %}
+{%- endif %}
+<script type="application/json" id="og-card">{"kind":{{ kind | json_encode | safe }},"eyebrow":{{ eyebrow | json_encode | safe }},"title":{{ title | json_encode | safe }},"description":{{ desc | json_encode | safe }},"meta":{{ meta | json_encode | safe }},"cover":{{ cover | json_encode | safe }}}</script>
