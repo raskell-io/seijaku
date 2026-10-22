@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {#- A venture or investor brief: a hero card in the project's brand colours (extra.project names a file in
-    data/projects/), a row of section links from the page's h2s, then the prose and its building blocks.
+    data/projects/), section links from the page's h2s (as on articles), then the prose and its building blocks.
     extra.eyebrow labels the page ("Investor brief"); extra.parent = { name, url } is the page it belongs to. -#}
 {% block title %}{{ page.title }}{% if page.extra.eyebrow %}: {{ page.extra.eyebrow }}{% endif %} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
@@ -30,15 +30,14 @@
       {%- endfor %}{% endif %}
     </div>
   </header>
-  {%- if page.toc | length > 1 %}
-  <nav class="venture__nav" aria-label="Sections">
-    {%- for h in page.toc %}<a href="{{ h.permalink | safe }}">{{ h.title }}</a>{% endfor %}
-  </nav>
-  {%- endif %}
-  <div class="post__body venture__body">
+  {#- Section links as on articles: a list above the text, a sticky column beside it on wide screens. -#}
+  {%- set show_toc = page.toc | length > 1 %}
+  <div class="post__body venture__body{% if show_toc %} post__body--toc{% endif %}">
+    {% include "partials/toc.html" %}
     <div class="prose">
       {{ page.content | safe }}
     </div>
+    {% include "partials/toc_script.html" %}
   </div>
 </article>
 {% endblock content %}

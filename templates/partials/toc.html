@@ -1,0 +1,11 @@
+{#- Contents list for a page (`show_toc` set by the template): a list above the text, a sticky side column on wide screens. -#}
+    {%- if show_toc %}
+    <nav class="toc" aria-labelledby="toc-label">
+      <p class="toc__label" id="toc-label">Contents</p>
+      <ol>
+        {%- for h in page.toc %}
+        <li><a href="{{ h.permalink | safe }}">{{ h.title }}</a></li>
+        {%- endfor %}
+      </ol>
+    </nav>
+    {%- endif %}

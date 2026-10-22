@@ -80,24 +80,11 @@
   {%- if page.extra.toc is defined %}{% set show_toc = page.extra.toc and page.toc | length > 0 %}
   {%- else %}{% set show_toc = page.toc | length >= 3 and page.reading_time and page.reading_time >= 8 %}{% endif %}
   <div class="post__body{% if show_toc %} post__body--toc{% endif %}">
-    {%- if show_toc %}
-    <nav class="toc" aria-labelledby="toc-label">
-      <p class="toc__label" id="toc-label">Contents</p>
-      <ol>
-        {%- for h in page.toc %}
-        <li><a href="{{ h.permalink | safe }}">{{ h.title }}</a></li>
-        {%- endfor %}
-      </ol>
-    </nav>
-    {%- endif %}
+    {% include "partials/toc.html" %}
     <div class="prose">
       {{ page.content | safe }}
     </div>
-    {%- if show_toc %}
-    {#- Highlights the section being read. After the prose, so the headings exist when it runs; listens to scroll
-        in the capture phase because the page scrolls inside .interior, not the window. -#}
-    <script>(function(){var links=document.querySelectorAll(".toc a");if(!links.length){return}var map={};links.forEach(function(a){map[decodeURIComponent(a.hash.slice(1))]=a});var prose=document.querySelector(".prose");var heads=[].filter.call(prose.querySelectorAll("[id]"),function(h){return map[h.id]});var cur=null,queued=false;function update(){queued=false;var line=innerHeight*0.3,top=null;var end=prose.getBoundingClientRect().bottom<=innerHeight+2;heads.forEach(function(h){var t=h.getBoundingClientRect().top;if(t<line||(end&&t<innerHeight)){top=h}});var a=top?map[top.id]:null;if(a===cur){return}if(cur){cur.removeAttribute("aria-current")}cur=a;if(a){a.setAttribute("aria-current","true")}}function queue(){if(!queued){queued=true;requestAnimationFrame(update)}}addEventListener("scroll",queue,{capture:true,passive:true});addEventListener("resize",queue);update()})();</script>
-    {%- endif %}
+    {% include "partials/toc_script.html" %}
   </div>
   {%- if page.date and page.ancestors | length > 1 %}
   {% include "partials/post_footer.html" %}
