@@ -1,0 +1,62 @@
+// Venture brief (templates/venture.html): a hero card lit in the project's brand colours, a row of section
+// links, then the prose. The status sits in the same notch as on the project cards.
+.venture__hero {
+  --glow: 34%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-block-end: 1.5rem;
+  padding: clamp(1.75rem, 4.5vw, 3.75rem);
+  border-radius: 1.5rem;
+  background: var(--tint-2);
+}
+.venture__hero--glow {
+  background-image:
+    radial-gradient(110% 80% at 0% 100%, color-mix(in srgb, var(--acc-a) var(--glow), transparent), transparent 70%),
+    radial-gradient(80% 70% at 100% 0%, color-mix(in srgb, var(--acc-b) var(--glow), transparent), transparent 70%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .venture__hero { --glow: 24%; } }
+:root[data-theme="dark"] .venture__hero { --glow: 24%; }
+.venture__top { display: flex; align-items: center; min-height: 3rem; margin-block-end: 0.75rem; }
+.venture__logo { width: 4.5rem; height: 4.5rem; object-fit: contain; border-radius: 1rem; }
+.venture__logo.venture__logo--wide { width: min(16rem, 70%); height: auto; border-radius: 0.6rem; }
+.venture__brand { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
+.venture__wordmark { height: 2.6rem; width: auto; max-width: 100%; }
+.venture__status { font-size: 0.85rem; }
+.venture__eyebrow { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.venture__eyebrow a { color: inherit; text-decoration: none; }
+.venture__eyebrow a:hover { color: var(--ink); text-decoration: underline; }
+.venture__title { font-size: clamp(2.75rem, 7vw, 5.6rem); font-weight: 500; line-height: 0.98; letter-spacing: -0.045em; }
+.venture__deck { max-width: 46rem; font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; text-wrap: pretty; }
+.venture__links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 1rem; }
+.venture__nav {
+  position: sticky; top: 4.75rem; z-index: 5;
+  display: flex; gap: 0.35rem; overflow-x: auto; scrollbar-width: none;
+  margin-block-end: 1rem; padding: 0.4rem; border: 1px solid var(--line); border-radius: 100px;
+  background: color-mix(in srgb, var(--paper) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+.venture__nav::-webkit-scrollbar { display: none; }
+.venture__nav a { flex: none; padding: 0.45rem 0.9rem; border-radius: 100px; color: var(--muted); font-size: 0.88rem; font-weight: 500; text-decoration: none; white-space: nowrap; }
+.venture__nav a:hover { background: var(--tint-bar); color: var(--ink); }
+.venture__body { border-top: 0; padding-block-start: clamp(1rem, 3vw, 2rem); }
+.venture .prose h2 { scroll-margin-top: 8rem; }
+
+// The lead paragraph of a brief reads larger, like a deck.
+.venture .prose > p:first-child { color: var(--ink); font-size: 1.2em; font-weight: 500; line-height: 1.4; letter-spacing: -0.01em; }
+
+// Figures (tiles with variant "figures"): the bold phrase is a large number, the text says what it counts,
+// and a link at the end names the source.
+.tiles--figures li strong:first-child { font-size: clamp(1.9rem, 3.4vw, 2.6rem); font-weight: 500; letter-spacing: -0.04em; line-height: 1.05; }
+.tiles--figures li { justify-content: flex-start; }
+.tiles--figures li a { margin-block-start: auto; padding-block-start: 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.72rem; text-decoration: none; }
+.tiles--figures li a::before { content: "Source: "; }
+.tiles--figures li a:hover { color: var(--ink); text-decoration: underline; }
+
+// Comparison tables inside a brief: a tinted card with the venture's own row picked out.
+.venture .prose table:not(.meta) { display: block; overflow-x: auto; padding: 0.5rem 1.25rem; border-radius: 1rem; background: var(--tint-2); font-size: 0.9rem; }
+.venture .prose table:not(.meta) th { padding-block-start: 1rem; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.venture .prose table:not(.meta) tr:last-child td { border-bottom: 0; }
+.venture .prose table:not(.meta) td:first-child { color: var(--ink); font-weight: 500; white-space: nowrap; }
+.venture .prose table:not(.meta) td { color: var(--muted); }

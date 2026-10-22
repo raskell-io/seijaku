@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{#- A venture or investor brief: a hero card in the project's brand colours (extra.project names a file in
+    data/projects/), a row of section links from the page's h2s, then the prose and its building blocks.
+    extra.eyebrow labels the page ("Investor brief"); extra.parent = { name, url } is the page it belongs to. -#}
+{% block title %}{{ page.title }}{% if page.extra.eyebrow %}: {{ page.extra.eyebrow }}{% endif %} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set p = load_data(path="data/projects/" ~ page.extra.project ~ ".toml", required=false) %}
+{%- set parent = page.extra.parent | default(value=false) %}
+<article class="post venture">
+  <header class="venture__hero{% if p and p.accents %} venture__hero--glow{% endif %}"{% if p and p.accents %} style="--acc-a: {{ p.accents[0] }}; --acc-b: {{ p.accents | last }}"{% endif %}>
+    <div class="venture__top">
+      {%- if p and p.logo %}
+      {%- set bm_icon = "venture__logo" %}{% set bm_word = "venture__wordmark" %}
+      <div class="venture__brand">{% include "partials/brand_marks.html" %}</div>
+      {%- endif %}
+      {%- if p and p.status %}
+      <span class="project__notch venture__status"><span class="status status--{{ p.status }}">{% if p.status_label %}{{ p.status_label }}{% elif p.status == "live" %}Live{% elif p.status == "stable" %}Stable{% elif p.status == "dev" %}In development{% elif p.status == "shipping" %}Shipping{% elif p.status == "early" %}Very early{% elif p.status == "progress" %}In progress{% else %}{{ p.status }}{% endif %}</span></span>
+      {%- endif %}
+    </div>
+    <p class="venture__eyebrow">{% if parent %}<a href="{{ get_url(path=parent.url) | safe }}">{{ parent.name }}</a> / {% endif %}{{ page.extra.eyebrow | default(value="Venture") }}</p>
+    <h1 class="venture__title">{{ page.title }}</h1>
+    {%- if page.description %}<p class="venture__deck" data-ai-summary>{{ page.description }}</p>{% endif %}
+    <div class="venture__links">
+      {%- if page.extra.contact_anchor | default(value="") %}
+      <a class="cardcta cardcta--main" href="#{{ page.extra.contact_anchor }}">Talk about investing<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
+      {%- endif %}
+      {%- if p and p.links %}{% for l in p.links %}
+      <a class="cardcta" href="{{ l.url | safe }}">{{ l.name }}</a>
+      {%- endfor %}{% endif %}
+    </div>
+  </header>
+  {%- if page.toc | length > 1 %}
+  <nav class="venture__nav" aria-label="Sections">
+    {%- for h in page.toc %}<a href="{{ h.permalink | safe }}">{{ h.title }}</a>{% endfor %}
+  </nav>
+  {%- endif %}
+  <div class="post__body venture__body">
+    <div class="prose">
+      {{ page.content | safe }}
+    </div>
+  </div>
+</article>
+{% endblock content %}
+{% block crumbs %}
+{%- set parent = page.extra.parent | default(value=false) %}
+{%- if parent %} → <a href="{{ get_url(path=parent.url) | safe }}">{{ parent.name }}</a>{% endif %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

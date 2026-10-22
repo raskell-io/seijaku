@@ -4,15 +4,24 @@
   {%- for slug in slugs %}
   {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
   <li class="support__item{% if p.accents %} project--glow{% endif %}"{% if p.accents %} style="--acc-a: {{ p.accents[0] }}; --acc-b: {{ p.accents | last }}"{% endif %}>
+    {#- As on the project cards, a brandtype (wordmark or wide logo) is the title and the name opens the tagline in bold. -#}
+    {%- set brand = p.wordmark | default(value="") or (p.logo and p.logo_wide | default(value=false)) %}
+    {%- if p.links %}{% set home = p.links[0].url %}{% else %}{% set home = "" %}{% endif %}
+    {%- set bm_icon = "support__logo" %}{% set bm_word = "support__wordmark" %}
     <div class="support__head">
+      {%- if brand %}
+      <h3 class="support__title support__title--brand">{% if home %}<a href="{{ home | safe }}">{% endif %}{% include "partials/brand_marks.html" %}{% if home %}</a>{% endif %}</h3>
+      {%- if p.tagline %}<p class="support__tagline"><strong class="support__name">{{ p.title }}</strong> {{ p.tagline }}</p>{% endif %}
+      {%- else %}
       {%- if p.logo %}
       <img class="support__logo{% if p.logo_mono %} project__logo--mono{% endif %}{% if p.logo_dark %} project__logo--light{% endif %}" src="{{ get_url(path=p.logo, cachebust=true) | safe }}" alt="" loading="lazy">
       {%- if p.logo_dark %}<img class="support__logo project__logo--dark" src="{{ get_url(path=p.logo_dark, cachebust=true) | safe }}" alt="" loading="lazy">{% endif %}
       {%- endif %}
       <div>
-        <h3 class="support__title">{% if p.links %}<a href="{{ p.links[0].url | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h3>
+        <h3 class="support__title">{% if home %}<a href="{{ home | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h3>
         {%- if p.tagline %}<p class="support__tagline">{{ p.tagline }}</p>{% endif %}
       </div>
+      {%- endif %}
     </div>
     {%- if p.support_note %}<p class="support__note">{{ p.support_note }}</p>{% endif %}
     <div class="support__links">

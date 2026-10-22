@@ -7,23 +7,36 @@
   <div class="project__visual"><img src="{{ get_url(path=p.image) | safe }}" alt="" loading="lazy"></div>
   {%- endif %}
   <div class="project__body">
+    {#- A brandtype is the card's title: a wordmark beside the logo (`wordmark`, `wordmark_dark`), or a wide logo
+        that holds the name (`logo_wide`). The heading holds the images, named by their alt text, and the
+        description opens with the name written out in bold. Other projects show their logo above a text title. -#}
+    {%- set brand = p.wordmark | default(value="") or (p.logo and p.logo_wide | default(value=false)) %}
     <div class="project__top">
-      {%- if p.logo %}
-      <img class="project__logo{% if p.logo_wide %} project__logo--wide{% endif %}{% if p.logo_mono %} project__logo--mono{% endif %}{% if p.logo_dark %} project__logo--light{% endif %}" src="{{ get_url(path=p.logo, cachebust=true) | safe }}" alt="" loading="lazy">
-      {%- if p.logo_dark %}<img class="project__logo project__logo--dark{% if p.logo_wide %} project__logo--wide{% endif %}" src="{{ get_url(path=p.logo_dark, cachebust=true) | safe }}" alt="" loading="lazy">{% endif %}
+      {%- if brand %}
+      {%- set bm_icon = "project__logo" %}{% set bm_word = "project__wordmark" %}
+      <h3 class="project__brand{% if p.wordmark | default(value="") %} project__brand--pair{% endif %}">{% include "partials/brand_marks.html" %}</h3>
+      {%- elif p.logo %}
+      {%- set bm_icon = "project__logo" %}{% set bm_word = "project__wordmark" %}
+      {% include "partials/brand_marks.html" %}
       {%- else %}
       <span class="project__monogram" aria-hidden="true">{{ p.title | truncate(length=1, end="") }}</span>
       {%- endif %}
-
     </div>
-    <h3 class="project__title">{{ p.title }}</h3>
-    {%- if p.description %}<p class="project__desc">{{ p.description }}</p>{%- endif %}
+    {%- if not brand %}<h3 class="project__title">{{ p.title }}</h3>{% endif %}
+    {%- if p.description %}<p class="project__desc">{% if brand %}<strong class="project__name">{{ p.title }}</strong> {% endif %}{{ p.description }}</p>{%- endif %}
     {%- if p.links %}
     <div class="project__links">
       {#- The first link is the main action (a filled pill with an arrow); GitHub and Docs become round icon
           buttons, so a card's actions fit on one line; anything else stays a small text pill. -#}
+      {#- With show_pitch (project_cards(pitch=true)) and a `pitch` page in the data, that page is the main action. -#}
+      {%- set pitch_first = show_pitch | default(value=false) and p.pitch | default(value="") %}
+      {%- if pitch_first %}
+      <a class="cardcta cardcta--main" href="{{ get_url(path=p.pitch) | safe }}">Read the pitch<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
+      {%- endif %}
       {%- for l in p.links %}{% set key = l.name | lower %}
-      {%- if loop.first and key != "github" %}
+      {%- if loop.first and key != "github" and pitch_first %}
+      <a class="cardcta cardcta--icon" href="{{ l.url | safe }}" aria-label="{{ p.title }} {{ l.name | lower }}" title="{{ l.name }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.75 5.6 3.75 9S14.5 18.4 12 21c-2.5-2.6-3.75-5.6-3.75-9S9.5 5.6 12 3Z"/></svg></a>
+      {%- elif loop.first and key != "github" %}
       <a class="cardcta cardcta--main" href="{{ l.url | safe }}">{{ l.name }}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
       {%- elif key == "github" %}
       <a class="cardcta cardcta--icon" href="{{ l.url | safe }}" aria-label="{{ p.title }} on GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg></a>

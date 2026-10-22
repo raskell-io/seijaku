@@ -1,6 +1,6 @@
 {#- A markdown list set as a grid of tiles: {% tiles() %} - **Title**: text {% end %}. A leading bold phrase
-    becomes the tile's title. Numbered lists count up in large figures. cols = 2 or 3 (default: fit). -#}
-{%- set cols = cols | default(value="") %}
-<div class="tiles not-prose{% if cols %} tiles--{{ cols }}{% endif %}">
+    becomes the tile's title. Numbered lists count up in large figures. cols = 2 or 3 (default: fit); variant = "figures" sets the bold phrase as a large number. -#}
+{%- set cols = cols | default(value="") %}{%- set variant = variant | default(value="") %}
+<div class="tiles not-prose{% if cols %} tiles--{{ cols }}{% endif %}{% if variant %} tiles--{{ variant }}{% endif %}">
 {{ body | markdown | safe }}
 </div>

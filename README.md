@@ -95,6 +95,11 @@ optional `logo` or `image`, `stack`, `links`, and `featured`. See `theme.toml`
 for the full shape. Projects have no pages of their own; cards link out.
 A tier can carry a call to action between its head and its cards:
 `cta = { eyebrow = "...", title = "...", text = "...", links = [{ name = "...", url = "@/invest.md" }] }`.
+A project with a brandtype shows it as the card title: `wordmark` (and `wordmark_dark`) sit beside the
+`logo`, or `logo_wide = true` marks a logo that already holds the name. The description then opens
+with the name in bold. `pitch = "@/..."` names an investor brief, linked from `project_cards(pitch=true)`.
+Pages with `template = "venture.html"` and `extra.project = "<slug>"` render such a brief: a hero in the
+project's colours, section links from the headings, and the page's building blocks.
 Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, Ko-fi, ...) and
 `tagline` for the `support_cards` shortcode.
 

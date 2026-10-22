@@ -1,0 +1,14 @@
+{#- The brand images of a project `p`: its logo (the brandicon) and, when it has one, its wordmark (the
+    brandtype), each with an optional dark variant. Set `bm_icon` and `bm_word` to the class names first.
+    The wordmark, or a wide logo that holds the name, carries the name as alt text; the icon then is decoration. -#}
+{%- set bm_wordmark = p.wordmark | default(value="") %}
+{%- set bm_wide = p.logo_wide | default(value=false) %}
+{%- if bm_wide and not bm_wordmark %}{% set bm_alt = p.title %}{% else %}{% set bm_alt = "" %}{% endif %}
+{%- if p.logo %}
+<img class="{{ bm_icon }}{% if bm_wide %} {{ bm_icon }}--wide{% endif %}{% if p.logo_mono %} project__logo--mono{% endif %}{% if p.logo_dark %} project__logo--light{% endif %}" src="{{ get_url(path=p.logo, cachebust=true) | safe }}" alt="{{ bm_alt }}" loading="lazy">
+{%- if p.logo_dark %}<img class="{{ bm_icon }}{% if bm_wide %} {{ bm_icon }}--wide{% endif %} project__logo--dark" src="{{ get_url(path=p.logo_dark, cachebust=true) | safe }}" alt="{{ bm_alt }}" loading="lazy">{% endif %}
+{%- endif %}
+{%- if bm_wordmark %}
+<img class="{{ bm_word }}{% if p.wordmark_dark %} project__logo--light{% endif %}" src="{{ get_url(path=bm_wordmark, cachebust=true) | safe }}" alt="{{ p.title }}" loading="lazy">
+{%- if p.wordmark_dark %}<img class="{{ bm_word }} project__logo--dark" src="{{ get_url(path=p.wordmark_dark, cachebust=true) | safe }}" alt="{{ p.title }}" loading="lazy">{% endif %}
+{%- endif %}

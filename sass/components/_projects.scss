@@ -67,6 +67,14 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .project__logo--light { display: none; } :root:not([data-theme="light"]) .project__logo--dark { display: block; } }
 :root[data-theme="dark"] .project__logo--light { display: none; }
 :root[data-theme="dark"] .project__logo--dark { display: block; }
+// Brand wordmark as the card title (logo_wide): the heading only frames the image; the name opens the text.
+.project__brand { flex: 0 1 12rem; min-width: 9rem; max-width: 100%; margin: 0; line-height: 0; }
+.project__name { color: var(--ink); font-weight: 600; }
+// Brandicon and brandtype side by side: the logo at its usual size, the wordmark set to a type height.
+.project__brand--pair { display: flex; align-items: center; gap: 0.85rem; flex: 0 1 auto; min-width: 0; }
+.project__wordmark { height: 1.75rem; width: auto; min-width: 0; max-width: 100%; object-fit: contain; object-position: left center; }
+.projects--venture .project__wordmark, .projects--large .project__wordmark { height: 2.2rem; }
+.projects--lab .project__wordmark, .projects--compact .project__wordmark { height: 1.25rem; }
 .project__monogram { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
 .project__title { font-size: clamp(1.45rem, 1.9vw, 1.75rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
 .project__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; color: var(--muted); font-size: 1.05rem; line-height: 1.45; text-wrap: pretty; }

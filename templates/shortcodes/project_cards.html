@@ -1,6 +1,6 @@
 {#- Project cards inside a page, from data/projects/<slug>.toml, the same cards as the projects page.
-    {{ project_cards(slugs=["zentinel", "cyanea"]) }}; size = "large" or "compact" picks the tier size. -#}
-{%- set size = size | default(value="") %}
+    {{ project_cards(slugs=["zentinel", "cyanea"]) }}; size = "large" or "compact" picks the tier size; pitch = true makes a project's `pitch` page the main action. -#}
+{%- set size = size | default(value="") %}{%- set show_pitch = pitch | default(value=false) %}
 <ul class="projects not-prose{% if size %} projects--{{ size }}{% endif %} projects--inline">
   {%- for slug in slugs %}
   {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
