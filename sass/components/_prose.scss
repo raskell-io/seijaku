@@ -1,9 +1,13 @@
+// Building blocks inside prose (shortcodes) carry .not-prose and style themselves; the prose rules
+// for headings, paragraphs, lists, links, and images skip them without adding specificity.
+$np: ":where(:not(.not-prose, .not-prose *))";
+
 .prose {
   max-width: var(--measure);
   font-size: clamp(1.05rem, 1.35vw, 1.25rem);
   line-height: 1.55;
 
-  h2, h3, h4 {
+  h2#{$np}, h3#{$np}, h4#{$np} {
     margin-block: 2.6em 0.7em;
     font-weight: 500;
     line-height: 1.12;
@@ -15,14 +19,14 @@
   h3 { font-size: clamp(1.35rem, 2.2vw, 1.7rem); }
   h4 { font-size: 1.15rem; }
   > :first-child { margin-block-start: 0; }
-  p, ul, ol { margin-block-end: 1.3em; }
-  ul, ol { padding-inline-start: 1.4em; }
-  li { padding-inline-start: 0.15em; }
-  li + li { margin-block-start: 0.35em; }
-  li::marker { color: var(--muted); }
-  a { text-decoration-color: var(--line-strong); }
-  a:hover { text-decoration-color: currentColor; }
-  a svg { display: inline-block; width: 1em; height: 1em; margin-inline-end: 0.35em; vertical-align: -0.15em; }
+  p#{$np}, ul#{$np}, ol#{$np} { margin-block-end: 1.3em; }
+  ul#{$np}, ol#{$np} { padding-inline-start: 1.4em; }
+  li#{$np} { padding-inline-start: 0.15em; }
+  li#{$np} + li { margin-block-start: 0.35em; }
+  li#{$np}::marker { color: var(--muted); }
+  a#{$np} { text-decoration-color: var(--line-strong); }
+  a#{$np}:hover { text-decoration-color: currentColor; }
+  a#{$np} svg { display: inline-block; width: 1em; height: 1em; margin-inline-end: 0.35em; vertical-align: -0.15em; }
   strong { font-weight: 600; }
 
   blockquote {
@@ -109,5 +113,5 @@
   table:not(.meta) { display: block; max-width: 100%; margin-block: 2em; overflow-x: auto; border-collapse: collapse; font-size: 0.95rem; }
   table:not(.meta) th, table:not(.meta) td { padding: 0.8rem 1.25rem 0.8rem 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
   table:not(.meta) th { color: var(--muted); font-weight: 500; }
-  img { margin-block: 2em; border-radius: 1rem; }
+  img#{$np} { margin-block: 2em; border-radius: 1rem; }
 }

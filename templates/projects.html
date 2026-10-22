@@ -19,6 +19,23 @@
     <h2 class="tier__title" id="tier-{{ tier.key }}">{{ tier.title }}</h2>
     {%- if tier.deck %}<p class="tier__deck">{{ tier.deck }}</p>{%- endif %}
   </header>
+  {#- tiers[].cta = { eyebrow, title, text, links = [{ name, url }] }: a call to action between the head and the cards. -#}
+  {%- if tier.cta %}
+  <aside class="panel panel--tier">
+    <div class="panel__text">
+      {%- if tier.cta.eyebrow %}<p class="panel__eyebrow"><span class="panel__dot" aria-hidden="true"></span>{{ tier.cta.eyebrow }}</p>{% endif %}
+      {%- if tier.cta.title %}<h3 class="panel__title">{{ tier.cta.title }}</h3>{% endif %}
+      {%- if tier.cta.text %}<div class="panel__body"><p>{{ tier.cta.text }}</p></div>{% endif %}
+    </div>
+    {%- if tier.cta.links %}
+    <div class="panel__actions">
+      {%- for l in tier.cta.links %}{% if l.url is starting_with("@/") %}{% set href = get_url(path=l.url) %}{% else %}{% set href = l.url %}{% endif %}
+      <a class="cardcta{% if loop.first %} cardcta--main{% endif %}" href="{{ href | safe }}">{{ l.name }}{% if loop.first %}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg>{% endif %}</a>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </aside>
+  {%- endif %}
   <ul class="projects projects--{{ tier.key }}{% if tier.size %} projects--{{ tier.size }}{% endif %}">
     {%- for slug in tier.projects %}
     {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}

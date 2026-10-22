@@ -1,0 +1,21 @@
+{#- A card around a block of prose: {% card(title="", url="", eyebrow="", meta="", links=["Name|url"]) %} markdown {% end %}.
+    eyebrow is a small label above the title, meta a line under it; links become buttons, the first one filled. -#}
+{%- set title = title | default(value="") %}{%- set url = url | default(value="") %}{%- set eyebrow = eyebrow | default(value="") %}{%- set meta = meta | default(value="") %}{%- set links = links | default(value=[]) %}
+<article class="card">
+  {%- if eyebrow or meta %}
+  <p class="card__meta not-prose">{% if eyebrow %}<span class="card__eyebrow">{{ eyebrow }}</span>{% endif %}{% if meta %}<span>{{ meta | markdown(inline=true) | safe }}</span>{% endif %}</p>
+  {%- endif %}
+  {%- if title %}
+  <h3 class="card__title not-prose">{% if url %}<a href="{{ url | safe }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</h3>
+  {%- endif %}
+  <div class="card__body">
+{{ body | markdown | safe }}
+  </div>
+  {%- if links %}
+  <div class="card__links not-prose">
+    {%- for l in links %}{% set parts = l | split(pat="|") %}
+    <a class="cardcta{% if loop.first %} cardcta--main{% endif %}" href="{{ parts | last | safe }}">{{ parts | first }}{% if loop.first %}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg>{% endif %}</a>
+    {%- endfor %}
+  </div>
+  {%- endif %}
+</article>

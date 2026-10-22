@@ -93,6 +93,22 @@ each naming the project slugs to show in order. Every project is a small TOML
 file at `data/projects/<slug>.toml` with `title`, `description`, `status`,
 optional `logo` or `image`, `stack`, `links`, and `featured`. See `theme.toml`
 for the full shape. Projects have no pages of their own; cards link out.
+A tier can carry a call to action between its head and its cards:
+`cta = { eyebrow = "...", title = "...", text = "...", links = [{ name = "...", url = "@/invest.md" }] }`.
+Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, Ko-fi, ...) and
+`tagline` for the `support_cards` shortcode.
+
+### Building blocks for pages
+
+Shortcodes that set parts of a page apart from the running text:
+
+- `{{ project_cards(slugs=["a", "b"]) }}`: the projects page cards, inside any page
+- `{{ support_cards(slugs=["a"]) }}`: ways to fund an open-source project, from its `support` list
+- `{% tiles(cols=3) %} - **Title**: text {% end %}`: a list set as a grid of tiles; numbered lists count up
+- `{% card(title, url, eyebrow, meta, links=["Name|url"]) %} markdown {% end %}`: a card around a block of prose
+- `{% panel(eyebrow, title, links=["Name|url"], contact=true) %} markdown {% end %}`: a call to action in a gradient frame
+- `{{ contact() }}`: the `extra.seijaku.social` profiles as buttons
+
 `zola serve` does not watch `data/`, so restart it after editing project files.
 
 Develop the theme in isolation with `zola serve` in this directory — the

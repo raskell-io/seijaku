@@ -1,0 +1,9 @@
+{#- Project cards inside a page, from data/projects/<slug>.toml, the same cards as the projects page.
+    {{ project_cards(slugs=["zentinel", "cyanea"]) }}; size = "large" or "compact" picks the tier size. -#}
+{%- set size = size | default(value="") %}
+<ul class="projects not-prose{% if size %} projects--{{ size }}{% endif %} projects--inline">
+  {%- for slug in slugs %}
+  {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+  {% include "partials/project_card.html" %}
+  {%- endfor %}
+</ul>

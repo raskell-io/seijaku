@@ -1,0 +1,6 @@
+{#- The extra.seijaku.social profiles as buttons with icons and handles: {{ contact() }}. -#}
+<ul class="contact not-prose">
+  {%- for item in config.extra.seijaku.social | default(value=[]) %}
+  <li><a class="contact__item" href="{{ item.url | safe }}" rel="me noopener">{% include "partials/social_icon.html" %}<span class="contact__name">{{ item.name }}</span><span class="contact__handle">{{ item.handle | default(value=item.url | trim_end_matches(pat="/") | split(pat="/") | last) }}</span></a></li>
+  {%- endfor %}
+</ul>

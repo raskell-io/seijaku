@@ -1,0 +1,168 @@
+// Building blocks for pages (shortcodes in templates/shortcodes): panels, tiles, cards, support cards,
+// and contact buttons. They set parts of a page apart from the running text without leaving the theme's
+// language: tinted surfaces, 1rem radii, the champagne-to-ice ring, and the card buttons (.cardcta).
+
+// Panel: a call to action in a thin gradient frame, lit in the corners. Text on the left, buttons on the right.
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem 2.5rem;
+  margin-block: 2.5rem;
+  padding: clamp(1.5rem, 3.2vw, 2.5rem);
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(70% 140% at 0% 0%, color-mix(in srgb, var(--champagne) 22%, transparent), transparent 65%) padding-box,
+    radial-gradient(60% 140% at 100% 100%, color-mix(in srgb, var(--ice) 26%, transparent), transparent 65%) padding-box,
+    linear-gradient(var(--tint-2), var(--tint-2)) padding-box,
+    var(--ring-gradient-ink) border-box;
+  color: var(--ink);
+}
+.panel__text { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
+.panel__eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; margin: 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.panel__dot { width: 0.5rem; height: 0.5rem; flex: none; border-radius: 50%; background: #17a24a; animation: status-pulse 2.4s ease-out infinite; }
+.panel__title { margin: 0; font-size: clamp(1.45rem, 2.4vw, 2rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; text-wrap: balance; }
+.panel__body { color: var(--muted); font-size: clamp(1rem, 1.2vw, 1.1rem); line-height: 1.5; text-wrap: pretty; }
+.panel__body p { margin: 0; max-width: 40rem; }
+.panel__body p + p { margin-block-start: 0.6em; }
+.panel__body a { color: var(--ink); text-decoration-color: var(--line-strong); }
+.panel__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+.panel--tier { margin-block: 0 clamp(1.75rem, 3.5vw, 3rem); }
+@media (max-width: 44rem) {
+  .panel { grid-template-columns: 1fr; }
+  .panel__actions { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .panel__dot { animation: none; } }
+
+// Card buttons carry a small icon on the left when one is given (support links, social profiles).
+.cardcta .cardcta__icon, .cardcta .icon { width: 1rem; height: 1rem; }
+a.cardcta:hover .cardcta__icon, a.cardcta:hover .icon { transform: none; }
+
+// Project cards inside a page.
+.projects--inline { margin-block: 2rem 2.5rem; }
+
+// Tiles: a list set as a grid. A leading bold phrase is the tile's title; ordered lists count up.
+.tiles { margin-block: 1.75rem 2.25rem; }
+.tiles > :is(ul, ol) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr));
+  gap: 0.75rem;
+  counter-reset: tile;
+}
+.tiles--2 > :is(ul, ol) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.tiles--3 > :is(ul, ol) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.tiles li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.15rem 1.25rem 1.3rem;
+  border-radius: 1rem;
+  background: var(--tint-2);
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.tiles li:nth-child(6n+1) { background: var(--tint-3); }
+.tiles li:nth-child(6n+2) { background: var(--tint-1); }
+.tiles li:nth-child(6n+3) { background: var(--tint-5); }
+.tiles li:nth-child(6n+5) { background: var(--tint-6); }
+.tiles li:nth-child(6n+6) { background: var(--tint-4); }
+.tiles li > p { margin: 0; }
+.tiles li strong:first-child { display: block; color: var(--ink); font-size: 1.08rem; font-weight: 500; letter-spacing: -0.015em; line-height: 1.25; }
+.tiles li a { color: var(--ink); text-decoration-color: var(--line-strong); }
+.tiles li a:hover { text-decoration-color: currentColor; }
+.tiles ol > li { counter-increment: tile; }
+.tiles ol > li::before {
+  content: counter(tile, decimal-leading-zero);
+  margin-block-end: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  background: var(--ring-gradient-ink);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 600;
+}
+
+// Card: a block of prose on a tinted surface, with a meta line, a title, and buttons at the foot.
+.card {
+  margin-block: 2rem;
+  padding: clamp(1.5rem, 3.2vw, 2.4rem);
+  border-radius: 1.25rem;
+  background: var(--tint-2);
+}
+.card + .card { margin-block-start: 1rem; }
+.card:nth-of-type(3n+1) { background: var(--tint-3); }
+.card:nth-of-type(3n+2) { background: var(--tint-5); }
+.card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem; margin: 0 0 0.85rem; color: var(--muted); font-size: 0.9rem; line-height: 1.3; }
+.card__meta strong { color: var(--ink); font-weight: 500; }
+.card__eyebrow { display: inline-flex; align-items: center; min-height: 1.75rem; padding: 0.3rem 0.75rem; border-radius: 100px; background: var(--paper); color: var(--ink); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.03em; }
+.card__title { margin: 0 0 1rem; font-size: clamp(1.45rem, 2.3vw, 1.85rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.03em; text-wrap: balance; }
+.card__title a { color: inherit; text-decoration: none; }
+.card__title a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.16em; }
+.card__body { font-size: 0.95em; color: var(--muted); }
+.card__body strong { color: var(--ink); }
+.card__body > :last-child { margin-block-end: 0; }
+.card__links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 1.5rem; }
+
+// Support cards: one per open-source project, lit in its brand colours, with its funding links.
+.support {
+  list-style: none;
+  margin: 2rem 0 2.5rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1rem;
+}
+.support__item {
+  --glow: 26%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.4rem, 2.8vw, 2rem);
+  border-radius: 1.25rem;
+  background: var(--tint-2);
+}
+.support__item.project--glow {
+  background-image:
+    radial-gradient(120% 70% at 0% 100%, color-mix(in srgb, var(--acc-a) var(--glow), transparent), transparent 70%),
+    radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--acc-b) var(--glow), transparent), transparent 70%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .support__item { --glow: 20%; } }
+:root[data-theme="dark"] .support__item { --glow: 20%; }
+.support__head { display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+.support__logo { height: 2.75rem; width: auto; max-width: 11rem; object-fit: contain; border-radius: 0.6rem; }
+.support__title { margin: 0; font-size: 1.45rem; font-weight: 500; line-height: 1.15; letter-spacing: -0.025em; }
+.support__title a { color: inherit; text-decoration: none; }
+.support__title a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.16em; }
+.support__tagline { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.98rem; line-height: 1.4; }
+.support__note { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
+.support__links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: auto; padding-block-start: 0.5rem; }
+
+// Contact: social profiles as buttons, the icon beside the network's name and the handle.
+.contact { list-style: none; margin: 1.5rem 0 2rem; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 0.75rem; }
+.contact__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 0.85rem;
+  align-items: center;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--tint-2);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.contact__item:visited { color: var(--ink); }
+.contact__item:hover { border-color: var(--ink); transform: translateY(-1px); }
+.contact__item:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.contact__item .icon { grid-row: span 2; width: 1.5rem; height: 1.5rem; }
+.contact__name { font-weight: 500; line-height: 1.2; }
+.contact__handle { overflow: hidden; color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; text-overflow: ellipsis; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .contact__item { transition: none; } }
