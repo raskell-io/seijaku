@@ -12,7 +12,13 @@
 </header>
 {{ section.content | safe }}
 {%- set group_years = true %}
-{%- if paginator %}
+{#- With facets the whole section is listed on one page, so the filters see every post. -#}
+{%- if section.extra.facets %}
+{%- set with_facets = true %}
+{% include "partials/facets.html" %}
+{%- set pages = section.pages %}
+{% include "partials/post_list.html" %}
+{%- elif paginator %}
 {%- set pages = paginator.pages %}
 {% include "partials/post_list.html" %}
 {%- if paginator.number_pagers > 1 %}

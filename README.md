@@ -98,6 +98,14 @@ A tier can carry a call to action between its head and its cards:
 Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, Ko-fi, ...) and
 `tagline` for the `support_cards` shortcode.
 
+### Facet filters on a post list
+
+Set `facets = ["topic", "technology", "length", "series"]` under `[extra]` in a section's `_index.md`
+to put filters above its list (any subset, in that order). Topics are the `domain` tags of the tag
+vocabulary, each post's tags rolled up through `broader`; technologies are the `technology` tags;
+length comes from the reading time. The whole section is listed on one page, the choice is kept in
+the URL, and without JavaScript the list shows in full.
+
 ### Building blocks for pages
 
 Shortcodes that set parts of a page apart from the running text:
