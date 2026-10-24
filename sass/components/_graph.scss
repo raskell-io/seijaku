@@ -35,6 +35,8 @@
 // Notes: a lighter header than articles (no cover, no meta table) and topics as a quiet line.
 .pagehead--note { margin-block-end: clamp(1.5rem, 3vw, 2.5rem); }
 .pagehead--note .pagehead__title { max-width: 22ch; font-size: clamp(2.2rem, 4.6vw, 3.8rem); }
+.note__work { margin: 1rem 0 0; color: var(--muted); font-size: 1.05rem; }
+.note__work a { color: var(--ink); }
 .note__tags { margin: 1.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .note__tags a { padding: 0.2rem 0.6rem; border-radius: 100px; background: var(--tint-bar); color: var(--ink); font-size: 0.85rem; text-decoration: none; }
 .note__tags a:hover { background: color-mix(in srgb, var(--ink) 10%, transparent); }

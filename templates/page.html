@@ -43,7 +43,7 @@
     {#- Optional `extra.headline` (inline HTML allowed) replaces the title in the h1; the title becomes the eyebrow. -#}
     {%- if page.ancestors | length > 1 %}
     {%- set sec = get_section(path=page.ancestors | last) %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ sec.title }}</a></p>
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ sec.title }}</a>{% if page.extra.review %} · Review{% endif %}</p>
     {%- elif page.extra.headline %}
     <p class="pagehead__eyebrow">{{ page.title }}</p>
     {%- endif %}
@@ -60,16 +60,7 @@
       <img src="{{ cover_src | safe }}" alt="{{ page.extra.cover_alt | default(value="") }}" decoding="async">
       {%- if graded %}
       {#- Tritone grade in the theme palette (green-black, sea teal, champagne, pearl); hover or focus fades back to the original. -#}
-      <svg class="pagehead__cover-defs" width="0" height="0" aria-hidden="true" focusable="false">
-        <filter id="seijaku-grade" color-interpolation-filters="sRGB">
-          <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/>
-          <feComponentTransfer>
-            <feFuncR type="table" tableValues=".043 .24 .92 .98"/>
-            <feFuncG type="table" tableValues=".078 .46 .84 .96"/>
-            <feFuncB type="table" tableValues=".071 .47 .64 .91"/>
-          </feComponentTransfer>
-        </filter>
-      </svg>
+      {% include "partials/grade_filter.html" %}
       <img class="pagehead__cover-grade" src="{{ cover_src | safe }}" alt="" aria-hidden="true" decoding="async">
       {%- endif %}
     </figure>

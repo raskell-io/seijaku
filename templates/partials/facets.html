@@ -1,11 +1,13 @@
-{#- Facet filters above a post list (section extra.facets = ["topic", "technology", "length", "series"]).
-    topic: the domains in the tag vocabulary, each post's tags rolled up through `broader`; technology: the
-    technology tags; length: reading time; series: the series taxonomy. The chips are filled in and counted
-    by the script below; without it the bar stays hidden and the list is complete. -#}
+{#- Facet filters above a post list: section extra.facets = ["topic", "technology", "form", "length", "series"],
+    or `facet_list` set before including (the reading page). topic: the domains in the tag vocabulary, each
+    post's tags rolled up through `broader`; technology: the technology tags; form: reviews among posts, and
+    books, papers, and the like on the reading page; length: reading time; series: the series taxonomy. The
+    chips are filled in and counted by the script below; without it the bar stays hidden and the list is complete. -#}
 {%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- if facet_list is not defined %}{% set facet_list = section.extra.facets %}{% endif %}
 <div class="facets" hidden>
-  {%- for facet in section.extra.facets %}
-  {%- if facet == "topic" or facet == "technology" %}{% set label = facet | title %}{% elif facet == "length" %}{% set label = "Length" %}{% elif facet == "series" %}{% set label = "Series" %}{% else %}{% continue %}{% endif %}
+  {%- for facet in facet_list %}
+  {%- if facet == "topic" or facet == "technology" or facet == "form" %}{% set label = facet | title %}{% elif facet == "length" %}{% set label = "Length" %}{% elif facet == "series" %}{% set label = "Series" %}{% else %}{% continue %}{% endif %}
   <div class="facets__row">
     <span class="facets__label" id="facet-{{ facet }}">{{ label }}</span>
     <div class="facets__chips" role="group" aria-labelledby="facet-{{ facet }}" data-group="{{ facet }}">
@@ -14,6 +16,12 @@
       {%- for slug, t in tagdata %}{% if t.kind == kind %}
       <button type="button" class="facet" data-facet="{{ facet }}" data-value="{{ slug }}" aria-pressed="false">{{ t.name }}<span class="facet__n"></span></button>
       {%- endif %}{% endfor %}
+      {%- elif facet == "form" %}
+      {#- Chips nothing on the page uses are dropped by the script, so one list serves posts and the reading log. -#}
+      {%- set fnames = ["Reviews", "Books", "Papers", "Reports", "Articles", "Essays", "Journals"] %}
+      {%- for f in ["review", "book", "paper", "report", "article", "essay", "journal"] %}
+      <button type="button" class="facet" data-facet="form" data-value="{{ f }}" aria-pressed="false">{{ fnames[loop.index0] }}<span class="facet__n"></span></button>
+      {%- endfor %}
       {%- elif facet == "length" %}
       <button type="button" class="facet" data-facet="length" data-value="short" aria-pressed="false">Under 10 min<span class="facet__n"></span></button>
       <button type="button" class="facet" data-facet="length" data-value="medium" aria-pressed="false">10 to 20 min<span class="facet__n"></span></button>

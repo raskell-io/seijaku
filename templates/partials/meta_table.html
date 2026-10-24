@@ -12,6 +12,12 @@
     {%- if series_key %}
     <tr><th scope="row">Series</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
+    {%- if page.extra.review %}
+    <tr><th scope="row">Review of</th><td>{% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</td></tr>
+    {%- endif %}
+    {%- if page.extra.reads %}
+    <tr><th scope="row">Reading</th><td>{% for wid in page.extra.reads %}{% include "partials/work_ref.html" %}{% if not loop.last %}; {% endif %}{% endfor %}</td></tr>
+    {%- endif %}
     {%- if page.taxonomies.tags %}
     <tr><th scope="row">Topics</th><td>{% for tag in page.taxonomies.tags %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}

@@ -1,8 +1,10 @@
 {#- The site graph as JSON: every page in the graph sections, every tag (with its description and its
-    broader tags from the tag vocabulary), every series, project, and project group, and the links
-    between them. Rendered by map.html; the end-of-page maps fetch it from there.
+    broader tags from the tag vocabulary), every series, project, and project group, every work in the
+    reading log with its shelf, and the links between them. Rendered by map.html; the end-of-page maps
+    fetch it from there.
     Config (extra.seijaku): graph_sections = ["articles", "notes"] (pages in "notes" become note
-    nodes), projects_section / map project_sections, tag_data = "data/tags.toml". -#}
+    nodes), projects_section / map project_sections, tag_data = "data/tags.toml",
+    reading_data = "data/reading.toml", reading = "@/reading.md" (where work and shelf nodes point). -#}
 {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")]) %}
 {%- set_global gpages = [] %}
 {%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global gpages = gpages | concat(with=s.pages) %}{% endif %}{% endfor %}
@@ -10,6 +12,10 @@
 {%- set series = get_taxonomy(kind="series", required=false) %}
 {%- set_global tslugs = [] %}{% if tags %}{% for t in tags.items %}{% set_global tslugs = tslugs | concat(with=t.slug) %}{% endfor %}{% endif %}
 {%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set_global works = [] %}{% if rdata and rdata.works %}{% set_global works = rdata.works %}{% endif %}
+{%- set rpage = config.extra.seijaku.reading | default(value="") %}{% if rpage %}{% set rbase = get_url(path=rpage) %}{% else %}{% set rbase = "" %}{% endif %}
+{%- set shelves = ["reading", "next", "backlog", "read", "set-aside"] %}{% set shelfnames = ["Reading now", "Up next", "Backlog", "Read", "Set aside"] %}
 {%- set psecs = project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}
 {%- set_global projects = [] %}{% set_global pslugs = [] %}{% set_global phubs = [] %}{% set_global hubs = [] %}{% set_global hubnames = [] %}{% set_global huburls = [] %}
 {%- for ps in psecs %}{% set psec = get_section(path=ps ~ "/_index.md", required=false) %}
@@ -35,6 +41,15 @@
 {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
 {"id":"p:{{ pslug }}","kind":"project","label":{{ p.title | json_encode | safe }},"url":{% if p.links %}{{ p.links[0].url | json_encode | safe }}{% else %}""{% endif %},"meta":"Project","desc":{{ p.description | default(value="") | truncate(length=180) | json_encode | safe }}},
 {%- endfor %}
+{#- A work opens its review when there is one, else its row on the reading page. -#}
+{%- for w in works %}{% set_global wurl = "" %}{% if rbase %}{% set_global wurl = rbase ~ "#" ~ w.id %}{% elif w.url %}{% set_global wurl = w.url %}{% endif %}
+{%- for a in gpages %}{% if a.extra.review and a.extra.review == w.id %}{% set_global wurl = a.permalink %}{% endif %}{% endfor %}
+{%- if w.status == "read" %}{% set wyear = w.finished | truncate(length=4, end="") %}{% set wstate = "read " ~ wyear %}{% elif w.status == "reading" %}{% set wstate = "reading now" %}{% elif w.status == "next" %}{% set wstate = "up next" %}{% elif w.status == "backlog" %}{% set wstate = "in the backlog" %}{% else %}{% set wstate = "set aside" %}{% endif %}
+{"id":"w:{{ w.id }}","kind":"work","label":{{ w.title | json_encode | safe }},"url":{{ wurl | json_encode | safe }},"meta":{% set wkind = w.kind | capitalize %}{% set wmeta = wkind ~ " · " ~ w.author ~ " · " ~ wstate %}{{ wmeta | json_encode | safe }},"desc":{% if w.take %}{{ w.take | json_encode | safe }}{% elif w.subtitle %}{{ w.subtitle | json_encode | safe }}{% else %}""{% endif %}},
+{%- endfor %}
+{%- for sh in shelves %}{% if works | filter(attribute="status", value=sh) | length > 0 %}
+{"id":"h:shelf-{{ sh }}","kind":"hub","of":"work","label":{{ shelfnames[loop.index0] | json_encode | safe }},"url":{% if rbase %}{% set shurl = rbase ~ "#shelf-" ~ sh %}{{ shurl | json_encode | safe }}{% else %}""{% endif %},"meta":"Shelf","desc":""},
+{%- endif %}{% endfor %}
 {%- for h in hubs %}
 {"id":"h:{{ h }}","kind":"hub","label":{{ hubnames[loop.index0] | json_encode | safe }},"url":{{ huburls[loop.index0] | json_encode | safe }},"meta":"Group","desc":""},
 {%- endfor %}
@@ -55,5 +70,15 @@ null],"links":[
 {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}["p:{{ pslug }}","h:{{ phubs[loop.index0] }}"],
 {%- for t in p.topics | default(value=[]) %}["p:{{ pslug }}","t:{{ t }}"],{% endfor %}
 {%- for r in p.related | default(value=[]) %}["p:{{ pslug }}","p:{{ r }}"],{% endfor %}
+{%- endfor %}
+{#- Work to its shelf and its topics; page to work when it reviews it (extra.review), names it in
+    extra.reads, or links to the work's own URL. -#}
+{%- for w in works %}["w:{{ w.id }}","h:shelf-{{ w.status }}"],
+{%- for t in w.topics | default(value=[]) %}["w:{{ w.id }}","t:{{ t }}"],{% endfor %}
+{%- for a in gpages %}
+{%- if a.extra.review and a.extra.review == w.id %}["a:{{ a.path | safe }}","w:{{ w.id }}"],
+{%- elif a.extra.reads and w.id in a.extra.reads %}["a:{{ a.path | safe }}","w:{{ w.id }}"],
+{%- elif w.url and a.content is containing(w.url | replace(from="https://", to="") | trim_end_matches(pat="/")) %}["a:{{ a.path | safe }}","w:{{ w.id }}"],
+{%- endif %}{% endfor %}
 {%- endfor %}
 null]}

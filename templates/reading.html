@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{#- Reading log: what is being read, what is next, and what has been read, from the reading data
+    (config extra.seijaku.reading_data, default data/reading.toml: [[works]] with id, title, author, kind,
+    status reading/next/backlog/read/set-aside, started, finished, topics, take, cover). Each row shows the cover (graded like article covers),
+    title, and author, and opens for the rest (partials/work_row.html); read works are grouped by the year
+    they were finished. A link to /reading/#<id> opens that row. Reviews are ordinary pages with extra.review = "<id>".
+    Front matter: template = "reading.html", optional extra.facets = ["form", "topic"]. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set tags = get_taxonomy(kind="tags", required=false) %}
+{%- set_global tslugs = [] %}{% if tags %}{% for t in tags.items %}{% set_global tslugs = tslugs | concat(with=t.slug) %}{% endfor %}{% endif %}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set_global works = [] %}{% if rdata and rdata.works %}{% set_global works = rdata.works %}{% endif %}
+{%- set gsecs = config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")]) %}
+{%- set_global gpages = [] %}
+{%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global gpages = gpages | concat(with=s.pages) %}{% endif %}{% endfor %}
+{%- set current = works | filter(attribute="status", value="reading") %}
+{%- set queue = works | filter(attribute="status", value="next") %}
+{%- set backlog = works | filter(attribute="status", value="backlog") %}
+{%- set done = works | filter(attribute="status", value="read") | sort(attribute="finished") | reverse %}
+{%- set aside = works | filter(attribute="status", value="set-aside") %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{% if current | length > 0 %}{{ current | length }} reading · {% endif %}{% if queue | length > 0 %}{{ queue | length }} up next · {% endif %}{{ backlog | length }} in the backlog · {{ done | length }} read</p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+</header>
+{%- if page.content %}
+<div class="readlog__intro prose">{{ page.content | safe }}</div>
+{%- endif %}
+{%- if page.extra.facets %}{% set facet_list = page.extra.facets %}{% include "partials/facets.html" %}{% endif %}
+{% include "partials/grade_filter.html" %}
+<ol class="postlist readlog">
+  {%- if current | length > 0 %}
+  <li class="postlist__year" id="shelf-reading"><h2>Reading now</h2></li>
+  {%- for w in current %}{% set wdate = "" %}{% if w.started %}{% set wdate = "Started " ~ w.started %}{% endif %}
+  {% include "partials/work_row.html" %}
+  {%- endfor %}
+  {%- endif %}
+  {%- if queue | length > 0 %}
+  <li class="postlist__year" id="shelf-next"><h2>Up next</h2></li>
+  {%- for w in queue %}{% set wdate = "" %}
+  {% include "partials/work_row.html" %}
+  {%- endfor %}
+  {%- endif %}
+  {%- if backlog | length > 0 %}
+  <li class="postlist__year" id="shelf-backlog"><h2>Backlog</h2></li>
+  {%- for w in backlog %}{% set wdate = "" %}
+  {% include "partials/work_row.html" %}
+  {%- endfor %}
+  {%- endif %}
+  {%- set_global current_year = "" %}
+  {%- for w in done %}{% set year = w.finished | truncate(length=4, end="") %}
+  {%- if year != current_year %}{% set_global current_year = year %}
+  <li class="postlist__year"{% if loop.first %} id="shelf-read"{% endif %}><h2>Read in {{ year }}</h2></li>
+  {%- endif %}
+  {%- if w.finished | length == 10 %}{% set wdate = w.finished | date(format="%B %-d, %Y") %}{% elif w.finished | length == 7 %}{% set wdate = w.finished ~ "-01" %}{% set wdate = wdate | date(format="%B %Y") %}{% else %}{% set wdate = w.finished %}{% endif %}{% set wdate = "Finished " ~ wdate %}
+  {% include "partials/work_row.html" %}
+  {%- endfor %}
+  {%- if aside | length > 0 %}
+  <li class="postlist__year" id="shelf-set-aside"><h2>Set aside</h2></li>
+  {%- for w in aside %}{% set wdate = "" %}{% if w.finished %}{% set wdate = "Set aside " ~ w.finished %}{% endif %}
+  {% include "partials/work_row.html" %}
+  {%- endfor %}
+  {%- endif %}
+</ol>
+<script>(function(){function open(){var id=decodeURIComponent(location.hash.slice(1)),li=id&&document.getElementById(id);if(li&&li.classList.contains("readlog__item")){li.querySelector("details").open=true}}open();addEventListener("hashchange",open)})();</script>
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

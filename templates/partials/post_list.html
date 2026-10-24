@@ -10,34 +10,23 @@
   <li class="postlist__year"><h2>{{ year }}</h2></li>
   {%- endif %}
   {%- if with_facets | default(value=false) %}
-  {#- Facet values for the filters: domains (a tag's own kind or any ancestor's, three levels up; technology
-      tags stay out, so code in TypeScript does not make a post about programming languages), technologies
-      (a tag or its parent), length from the reading time, and series. Comma-separated: the HTML minifier
-      drops attribute values that start with a space. -#}
+  {#- Facet values for the filters: domains (partials/topic_rollup.html), technologies (a tag or its parent),
+      form (review, for pages with extra.review), length from the reading time, and series. Comma-separated:
+      the HTML minifier drops attribute values that start with a space. -#}
   {%- set rt = post.reading_time | default(value=0) %}
   {%- if rt < 10 %}{% set flen = "short" %}{% elif rt < 20 %}{% set flen = "medium" %}{% else %}{% set flen = "long" %}{% endif %}
-  <li class="postlist__item" data-topic="
-    {%- for tag in post.taxonomies.tags | default(value=[]) %}{% if tagdata and tag in tagdata and tagdata[tag].kind != "technology" %}{% set t1 = tagdata[tag] %}
-      {%- if t1.kind == "domain" %}{{ tag }},{% endif %}
-      {%- for b in t1.broader | default(value=[]) %}{% if b in tagdata %}{% set t2 = tagdata[b] %}
-        {%- if t2.kind == "domain" %}{{ b }},{% endif %}
-        {%- for c in t2.broader | default(value=[]) %}{% if c in tagdata %}{% set t3 = tagdata[c] %}
-          {%- if t3.kind == "domain" %}{{ c }},{% endif %}
-          {%- for d in t3.broader | default(value=[]) %}{% if d in tagdata and tagdata[d].kind == "domain" %}{{ d }},{% endif %}{% endfor %}
-        {%- endif %}{% endfor %}
-      {%- endif %}{% endfor %}
-    {%- endif %}{% endfor %}" data-technology="
+  <li class="postlist__item" data-topic="{% set rtags = post.taxonomies.tags | default(value=[]) %}{% include "partials/topic_rollup.html" %}" data-technology="
     {%- for tag in post.taxonomies.tags | default(value=[]) %}{% if tagdata and tag in tagdata %}{% set t1 = tagdata[tag] %}
       {%- if t1.kind == "technology" %}{{ tag }},{% endif %}
       {%- for b in t1.broader | default(value=[]) %}{% if b in tagdata and tagdata[b].kind == "technology" %}{{ b }},{% endif %}{% endfor %}
-    {%- endif %}{% endfor %}" data-length="{{ flen }}" data-series="{{ post.taxonomies.series | default(value=[]) | join(sep=" ") }}">
+    {%- endif %}{% endfor %}" data-form="{% if post.extra.review %}review{% endif %}" data-length="{{ flen }}" data-series="{{ post.taxonomies.series | default(value=[]) | join(sep=" ") }}">
   {%- else %}
   <li class="postlist__item">
   {%- endif %}
     <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format="%b %d") }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
     <div class="postlist__main">
       {%- set isnote = post.components | first == "notes" %}
-      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
+      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">review</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
       {%- if post.taxonomies.tags %}
       <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>

@@ -1,0 +1,54 @@
+{#- One work in the reading log: the cover on the left, title and author in view, and the rest (year,
+    edition, when, the take, who suggested it, reviews, topics) in a <details> that opens from the row.
+    Needs `w` (an entry of the reading data), `wdate` (when it was read or started, may be empty), `gpages`
+    (pages that may review or mention it), `tagdata`, `tslugs` (tags that have pages; the others link to
+    their entry on /tags/).
+    `w.cover` is a path under static/ (written by `mise run reading-covers`); without one the work gets a
+    typographic tile. The title opens the review when there is one. -#}
+{%- set_global wreviews = [] %}{% set_global wmentions = [] %}
+{%- for a in gpages %}
+  {%- if a.extra.review and a.extra.review == w.id %}{% set_global wreviews = wreviews | concat(with=a) %}
+  {%- elif a.extra.reads and w.id in a.extra.reads %}{% set_global wmentions = wmentions | concat(with=a) %}{% endif %}
+{%- endfor %}
+{%- set wtopics = w.topics | default(value=[]) %}
+<li class="postlist__item readlog__item" id="{{ w.id }}" data-form="{{ w.kind }}" data-topic="{% set rtags = wtopics %}{% include "partials/topic_rollup.html" %}">
+  {%- if w.cover %}{% set wsrc = get_url(path=w.cover) %}
+  <div class="readlog__cover">
+    <img src="{{ wsrc | safe }}" alt="" loading="lazy" decoding="async">
+    <img class="readlog__grade" src="{{ wsrc | safe }}" alt="" aria-hidden="true" loading="lazy" decoding="async">
+  </div>
+  {%- else %}
+  <div class="readlog__cover readlog__cover--tile" aria-hidden="true"><span class="readlog__tile-kind">{{ w.kind }}</span><span class="readlog__tile-title">{{ w.title }}</span></div>
+  {%- endif %}
+  <details class="readlog__more">
+    <summary>
+      <span class="readlog__head">
+        <span class="postlist__title readlog__title" role="heading" aria-level="3">{% if wreviews | length > 0 %}<span class="postlist__kind">reviewed</span><a href="{{ wreviews[0].permalink | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %}</span>
+        <span class="readlog__by">{{ w.author }}</span>
+      </span>
+      <span class="readlog__toggle" aria-hidden="true"></span>
+    </summary>
+    <div class="readlog__body">
+      <p class="readlog__facts">
+        <span>{{ w.kind | capitalize }}{% if w.year %}, {{ w.year }}{% endif %}</span>
+        {%- if w.edition %}<span>{{ w.edition }}</span>{% elif w.publisher %}<span>{{ w.publisher }}</span>{% endif %}
+        {%- if wdate %}<span>{{ wdate }}</span>{% endif %}
+      </p>
+      {%- if w.subtitle %}<p class="readlog__subtitle">{{ w.subtitle }}</p>{% endif %}
+      {%- if w.take %}<p class="readlog__take">{{ w.take }}</p>{% endif %}
+      {%- if w.suggested_by %}
+      <p class="readlog__suggested">Suggested by {% if w.suggested_url %}<a href="{{ w.suggested_url | safe }}" rel="noopener" target="_blank">{{ w.suggested_by }}</a>{% else %}{{ w.suggested_by }}{% endif %}{% if w.suggested_note %}: “{{ w.suggested_note }}”{% endif %}</p>
+      {%- endif %}
+      {%- if wreviews | length > 0 or wmentions | length > 0 or w.url %}
+      <p class="readlog__links">
+        {%- for a in wreviews %}<a href="{{ a.permalink | safe }}">{% if a.components | first == "notes" %}Reading note{% else %}Review{% endif %}: {{ a.title }}</a>{% endfor %}
+        {%- for a in wmentions %}<a href="{{ a.permalink | safe }}">Discussed in {{ a.title }}</a>{% endfor %}
+        {%- if w.url %}<a href="{{ w.url | safe }}" rel="noopener" target="_blank">The {{ w.kind }} ↗</a>{% endif %}
+      </p>
+      {%- endif %}
+      {%- if wtopics | length > 0 %}
+      <p class="postlist__tags">{% for tag in wtopics %}<a href="{% if tag in tslugs %}{{ get_taxonomy_url(kind="tags", name=tag) | safe }}{% else %}{{ get_url(path="/tags/") | safe }}#{{ tag }}{% endif %}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>
+      {%- endif %}
+    </div>
+  </details>
+</li>

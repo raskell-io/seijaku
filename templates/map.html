@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{#- Map: every article, topic, series and project drawn as one graph (static/seijaku-map.js),
+{#- Map: every article, topic, series, project and work in the reading log drawn as one graph (static/seijaku-map.js),
     with the same index as plain lists underneath for readers without JavaScript.
     Front matter: template = "map.html", extra.project_sections = ["projects", ...]. -#}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
@@ -17,9 +17,12 @@
 {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
 {%- set_global projects = projects | concat(with=p) %}{% set_global pslugs = pslugs | concat(with=slug) %}{% set_global phubs = phubs | concat(with=hub) %}
 {%- endfor %}{% endfor %}{% endif %}{% endfor %}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set_global works = [] %}{% if rdata and rdata.works %}{% set_global works = rdata.works %}{% endif %}
+{%- set rpage = config.extra.seijaku.reading | default(value="") %}
 {%- set n_tags = 0 %}{% if tags %}{% set n_tags = tags.items | length %}{% endif %}
 <header class="pagehead">
-  {%- set nsec = get_section(path="notes/_index.md", required=false) %}<p class="pagehead__eyebrow">{{ sec.pages | length }} articles{% if nsec and nsec.pages | length > 0 %} · {{ nsec.pages | length }} notes{% endif %} · {{ n_tags }} topics · {{ projects | length }} projects</p>
+  {%- set nsec = get_section(path="notes/_index.md", required=false) %}<p class="pagehead__eyebrow">{{ sec.pages | length }} articles{% if nsec and nsec.pages | length > 0 %} · {{ nsec.pages | length }} notes{% endif %} · {{ n_tags }} topics · {{ projects | length }} projects{% if works | length > 0 %} · {{ works | length }} readings{% endif %}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -32,6 +35,9 @@
     <button type="button" data-kind="tag" aria-pressed="true"><i></i>Topics</button>
     <button type="button" data-kind="series" aria-pressed="true"><i></i>Series</button>
     <button type="button" data-kind="project" aria-pressed="true"><i></i>Projects</button>
+    {%- if works | length > 0 %}
+    <button type="button" data-kind="work" aria-pressed="true"><i></i>Reading</button>
+    {%- endif %}
   </div>
   <div class="map__zoom">
     <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
@@ -87,6 +93,16 @@
     <ul>
       {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
       <li>{% if p.links %}<a href="{{ p.links[0].url | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endif %}
+  {%- if works | length > 0 %}
+  <section class="map-index__group" aria-labelledby="map-reading">
+    <h2 id="map-reading">{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}">Reading</a>{% else %}Reading{% endif %}</h2>
+    <ul>
+      {%- for w in works %}
+      <li>{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}#{{ w.id }}">{{ w.title }}</a>{% elif w.url %}<a href="{{ w.url | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <small>{{ w.author }}</small></li>
       {%- endfor %}
     </ul>
   </section>

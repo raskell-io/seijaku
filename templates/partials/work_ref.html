@@ -1,0 +1,10 @@
+{#- A work from the reading log, inline: its title (linked to its row on the reading page, else to the work
+    itself), author, and year. Set `wid` before including; prints the id as-is when no entry matches. -#}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set rpage = config.extra.seijaku.reading | default(value="") %}
+{%- set_global wfound = false %}
+{%- if rdata and rdata.works %}{% for w in rdata.works %}{% if w.id == wid and not wfound %}{% set_global wfound = true %}
+{%- if rpage %}{% set wref = get_url(path=rpage) ~ "#" ~ w.id %}{% elif w.url %}{% set wref = w.url %}{% else %}{% set wref = "" %}{% endif %}
+{%- if wref %}<a href="{{ wref | safe }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} by {{ w.author }}{% if w.year %} ({{ w.year }}){% endif %}
+{%- endif %}{% endfor %}{% endif %}
+{%- if not wfound %}{{ wid }}{% endif -%}

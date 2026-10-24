@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{#- A note: a short page with a title, a date, topics, and its place on the map. No cover, no reading time. -#}
+{#- A note: a short page with a title, a date, topics, and its place on the map. No cover, no reading time.
+    With extra.review = "<id>" it is a reading note on a work from the reading log. -#}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
@@ -7,8 +8,11 @@
 <article class="post post--note">
   <header class="pagehead pagehead--note">
     {%- set sec = get_section(path=page.ancestors | last) %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">Note</a> · <time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time>{% if page.updated %} · updated <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>{% endif %}</p>
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{% if page.extra.review %}Reading note{% else %}Note{% endif %}</a> · <time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time>{% if page.updated %} · updated <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>{% endif %}</p>
     <h1 class="pagehead__title">{{ page.title }}</h1>
+    {%- if page.extra.review %}
+    <p class="note__work">On {% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</p>
+    {%- endif %}
     {%- if page.taxonomies.tags %}
     <p class="note__tags">{% for tag in page.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>
     {%- endif %}

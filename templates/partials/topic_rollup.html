@@ -1,0 +1,13 @@
+{#- The domains a list of tags (`rtags`) falls under, for the topic facet: a tag's own kind or any ancestor's,
+    three levels up through `broader`. Technology tags stay out, so code in TypeScript does not make a post
+    about programming languages. Needs `tagdata`; prints comma-separated slugs (with a trailing comma). -#}
+{%- for tag in rtags %}{% if tagdata and tag in tagdata and tagdata[tag].kind != "technology" %}{% set t1 = tagdata[tag] %}
+  {%- if t1.kind == "domain" %}{{ tag }},{% endif %}
+  {%- for b in t1.broader | default(value=[]) %}{% if b in tagdata %}{% set t2 = tagdata[b] %}
+    {%- if t2.kind == "domain" %}{{ b }},{% endif %}
+    {%- for c in t2.broader | default(value=[]) %}{% if c in tagdata %}{% set t3 = tagdata[c] %}
+      {%- if t3.kind == "domain" %}{{ c }},{% endif %}
+      {%- for d in t3.broader | default(value=[]) %}{% if d in tagdata and tagdata[d].kind == "domain" %}{{ d }},{% endif %}{% endfor %}
+    {%- endif %}{% endfor %}
+  {%- endif %}{% endfor %}
+{%- endif %}{% endfor -%}

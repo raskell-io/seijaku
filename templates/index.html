@@ -42,7 +42,10 @@
   {%- endif %}
 </section>
 
-{#- Optional "now" list: [[extra.now]] blocks (name, text, url) in content/_index.md. -#}
+{#- Optional "now" list: [[extra.now]] blocks (name, text, url) in content/_index.md. A block with
+    `reading = true` shows what the reading log says is being read (status "reading"), linked to its row
+    on the reading page; `text` is added after it, `name` defaults to "Reading", and the block is left out
+    while nothing is being read. -#}
 {%- if section.extra.now %}
 <section class="home-now">
   <header class="home-head">
@@ -50,6 +53,18 @@
   </header>
   <ul class="nowlist">
     {%- for item in section.extra.now %}
+    {%- if item.reading %}
+    {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+    {%- set_global rnow = [] %}{% if rdata and rdata.works %}{% set_global rnow = rdata.works | filter(attribute="status", value="reading") %}{% endif %}
+    {%- if rnow | length > 0 %}
+    {%- set rpage = config.extra.seijaku.reading | default(value="") %}
+    <li>
+      <h3>{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}">{{ item.name | default(value="Reading") }}</a>{% else %}{{ item.name | default(value="Reading") }}{% endif %}</h3>
+      <p>{% for w in rnow %}{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}#{{ w.id }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} by {{ w.author }}{% if not loop.last %}, and {% endif %}{% endfor %}.{% if item.text %} {{ item.text }}{% endif %}</p>
+    </li>
+    {%- endif %}
+    {%- continue %}
+    {%- endif %}
     <li>
       <h3>{% if item.url %}<a href="{{ item.url | safe }}">{{ item.name }}</a>{% else %}{{ item.name }}{% endif %}</h3>
       <p>{{ item.text }}</p>

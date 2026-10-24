@@ -105,11 +105,30 @@ Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, K
 
 ### Facet filters on a post list
 
-Set `facets = ["topic", "technology", "length", "series"]` under `[extra]` in a section's `_index.md`
+Set `facets = ["topic", "technology", "form", "length", "series"]` under `[extra]` in a section's `_index.md`
 to put filters above its list (any subset, in that order). Topics are the `domain` tags of the tag
 vocabulary, each post's tags rolled up through `broader`; technologies are the `technology` tags;
-length comes from the reading time. The whole section is listed on one page, the choice is kept in
-the URL, and without JavaScript the list shows in full.
+form picks out reviews; length comes from the reading time. The whole section is listed on one page,
+the choice is kept in the URL, and without JavaScript the list shows in full.
+
+### Reading log
+
+A page with `template = "reading.html"` lists the works in `data/reading.toml` (config
+`reading_data`): `[[works]]` with `id`, `title`, `subtitle`, `author`, `kind` (book, paper, report,
+article, essay, journal), `year`, `edition` or `publisher`, `url`, `status` (reading, next, backlog,
+read, set-aside), `started` / `finished` ("YYYY", "YYYY-MM", or "YYYY-MM-DD"; read works need `finished`),
+`topics` (tag slugs), a one-line `take`, `cover` (a path under `static/`), and
+`suggested_by` / `suggested_url` / `suggested_note` to credit a reader who suggested the work. Each row shows the
+cover, graded with the theme's tritone until hovered or opened (works without one get a typographic
+tile), with title and author; the rest opens below them, and `/reading/#<id>` opens that row.
+Shelves are Reading now, Up next, Backlog, Read (by year), and Set aside; `facets = ["form", "topic"]` under the page's `[extra]` adds filters. Point
+`extra.seijaku.reading = "@/reading.md"` at the page so map nodes and references link to it.
+
+A review is any article or note with `review = "<id>"` under `[extra]`: it gets a "Review of" row
+(notes: an "On ..." line), a review label in post lists, and the work's title on the reading page
+opens it. Pages that discuss a work without reviewing it name it in `reads = ["<id>", ...]`. On the
+map, works are outlined diamonds joined to their shelf, their topics, their reviews and mentions,
+and any page that links to the work's `url`.
 
 ### Building blocks for pages
 

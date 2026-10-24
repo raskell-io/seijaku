@@ -1,0 +1,13 @@
+{#- The theme's image grade as an SVG filter (#seijaku-grade): a tritone in the palette (green-black, sea
+    teal, champagne, pearl). Include once per page that grades images; covers lay a graded copy over the
+    original and fade it out on hover or focus. -#}
+<svg class="pagehead__cover-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <filter id="seijaku-grade" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  .2126 .7152 .0722 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues=".043 .24 .92 .98"/>
+      <feFuncG type="table" tableValues=".078 .46 .84 .96"/>
+      <feFuncB type="table" tableValues=".071 .47 .64 .91"/>
+    </feComponentTransfer>
+  </filter>
+</svg>

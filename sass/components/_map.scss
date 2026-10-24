@@ -39,6 +39,7 @@
 .map__legend [data-kind="tag"] i { background: #72d7dc; }
 .map__legend [data-kind="series"] i { background: #efd093; }
 .map__legend [data-kind="project"] i { background: transparent; box-shadow: inset 0 0 0 1.5px #efd093; }
+.map__legend [data-kind="work"] i { width: 0.5rem; height: 0.5rem; border-radius: 1px; background: transparent; box-shadow: inset 0 0 0 1.5px #a9e8e9; transform: rotate(45deg); }
 .map__zoom button { min-width: 2rem; justify-content: center; padding-inline: 0.6rem; font-family: var(--font-mono); }
 
 // Export: a small menu under the zoom controls (PNG of the whole graph, or the graph as JSON).
@@ -111,3 +112,6 @@
 .pills--small { gap: 0.5rem; }
 .pills--small .pill { min-height: 2.25rem; padding: 0.45rem 0.9rem; font-size: 0.88rem; gap: 0.45rem; text-decoration: none; }
 @media (max-width: 58rem) { .map-index { grid-template-columns: 1fr; } }
+.map-index h2 a { color: inherit; text-decoration: none; }
+.map-index h2 a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.16em; }
+.map-index li small { margin-inline-start: 0.35rem; font-size: 0.82rem; }
