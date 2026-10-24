@@ -50,7 +50,7 @@
     {#- Optional `extra.headline` (inline HTML allowed) replaces the title in the h1; the title becomes the eyebrow. -#}
     {%- if page.ancestors | length > 1 %}
     {%- set sec = get_section(path=page.ancestors | last) %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ sec.title }}</a>{% if page.extra.review %} · Review{% endif %}</p>
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ sec.title }}</a>{% for c in page.taxonomies.categories | default(value=[]) %} · <a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{{ c | replace(from="-", to=" ") | title }}</a>{% endfor %}</p>
     {%- elif page.extra.headline %}
     <p class="pagehead__eyebrow">{{ page.title }}</p>
     {%- endif %}

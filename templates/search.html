@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{#- Search across the whole garden: articles, reviews, notes, talks, works from the reading log, projects,
+    topics, and every external link the pages cite, with a filter per kind (static/seijaku-search.js).
+    The index is inline below (partials/garden_data.html); the search dialog fetches it from this page.
+    Front matter: template = "search.html". Config: extra.seijaku.search = "@/search.md" points the dialog
+    here. The URL keeps the state (?q=...&type=link), so a filtered view can be shared. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">Index</p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+</header>
+{%- set search_lang = lang | default(value="en") %}{% set search_index = "search_index." ~ search_lang ~ ".js" %}
+<div class="garden garden--page" data-garden data-limit="40"{% if config.build_search_index %} data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}"{% endif %}>
+  <form class="garden__bar" role="search" action="" method="get">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+    <input type="search" name="q" placeholder="Search articles, books, projects, links…" autocomplete="off" spellcheck="false" aria-label="Search the site" autofocus>
+  </form>
+  <div class="garden__chips" role="group" aria-label="Show only" hidden></div>
+  <p class="garden__status" role="status"></p>
+  <ol class="garden__results"></ol>
+  <button type="button" class="garden__more" hidden>Show more</button>
+  <noscript>
+    <p class="garden__noscript">Search needs JavaScript. Everything it covers is also browsable:
+      <a href="{{ get_url(path="@/articles/_index.md") | safe }}">articles</a>,
+      {%- if config.extra.seijaku.reading %} <a href="{{ get_url(path=config.extra.seijaku.reading) | safe }}">the reading log</a>,{% endif %}
+      <a href="{{ get_url(path="/tags/") | safe }}">topics</a>, and
+      <a href="{{ get_url(path=config.extra.seijaku.map | default(value="@/map.md")) | safe }}">the map</a>.</p>
+  </noscript>
+</div>
+<script type="application/json" id="garden-data">{% set project_sections = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}{% include "partials/garden_data.html" %}</script>
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

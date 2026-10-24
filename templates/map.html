@@ -32,8 +32,16 @@
   <div class="map__legend" role="group" aria-label="Show on the map">
     <button type="button" data-kind="article" aria-pressed="true"><i></i>Articles</button>
     <button type="button" data-kind="note" aria-pressed="true"><i></i>Notes</button>
+    {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[]) %}{% set tsec = get_section(path="talks/_index.md", required=false) %}
+    {%- if tsec and tsec.pages | length > 0 and "talks" in gsecs %}
+    <button type="button" data-kind="talk" aria-pressed="true"><i></i>Talks</button>
+    {%- endif %}
     <button type="button" data-kind="tag" aria-pressed="true"><i></i>Topics</button>
     <button type="button" data-kind="series" aria-pressed="true"><i></i>Series</button>
+    {%- set categories = get_taxonomy(kind="categories", required=false) %}
+    {%- if categories and categories.items | length > 0 %}
+    <button type="button" data-kind="category" aria-pressed="true"><i></i>Categories</button>
+    {%- endif %}
     <button type="button" data-kind="project" aria-pressed="true"><i></i>Projects</button>
     {%- if works | length > 0 %}
     <button type="button" data-kind="work" aria-pressed="true"><i></i>Reading</button>
@@ -84,6 +92,20 @@
       <li><a href="{{ a.permalink | safe }}">{{ a.title }}</a></li>
       {%- endfor %}
     </ol>
+    {%- endfor %}
+  </section>
+  {%- endif %}
+  {%- set categories = get_taxonomy(kind="categories", required=false) %}
+  {%- if categories and categories.items | length > 0 %}
+  <section class="map-index__group" aria-labelledby="map-categories">
+    <h2 id="map-categories">Categories</h2>
+    {%- for c in categories.items %}
+    <h3><a href="{{ c.permalink | safe }}">{{ c.name | replace(from="-", to=" ") | title }}</a></h3>
+    <ul>
+      {%- for a in c.pages %}
+      <li><a href="{{ a.permalink | safe }}">{{ a.title }}</a></li>
+      {%- endfor %}
+    </ul>
     {%- endfor %}
   </section>
   {%- endif %}

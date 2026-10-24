@@ -175,13 +175,23 @@
   </footer>
   {%- if config.build_search_index %}
   {%- set search_lang = lang | default(value="en") %}{% set search_index = "search_index." ~ search_lang ~ ".js" %}
-  <dialog class="search" id="search" aria-label="Search" data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}">
-    <form method="dialog" class="search__bar">
-      <input type="search" name="q" placeholder="Search the writing" autocomplete="off" spellcheck="false" aria-label="Search the writing">
-      <button type="submit" class="search__close" aria-label="Close search">esc</button>
-    </form>
-    <p class="search__status" role="status"></p>
-    <ol class="search__results"></ol>
+  {#- The dialog searches the same index as the search page (config extra.seijaku.search), fetched on first
+      open; without that page it searches the writing only, through Zola's full-text index. -#}
+  {%- set search_page = config.extra.seijaku.search | default(value="") %}
+  <dialog class="search" id="search" aria-label="Search">
+    <div class="garden garden--dialog" data-garden data-limit="12" data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}"{% if search_page %} data-src="{{ get_url(path=search_page) | safe }}"{% endif %}>
+      <form method="dialog" class="garden__bar">
+        <input type="search" name="q" placeholder="{% if search_page %}Search articles, books, projects, links…{% else %}Search the writing{% endif %}" autocomplete="off" spellcheck="false" aria-label="Search the site">
+        <button type="submit" class="search__close" aria-label="Close search">esc</button>
+      </form>
+      <div class="garden__chips" role="group" aria-label="Show only" hidden></div>
+      <p class="garden__status" role="status"></p>
+      <ol class="garden__results"></ol>
+      <button type="button" class="garden__more" hidden>Show more</button>
+      {%- if search_page %}
+      <a class="garden__full" href="{{ get_url(path=search_page) | safe }}">Open the full search →</a>
+      {%- endif %}
+    </div>
   </dialog>
   <script src="{{ get_url(path="seijaku-search.js", cachebust=true) | safe }}" defer></script>
   {%- endif %}

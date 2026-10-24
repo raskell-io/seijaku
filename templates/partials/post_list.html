@@ -26,7 +26,7 @@
     <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format="%b %d") }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
     <div class="postlist__main">
       {%- set isnote = post.components | first == "notes" %}
-      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">review</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
+      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">talk</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">review</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
       {%- if post.taxonomies.tags %}
       <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>

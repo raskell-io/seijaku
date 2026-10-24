@@ -9,21 +9,56 @@
 .topnav__search:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 
 .search {
-  width: min(42rem, calc(100% - 2rem)); max-height: min(36rem, 80svh); margin: 12svh auto auto; padding: 0;
+  width: min(44rem, calc(100% - 2rem)); max-height: min(40rem, 84svh); margin: 10svh auto auto; padding: 0;
   border: 0; border-radius: 1.25rem; background: var(--paper); color: var(--ink);
   box-shadow: 0 0 0 1px var(--line), 0 30px 80px rgba(0, 0, 0, 0.35);
 }
 .search::backdrop { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(4px); }
-.search__bar { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
-.search__bar input { flex: 1; min-width: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 1.2rem; outline: none; }
 .search__close { padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 0.4rem; background: none; color: var(--muted); font: 0.75rem var(--font-mono); cursor: pointer; }
-.search__status { padding: 0.75rem 1.25rem 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
-.search__status:empty { display: none; }
-.search__results { list-style: none; margin: 0; padding: 0.5rem; overflow-y: auto; max-height: calc(min(36rem, 80svh) - 6rem); }
-.search__results a { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.8rem 0.9rem; border-radius: 0.75rem; color: inherit; text-decoration: none; }
-.search__results a:hover, .search__results a:focus-visible { background: var(--tint-bar); outline: none; }
-.search__results strong { font-weight: 500; }
-.search__results span { color: var(--muted); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+
+// The garden search (static/seijaku-search.js): a field, a chip per kind, and typed results. The same
+// markup sits in the dialog (compact, scrolling) and on the search page (roomy, the whole list).
+.garden { display: flex; flex-direction: column; min-height: 0; }
+.garden--dialog { max-height: min(40rem, 84svh); }
+.garden__bar { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); }
+.garden__bar input { flex: 1; min-width: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 1.2rem; outline: none; }
+.garden__bar input::-webkit-search-cancel-button { cursor: pointer; }
+.garden__chips { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.85rem 1.25rem 0; }
+.garden__chips[hidden] { display: none; }
+.garden__chips .facet { padding: 0.3rem 0.7rem; font-size: 0.82rem; }
+.garden__status { padding: 0.75rem 1.25rem 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
+.garden__status:empty { display: none; }
+.garden__results { list-style: none; margin: 0; padding: 0.5rem; overflow-y: auto; }
+.garden__results a { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.15rem 1rem; padding: 0.75rem 0.9rem; border-radius: 0.75rem; color: inherit; text-decoration: none; }
+.garden__results a:hover, .garden__results a:focus-visible { background: var(--tint-bar); outline: none; }
+.garden__kind { grid-row: 1 / span 3; padding-top: 0.2rem; color: var(--muted); font: 0.72rem/1.4 var(--font-mono); letter-spacing: 0.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.garden__item--article .garden__kind, .garden__item--note .garden__kind, .garden__item--talk .garden__kind { color: var(--ink); }
+.garden__title { font-weight: 500; line-height: 1.35; }
+.garden__ext { color: var(--muted); font-weight: 400; }
+.garden__desc { color: var(--muted); font-size: 0.92rem; line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.garden__meta { color: var(--muted); font: 0.75rem/1.5 var(--font-mono); }
+.garden mark { background: color-mix(in srgb, #efd093 55%, transparent); color: inherit; border-radius: 0.15rem; padding: 0 0.05em; }
+.garden__more { align-self: center; margin: 0.25rem 0 1rem; padding: 0.4rem 1rem; border: 1px solid var(--line); border-radius: 100px; background: none; color: inherit; font: inherit; font-size: 0.88rem; cursor: pointer; }
+.garden__more[hidden] { display: none; }
+.garden__more:hover { background: var(--tint-bar); }
+.garden__full { padding: 0.7rem 1.25rem 0.9rem; border-top: 1px solid var(--line); color: var(--muted); font: 0.8rem var(--font-mono); text-decoration: none; }
+.garden__full:hover { color: var(--ink); }
+
+// The page: a large field, no frame; results use the width of the post lists.
+.garden--page .garden__bar { padding: 0.9rem 1.25rem; border: 1px solid var(--line-strong); border-radius: 100px; background: var(--paper); }
+.garden--page .garden__bar svg { color: var(--muted); flex: none; }
+.garden--page .garden__bar input { font-size: 1.35rem; }
+.garden--page .garden__chips, .garden--page .garden__status { padding-inline: 0.25rem; }
+.garden--page .garden__chips .facet { padding: 0.4rem 0.8rem; font-size: 0.88rem; }
+.garden--page .garden__results { padding: 1rem 0 0; overflow: visible; }
+.garden--page .garden__results a { grid-template-columns: 9rem minmax(0, 1fr); padding: 1rem 0.75rem; border-radius: 0.5rem; }
+.garden--page .garden__title { font-size: 1.15rem; }
+.garden__noscript { padding: 1rem 0.25rem; color: var(--muted); }
+
+@media (max-width: 44rem) {
+  .garden__results a, .garden--page .garden__results a { grid-template-columns: minmax(0, 1fr); }
+  .garden__kind { grid-row: auto; }
+}
 
 @media (max-width: 64rem) {
   .topnav__end { display: none; }

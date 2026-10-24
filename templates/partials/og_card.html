@@ -37,10 +37,11 @@
     {%- if tagdata and term.slug in tagdata %}{% set title = tagdata[term.slug].name %}{% set desc = tagdata[term.slug].description %}{% endif %}
     {%- if n == 1 %}{% set meta = "1 article or note" %}{% else %}{% set meta = n ~ " articles and notes" %}{% endif %}
   {%- else %}
-    {%- set kind = "series" %}{% set eyebrow = "Series" %}{% set title = term.name | replace(from="-", to=" ") | title %}
-    {%- set sdesc = config.extra.seijaku.series_descriptions | default(value=false) %}
+    {%- set title = term.name | replace(from="-", to=" ") | title %}
+    {%- set ckey = taxonomy.name ~ "_descriptions" %}{% set sdesc = config.extra.seijaku[ckey] | default(value=false) %}
     {%- if sdesc and term.slug in sdesc %}{% set desc = sdesc[term.slug] %}{% endif %}
-    {%- set meta = n ~ " parts" %}
+    {%- if taxonomy.name == "series" %}{% set kind = "series" %}{% set eyebrow = "Series" %}{% set meta = n ~ " parts" %}
+    {%- else %}{% set kind = "category" %}{% set eyebrow = "Category" %}{% if n == 1 %}{% set meta = "1 entry" %}{% else %}{% set meta = n ~ " entries" %}{% endif %}{% endif %}
   {%- endif %}
 {%- elif taxonomy is defined %}
   {%- set title = taxonomy.name | capitalize %}{% set n = terms | length %}{% set meta = n ~ " " ~ taxonomy.name %}

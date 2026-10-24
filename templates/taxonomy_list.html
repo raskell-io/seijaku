@@ -32,7 +32,8 @@
 <header class="pagehead">
   <p class="pagehead__eyebrow">Index</p>
   <h1 class="pagehead__title">{{ taxonomy.name | capitalize }}</h1>
-  <p class="pagehead__deck">Everything on the site, filed by subject. Pick a topic to follow the thread.</p>
+  {#- The deck comes from extra.seijaku.<taxonomy>_deck when set. -#}
+  <p class="pagehead__deck">{% set ckey = taxonomy.name ~ "_deck" %}{{ config.extra.seijaku[ckey] | default(value="Everything on the site, filed by subject. Pick a topic to follow the thread.") }}</p>
 </header>
 <ul class="pills">
   {%- for term in terms %}

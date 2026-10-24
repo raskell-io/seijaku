@@ -1,0 +1,50 @@
+{#- Everything on the site that search can find, as JSON: pages (articles, notes, talks, with categories),
+    works from the reading log, projects, topics, and every external link cited in the pages. Rendered by
+    search.html; the search dialog fetches it from there, as the end-of-page maps fetch the graph.
+    Keys are short because the list is long: k kind, t title, u url, d description, y date, g topics,
+    c categories, m meta line, s extra words to match, r 1 when a link sits in a References section,
+    p the page a link is cited on (url) and pt its title. Links come one row per citing page; the script
+    merges them by url.
+    Config (extra.seijaku): graph_sections, search_sections (default graph_sections), reading_data,
+    reading, tag_data, projects_section / project_sections. -#}
+{%- set ssecs = config.extra.seijaku.search_sections | default(value=config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")])) %}
+{%- set_global spages = [] %}
+{%- for gs in ssecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global spages = spages | concat(with=s.pages) %}{% endif %}{% endfor %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set tags = get_taxonomy(kind="tags", required=false) %}
+{%- set_global tslugs = [] %}{% if tags %}{% for t in tags.items %}{% set_global tslugs = tslugs | concat(with=t.slug) %}{% endfor %}{% endif %}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set rpage = config.extra.seijaku.reading | default(value="") %}{% if rpage %}{% set rbase = get_url(path=rpage) %}{% else %}{% set rbase = "" %}{% endif %}
+{%- set psecs = project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}
+{"items":[
+{#- Pages -#}
+{%- for a in spages %}{% set sec = a.components | first %}
+{%- if sec == "notes" %}{% set kind = "note" %}{% elif sec == "talks" %}{% set kind = "talk" %}{% else %}{% set kind = "article" %}{% endif %}
+{"k":"{{ kind }}","t":{{ a.title | json_encode | safe }},"u":{{ a.permalink | json_encode | safe }},"d":{{ a.description | default(value="") | json_encode | safe }},"y":"{{ a.date | date(format="%Y-%m-%d") }}","g":{{ a.taxonomies.tags | default(value=[]) | json_encode | safe }},"c":{{ a.taxonomies.categories | default(value=[]) | json_encode | safe }},"m":{% if kind == "talk" and a.extra.event %}{{ a.extra.event | json_encode | safe }}{% elif a.reading_time and kind == "article" %}"{{ a.reading_time }} min"{% else %}""{% endif %}},
+{%- endfor %}
+{#- Works in the reading log; a work opens its review when there is one. -#}
+{%- if rdata and rdata.works %}{% for w in rdata.works %}{% set_global wurl = "" %}{% if rbase %}{% set_global wurl = rbase ~ "#" ~ w.id %}{% elif w.url %}{% set_global wurl = w.url %}{% endif %}
+{%- for a in spages %}{% if a.extra.review and a.extra.review == w.id %}{% set_global wurl = a.permalink %}{% endif %}{% endfor %}
+{%- if w.status == "read" %}{% set wstate = "Read" %}{% elif w.status == "reading" %}{% set wstate = "Reading now" %}{% elif w.status == "next" %}{% set wstate = "Up next" %}{% elif w.status == "backlog" %}{% set wstate = "Backlog" %}{% else %}{% set wstate = "Set aside" %}{% endif %}
+{%- set wkind = w.kind | capitalize %}
+{"k":"work","t":{{ w.title | json_encode | safe }},"u":{{ wurl | json_encode | safe }},"d":{% if w.take %}{{ w.take | json_encode | safe }}{% elif w.subtitle %}{{ w.subtitle | json_encode | safe }}{% else %}""{% endif %},"y":"{% if w.finished %}{{ w.finished }}{% elif w.started %}{{ w.started }}{% endif %}","g":{{ w.topics | default(value=[]) | json_encode | safe }},"c":[],"m":{% set wm = wkind ~ " · " ~ w.author ~ " · " ~ wstate %}{{ wm | json_encode | safe }},"s":{% if w.subtitle %}{% set wsub = w.subtitle %}{% else %}{% set wsub = "" %}{% endif %}{% set ws = w.author ~ " " ~ wsub ~ " " ~ w.kind ~ " " ~ wstate %}{{ ws | json_encode | safe }}},
+{%- endfor %}{% endif %}
+{#- Projects and apps, from the tiers of each project section. -#}
+{%- for ps in psecs %}{% set psec = get_section(path=ps ~ "/_index.md", required=false) %}
+{%- if psec and psec.extra.tiers %}{% for tier in psec.extra.tiers %}{% for slug in tier.projects %}{% set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+{"k":"project","t":{{ p.title | json_encode | safe }},"u":{% if p.links %}{{ p.links[0].url | json_encode | safe }}{% else %}{% set purl = psec.permalink ~ "#tier-" ~ tier.key %}{{ purl | json_encode | safe }}{% endif %},"d":{{ p.description | default(value="") | json_encode | safe }},"y":"","g":{{ p.topics | default(value=[]) | json_encode | safe }},"c":[],"m":{% set pm = tier.title ~ " · " ~ psec.title %}{{ pm | json_encode | safe }},"s":{{ p.status | default(value="") | json_encode | safe }}},
+{%- endfor %}{% endfor %}{% endif %}{% endfor %}
+{#- Topics, from the vocabulary. -#}
+{%- if tagdata %}{% for slug, td in tagdata %}
+{"k":"topic","t":{{ td.name | json_encode | safe }},"u":{% if slug in tslugs %}{{ get_taxonomy_url(kind="tags", name=slug) | json_encode | safe }}{% else %}{% set turl = get_url(path="/tags/") ~ "#" ~ slug %}{{ turl | json_encode | safe }}{% endif %},"d":{{ td.description | json_encode | safe }},"y":"","g":[],"c":[],"m":{% set tm = td.kind | capitalize %}{{ tm | json_encode | safe }},"s":{{ slug | json_encode | safe }}},
+{%- endfor %}{% endif %}
+{#- External links, one row per citing page; links after a "References" heading are marked r:1. -#}
+{%- for a in spages %}{% set segs = a.content | split(pat='<h2 id="references"') %}
+{%- for seg in segs %}{% set inref = loop.index0 > 0 %}
+{%- for part in seg | split(pat='href="') %}{% if not loop.first %}{% set url = part | split(pat='"') | first %}
+{%- if url is starting_with("http") and not url is starting_with(config.base_url) %}
+{%- set inner = part | split(pat="</a>") | first | split(pat=">") | slice(start=1) | join(sep=">") | striptags | trim %}
+{"k":"link","t":{{ inner | json_encode | safe }},"u":{{ url | json_encode | safe }},"p":{{ a.permalink | json_encode | safe }},"pt":{{ a.title | json_encode | safe }}{% if inref %},"r":1{% endif %}},
+{%- endif %}{% endif %}{% endfor %}
+{%- endfor %}{% endfor %}
+null]}

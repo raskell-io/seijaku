@@ -111,6 +111,16 @@ vocabulary, each post's tags rolled up through `broader`; technologies are the `
 form picks out reviews; length comes from the reading time. The whole section is listed on one page,
 the choice is kept in the URL, and without JavaScript the list shows in full.
 
+### Search
+
+`template = "search.html"` makes a search page over everything the site has: pages from
+`extra.seijaku.search_sections` (default `graph_sections`), works from the reading data, projects,
+topics, and every external link the pages cite (merged by URL, with the citing pages, and marked when
+they sit under a "References" heading). Point `extra.seijaku.search = "@/search.md"` at it and the nav
+dialog (press `/`) searches the same index, fetched from that page on first use. Filters are a chip per
+kind with live counts; Zola's elasticlunr index adds matches from page bodies. `?q=` and `?type=`
+(article, review, note, talk, work, project, topic, link) keep the state in the URL.
+
 ### Reading log
 
 A page with `template = "reading.html"` lists the works in `data/reading.toml` (config
@@ -124,6 +134,11 @@ cover, graded with the theme's tritone until hovered or opened (works without on
 tile), with title and author; the rest opens below them, and `/reading/#<id>` opens that row.
 Shelves are Reading now, Up next, Backlog, Read (by year), and Set aside; `facets = ["form", "topic"]` under the page's `[extra]` adds filters. Point
 `extra.seijaku.reading = "@/reading.md"` at the page so map nodes and references link to it.
+
+Taxonomies other than tags (series, categories) take a one-line description per term from
+`extra.seijaku.<taxonomy>_descriptions = { <slug> = "..." }` and an index deck from
+`extra.seijaku.<taxonomy>_deck`. Categories appear in the article eyebrow, on the map as hollow squares,
+and get their own social card.
 
 A review is any article or note with `review = "<id>"` under `[extra]`: it gets a "Review of" row
 (notes: an "On ..." line), a review label in post lists, and the work's title on the reading page
