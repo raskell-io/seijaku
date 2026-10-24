@@ -33,6 +33,7 @@
         <span>{{ w.kind | capitalize }}{% if w.year %}, {{ w.year }}{% endif %}</span>
         {%- if w.edition %}<span>{{ w.edition }}</span>{% elif w.publisher %}<span>{{ w.publisher }}</span>{% endif %}
         {%- if wdate %}<span>{{ wdate }}</span>{% endif %}
+        {%- if w.rating %}<span>Rated {{ w.rating }} / 10</span>{% endif %}
       </p>
       {%- if w.subtitle %}<p class="readlog__subtitle">{{ w.subtitle }}</p>{% endif %}
       {%- if w.take %}<p class="readlog__take">{{ w.take }}</p>{% endif %}

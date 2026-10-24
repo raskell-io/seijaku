@@ -116,10 +116,10 @@ the choice is kept in the URL, and without JavaScript the list shows in full.
 A page with `template = "reading.html"` lists the works in `data/reading.toml` (config
 `reading_data`): `[[works]]` with `id`, `title`, `subtitle`, `author`, `kind` (book, novel, paper,
 report, article, essay, journal), `year`, `edition` or `publisher`, `url`, `status` (reading, next, backlog,
-read, set-aside), `started` / `finished` ("YYYY", "YYYY-MM", or "YYYY-MM-DD"; read works need `finished`;
-`when` shows a vaguer date such as "summer 2025" while `finished` keeps the order),
-`topics` (tag slugs), a one-line `take`, `cover` (a path under `static/`), and
-`suggested_by` / `suggested_url` / `suggested_note` to credit a reader who suggested the work. Each row shows the
+read, set-aside), `started` / `finished` (a month, "YYYY-MM", shown as "October 2026"; read works need `finished`),
+`topics` (tag slugs), a one-line `take`, `cover` (a path under `static/`), `rating` (1 to 10, shown on the row and in
+the review's details), and `suggested_by` / `suggested_url` / `suggested_note` to credit a reader who
+suggested the work. Each row shows the
 cover, graded with the theme's tritone until hovered or opened (works without one get a typographic
 tile), with title and author; the rest opens below them, and `/reading/#<id>` opens that row.
 Shelves are Reading now, Up next, Backlog, Read (by year), and Set aside; `facets = ["form", "topic"]` under the page's `[extra]` adds filters. Point

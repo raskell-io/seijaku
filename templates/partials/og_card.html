@@ -1,6 +1,8 @@
 {#- Social card data for this page, read after `zola build` by a renderer that draws og/<path>.png (1200x630).
-    Enabled with extra.seijaku.og_cards = true. Fields: kind, eyebrow, title, description, meta, cover. -#}
+    Enabled with extra.seijaku.og_cards = true. Fields: kind, eyebrow, title, description, meta, cover, and for
+    reviews (kind "review", pages with extra.review) work, author, and rating; the cover is then the book's. -#}
 {%- set kind = "page" %}{% set eyebrow = "" %}{% set title = config.title %}{% set desc = config.description | default(value="") %}{% set meta = "" %}{% set cover = "" %}
+{%- set_global work = "" %}{% set_global wauthor = "" %}{% set_global rating = "" %}
 {%- if page is defined %}
   {%- set title = page.title %}{% set desc = page.description | default(value=desc) %}
   {%- if page.extra.cover %}{% set cover = get_url(path=page.extra.cover) %}{% endif %}
@@ -16,8 +18,17 @@
     {%- endif %}
   {%- elif top == "notes" %}{% set kind = "note" %}{% set eyebrow = "Note" %}
   {%- endif %}
+  {%- if page.extra.review %}
+  {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+  {%- if rdata and rdata.works %}{% for w in rdata.works %}{% if w.id == page.extra.review %}
+    {%- set_global kind = "review" %}{% set_global work = w.title %}{% set_global wauthor = w.author %}
+    {%- if w.kind == "book" or w.kind == "novel" %}{% set_global eyebrow = "Book review" %}{% else %}{% set wk = w.kind | capitalize %}{% set_global eyebrow = wk ~ " review" %}{% endif %}
+    {%- if w.rating %}{% set_global rating = w.rating ~ " / 10" %}{% set_global eyebrow = eyebrow ~ " · " ~ rating %}{% endif %}
+    {%- if w.cover %}{% set_global cover = get_url(path=w.cover) %}{% endif %}
+  {%- endif %}{% endfor %}{% endif %}
+  {%- endif %}
   {%- if page.date %}{% set meta = page.date | date(format="%-d %B %Y") %}{% endif %}
-  {%- if kind == "article" and page.reading_time %}{% set meta = meta ~ " · " ~ page.reading_time ~ " min read" %}{% endif %}
+  {%- if (kind == "article" or kind == "review") and page.reading_time %}{% set meta = meta ~ " · " ~ page.reading_time ~ " min read" %}{% endif %}
 {%- elif term is defined %}
   {%- set n = term.pages | length %}
   {%- if taxonomy.name == "tags" %}
@@ -39,4 +50,4 @@
   {%- if section.path == "/" %}{% set kind = "home" %}{% set title = config.extra.seijaku.og_home_title | default(value=config.title) %}{% set meta = config.extra.seijaku.og_home_meta | default(value="") %}
   {%- else %}{% set kind = "section" %}{% set title = section.title %}{% set desc = section.description | default(value=desc) %}{% endif %}
 {%- endif %}
-<script type="application/json" id="og-card">{"kind":{{ kind | json_encode | safe }},"eyebrow":{{ eyebrow | json_encode | safe }},"title":{{ title | json_encode | safe }},"description":{{ desc | json_encode | safe }},"meta":{{ meta | json_encode | safe }},"cover":{{ cover | json_encode | safe }}}</script>
+<script type="application/json" id="og-card">{"kind":{{ kind | json_encode | safe }},"eyebrow":{{ eyebrow | json_encode | safe }},"title":{{ title | json_encode | safe }},"description":{{ desc | json_encode | safe }},"meta":{{ meta | json_encode | safe }},"cover":{{ cover | json_encode | safe }},"work":{{ work | json_encode | safe }},"author":{{ wauthor | json_encode | safe }},"rating":{{ rating | json_encode | safe }}}</script>

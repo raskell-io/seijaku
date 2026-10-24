@@ -36,7 +36,14 @@
   {#- Past the banner the nav switches from dark glass to paper glass, as on the homepage. -#}
   <script>(function(){var h=document.querySelector(".pagehead--banner .banner");if(!h||!("IntersectionObserver" in window)){return}new IntersectionObserver(function(e){document.body.classList.toggle("is-past-hero",!e[0].isIntersecting)},{rootMargin:"-72px 0px 0px 0px"}).observe(h)})();</script>
   {%- else %}
-  <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% endif %}">
+  {#- A review without a cover of its own shows the reviewed work's cover from the reading log, in a narrower
+      portrait column (pagehead--book). -#}
+  {%- set_global bookcover = "" %}{% set_global bookalt = "" %}
+  {%- if page.extra.review and not page.extra.cover and not page.extra.portrait %}
+  {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+  {%- if rdata and rdata.works %}{% for w in rdata.works %}{% if w.id == page.extra.review and w.cover %}{% set_global bookcover = w.cover %}{% set_global bookalt = "Cover of " ~ w.title ~ " by " ~ w.author %}{% endif %}{% endfor %}{% endif %}
+  {%- endif %}
+  <header class="pagehead pagehead--post{% if page.extra.portrait %} pagehead--portrait{% elif page.extra.cover %} pagehead--cover{% elif bookcover %} pagehead--cover pagehead--book{% endif %}">
     {%- if page.extra.portrait %}
     <img class="pagehead__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
     {%- endif %}
@@ -52,12 +59,13 @@
     {%- if page.date or page.updated or page.taxonomies.tags %}
     {% include "partials/meta_table.html" %}
     {%- endif %}
-    {%- if page.extra.cover and not page.extra.portrait %}
-    {#- Optional cover beside the header (front matter: extra.cover, extra.cover_alt). -#}
-    {%- set cover_src = get_url(path=page.extra.cover) %}
+    {%- if (page.extra.cover or bookcover) and not page.extra.portrait %}
+    {#- Optional cover beside the header (front matter: extra.cover, extra.cover_alt), or the reviewed book's. -#}
+    {%- if page.extra.cover %}{% set cover_src = get_url(path=page.extra.cover) %}{% set cover_alt = page.extra.cover_alt | default(value="") %}
+    {%- else %}{% set cover_src = get_url(path=bookcover) %}{% set cover_alt = bookalt %}{% endif %}
     {%- set graded = page.extra.cover_grade | default(value=config.extra.seijaku.cover_grade | default(value=true)) %}
-    <figure class="pagehead__cover{% if graded %} pagehead__cover--graded{% endif %}"{% if graded %} tabindex="0"{% endif %}>
-      <img src="{{ cover_src | safe }}" alt="{{ page.extra.cover_alt | default(value="") }}" decoding="async">
+    <figure class="pagehead__cover{% if graded %} pagehead__cover--graded{% endif %}{% if bookcover %} pagehead__cover--book{% endif %}"{% if graded %} tabindex="0"{% endif %}>
+      <img src="{{ cover_src | safe }}" alt="{{ cover_alt }}" decoding="async">
       {%- if graded %}
       {#- Tritone grade in the theme palette (green-black, sea teal, champagne, pearl); hover or focus fades back to the original. -#}
       {% include "partials/grade_filter.html" %}

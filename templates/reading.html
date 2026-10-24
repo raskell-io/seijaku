@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {#- Reading log: what is being read, what is next, and what has been read, from the reading data
     (config extra.seijaku.reading_data, default data/reading.toml: [[works]] with id, title, author, kind,
-    status reading/next/backlog/read/set-aside, started, finished, when, topics, take, cover). Each row shows the cover (graded like article covers),
+    status reading/next/backlog/read/set-aside, started and finished ("YYYY-MM"), topics, take, cover). Each row shows the cover (graded like article covers),
     title, and author, and opens for the rest (partials/work_row.html); read works are grouped by the year
     they were finished. A link to /reading/#<id> opens that row. Reviews are ordinary pages with extra.review = "<id>".
     Front matter: template = "reading.html", optional extra.facets = ["form", "topic"]. -#}
@@ -34,7 +34,7 @@
 <ol class="postlist readlog">
   {%- if current | length > 0 %}
   <li class="postlist__year" id="shelf-reading"><h2>Reading now</h2></li>
-  {%- for w in current %}{% set wdate = "" %}{% if w.started %}{% set wdate = "Started " ~ w.started %}{% endif %}
+  {%- for w in current %}{% set wdate = "" %}{% if w.started %}{% set wmonth = w.started ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Started " ~ wlabel %}{% endif %}
   {% include "partials/work_row.html" %}
   {%- endfor %}
   {%- endif %}
@@ -55,12 +55,12 @@
   {%- if year != current_year %}{% set_global current_year = year %}
   <li class="postlist__year"{% if loop.first %} id="shelf-read"{% endif %}><h2>Read in {{ year }}</h2></li>
   {%- endif %}
-  {%- if w.when %}{% set wdate = w.when %}{% elif w.finished | length == 10 %}{% set wdate = w.finished | date(format="%B %-d, %Y") %}{% elif w.finished | length == 7 %}{% set wdate = w.finished ~ "-01" %}{% set wdate = wdate | date(format="%B %Y") %}{% else %}{% set wdate = w.finished %}{% endif %}{% set wdate = "Finished " ~ wdate %}
+  {%- set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Finished " ~ wlabel %}
   {% include "partials/work_row.html" %}
   {%- endfor %}
   {%- if aside | length > 0 %}
   <li class="postlist__year" id="shelf-set-aside"><h2>Set aside</h2></li>
-  {%- for w in aside %}{% set wdate = "" %}{% if w.finished %}{% set wdate = "Set aside " ~ w.finished %}{% endif %}
+  {%- for w in aside %}{% set wdate = "" %}{% if w.finished %}{% set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Set aside " ~ wlabel %}{% endif %}
   {% include "partials/work_row.html" %}
   {%- endfor %}
   {%- endif %}
