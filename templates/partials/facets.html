@@ -18,8 +18,8 @@
       {%- endif %}{% endfor %}
       {%- elif facet == "form" %}
       {#- Chips nothing on the page uses are dropped by the script, so one list serves posts and the reading log. -#}
-      {%- set fnames = ["Reviews", "Books", "Papers", "Reports", "Articles", "Essays", "Journals"] %}
-      {%- for f in ["review", "book", "paper", "report", "article", "essay", "journal"] %}
+      {%- set fnames = ["Reviews", "Books", "Novels", "Papers", "Reports", "Articles", "Essays", "Journals"] %}
+      {%- for f in ["review", "book", "novel", "paper", "report", "article", "essay", "journal"] %}
       <button type="button" class="facet" data-facet="form" data-value="{{ f }}" aria-pressed="false">{{ fnames[loop.index0] }}<span class="facet__n"></span></button>
       {%- endfor %}
       {%- elif facet == "length" %}
