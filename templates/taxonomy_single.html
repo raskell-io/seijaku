@@ -1,30 +1,8 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {%- block title %}{% set td = false %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{% set td = tagdata[term.slug] %}{% endif %}{% endif %}{% if td %}{{ td.name }}{% elif taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} | {{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
 {%- block description %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{{ tagdata[term.slug].description }}{% else %}{{ config.description }}{% endif %}{% else %}{% set ckey = taxonomy.name ~ "_descriptions" %}{% set tdescs = config.extra.seijaku[ckey] | default(value=false) %}{% if tdescs and term.slug in tdescs %}{{ tdescs[term.slug] }}{% else %}{{ config.description }}{% endif %}{% endif %}{% endblock description %}
 {% block content %}
-{%- set td = false %}{% set tagdata = false %}
-{%- if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{% set td = tagdata[term.slug] %}{% endif %}{% endif %}
-{#- Other taxonomies (series, categories) take a one-line description per term from config:
-    extra.seijaku.<taxonomy>_descriptions = { <slug> = "..." }. -#}
-{%- set ckey = taxonomy.name ~ "_descriptions" %}{% set tdescs = config.extra.seijaku[ckey] | default(value=false) %}
-{%- if td %}{% set pretty = td.name %}{% elif taxonomy.name == "tags" %}{% set pretty = term.name %}{% else %}{% set pretty = term.name | replace(from="-", to=" ") | title %}{% endif %}
-<header class="pagehead">
-  <p class="pagehead__eyebrow"><a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{% if taxonomy.name == "tags" %}Topics{% else %}{{ taxonomy.name | capitalize }}{% endif %}</a>{% if td %} · {{ td.kind | capitalize }}{% endif %}</p>
-  <h1 class="pagehead__title">{{ pretty }}</h1>
-  <p class="pagehead__deck">{% if td %}{{ td.description }}{% elif tdescs and term.slug in tdescs %}{{ tdescs[term.slug] }}{% else %}{{ term.pages | length }} {% if term.pages | length == 1 %}entry{% else %}entries{% endif %} filed under “{{ pretty }}”.{% endif %}</p>
-  {%- if td %}
-  {%- set_global narrower = [] %}{% for slug, other in tagdata %}{% if other.broader and term.slug in other.broader %}{% set_global narrower = narrower | concat(with=slug) %}{% endif %}{% endfor %}
-  {%- set tags_tax = get_taxonomy(kind="tags") %}{% set_global used = [] %}{% for t in tags_tax.items %}{% set_global used = used | concat(with=t.slug) %}{% endfor %}
-  <dl class="topicrel">
-    {%- if td.broader %}<div><dt>Within</dt><dd>{% for b in td.broader %}<a href="{% if b in used %}{{ get_taxonomy_url(kind="tags", name=b) | safe }}{% else %}{{ get_url(path="/tags/") | safe }}#{{ b }}{% endif %}">{{ tagdata[b].name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
-    {%- if narrower | length > 0 %}<div><dt>Includes</dt><dd>{% for n in narrower %}<a href="{% if n in used %}{{ get_taxonomy_url(kind="tags", name=n) | safe }}{% else %}{{ get_url(path="/tags/") | safe }}#{{ n }}{% endif %}">{{ tagdata[n].name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
-    <div><dt>Pages</dt><dd>{{ term.pages | length }}</dd></div>
-  </dl>
-  {%- endif %}
-</header>
-{%- if taxonomy.name == "tags" %}{% set focus_tag = term %}{% include "partials/local_map.html" %}{% endif %}
-{%- set pages = term.pages %}
-{%- set group_years = true %}
-{% include "partials/post_list.html" %}
+{% include "partials/taxonomy_single_body.html" %}
 {% endblock content %}
-{% block crumbs %} → <a href="{{ get_url(path="/" ~ taxonomy.name) | safe }}">{% if taxonomy.name == "tags" %}Topics{% else %}{{ taxonomy.name | capitalize }}{% endif %}</a> → <span aria-current="page">{{ term.name }}</span>{% endblock crumbs %}
+{% block crumbs %} → <a href="{{ i18n::url(path="/" ~ taxonomy.name ~ "/", lang=lang, base=config.default_language) | safe }}">{% if taxonomy.name == "tags" %}{{ i18n::t(text="Topics", lang=lang, config=config) }}{% else %}{{ i18n::t(text=taxonomy.name | capitalize, lang=lang, config=config) }}{% endif %}</a> → <span aria-current="page">{{ term.name }}</span>{% endblock crumbs %}

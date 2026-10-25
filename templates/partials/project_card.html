@@ -39,7 +39,12 @@
       {#- With show_pitch (project_cards(pitch=true)) and a `pitch` page in the data, that page is the main action. -#}
       {%- set pitch_first = show_pitch | default(value=false) and p.pitch | default(value="") %}
       {%- if pitch_first %}
-      <a class="cardcta cardcta--main" href="{{ get_url(path=p.pitch) | safe }}">{{ i18n::t(text="Read the pitch", lang=plang, config=config) }}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
+      {#- The pitch in the reader's language when its file exists (<name>.<lang>.md). This card also renders inside
+          shortcodes, where translations cannot be looked up, so the file is checked directly. -#}
+      {%- set pitch_path = p.pitch %}
+      {%- if plang != config.default_language %}{% set pitch_ext = "." ~ plang ~ ".md" %}{% set pitch_tr = p.pitch | replace(from=".md", to=pitch_ext) %}{% set pitch_rel = pitch_tr | trim_start_matches(pat="@/") %}{% set pitch_file = "content/" ~ pitch_rel %}
+      {%- set pitch_text = load_data(path=pitch_file, format="plain", required=false) %}{% if pitch_text %}{% set pitch_path = pitch_tr %}{% endif %}{% endif %}
+      <a class="cardcta cardcta--main" href="{{ get_url(path=pitch_path) | safe }}">{{ i18n::t(text="Read the pitch", lang=plang, config=config) }}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
       {%- endif %}
       {%- for l in p.links %}{% set key = l.name | lower %}
       {%- if loop.first and key != "github" and pitch_first %}

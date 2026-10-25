@@ -1,3 +1,6 @@
+{%- import "macros/i18n.html" as i18n -%}
+{%- set plang = lang | default(value=config.default_language) %}
+{%- set day_fmt = i18n::t(text="%b %d", lang=plang, config=config) %}
 {#- Dense dated rows. Set `group_years = true` before including to break the list by year. -#}
 {%- set grouped = group_years | default(value=false) %}
 {%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
@@ -23,16 +26,16 @@
   {%- else %}
   <li class="postlist__item">
   {%- endif %}
-    <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format="%b %d") }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
+    <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format=day_fmt) }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
     <div class="postlist__main">
       {%- set isnote = post.components | first == "notes" %}
-      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">note</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">talk</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">review</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
+      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">{{ i18n::t(text="note", lang=plang, config=config) }}</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">{{ i18n::t(text="talk", lang=plang, config=config) }}</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">{{ i18n::t(text="review", lang=plang, config=config) }}</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
       {%- if post.taxonomies.tags %}
-      <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% endfor %}</p>
+      <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ i18n::topic_url(slug=tag, lang=plang, base=config.default_language, used=true) | safe }}">{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=plang, base=config.default_language) }}</a>{% endfor %}</p>
       {%- endif %}
     </div>
-    {%- if post.reading_time and not isnote %}<span class="postlist__time">{{ post.reading_time }} min</span>{%- endif %}
+    {%- if post.reading_time and not isnote %}<span class="postlist__time">{{ post.reading_time }} {{ i18n::t(text="min", lang=plang, config=config) }}</span>{%- endif %}
   </li>
   {%- endfor %}
 </ol>

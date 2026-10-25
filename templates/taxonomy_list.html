@@ -1,45 +1,7 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {% block title %}{{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
 {% block content %}
-{%- set tagdata = false %}
-{%- if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% endif %}
-{%- if tagdata %}
-{#- Tags with a vocabulary: grouped by kind, each with its definition and its broader topics. -#}
-{%- set_global used = [] %}{% for term in terms %}{% set_global used = used | concat(with=term.slug) %}{% endfor %}
-<header class="pagehead">
-  <p class="pagehead__eyebrow">Index · {{ tagdata | length }} topics</p>
-  <h1 class="pagehead__title">Topics</h1>
-  <p class="pagehead__deck">Everything on the site, filed by subject. Each topic has a definition and its broader topics, so together they form the vocabulary of the <a href="{{ get_url(path=config.extra.seijaku.map | default(value="@/map.md")) | safe }}">map</a>.</p>
-</header>
-{%- for kind in ["domain", "concept", "technology", "site"] %}
-{%- set_global group = [] %}{% for slug, td in tagdata %}{% if td.kind == kind %}{% set_global group = group | concat(with=slug) %}{% endif %}{% endfor %}
-{%- if group | length > 0 %}
-<section class="topics" aria-labelledby="kind-{{ kind }}">
-  <h2 class="topics__kind" id="kind-{{ kind }}">{% if kind == "domain" %}Domains{% elif kind == "concept" %}Concepts{% elif kind == "technology" %}Technologies{% else %}This site{% endif %}</h2>
-  <ul class="topics__list">
-    {%- for slug in group %}{% set td = tagdata[slug] %}{% set n = 0 %}{% for term in terms %}{% if term.slug == slug %}{% set_global n = term.pages | length %}{% endif %}{% endfor %}
-    <li class="topic" id="{{ slug }}">
-      <h3 class="topic__name">{% if slug in used %}<a href="{{ get_taxonomy_url(kind="tags", name=slug) | safe }}">{{ td.name }}</a>{% else %}{{ td.name }}{% endif %} <small>{% if slug in used %}{% for term in terms %}{% if term.slug == slug %}{{ term.pages | length }}{% endif %}{% endfor %}{% else %}0{% endif %}</small></h3>
-      <p class="topic__desc">{{ td.description }}</p>
-      {%- if td.broader %}<p class="topic__broader">within {% for b in td.broader %}<a href="{% if b in used %}{{ get_taxonomy_url(kind="tags", name=b) | safe }}{% else %}#{{ b }}{% endif %}">{{ tagdata[b].name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
-    </li>
-    {%- endfor %}
-  </ul>
-</section>
-{%- endif %}
-{%- endfor %}
-{%- else %}
-<header class="pagehead">
-  <p class="pagehead__eyebrow">Index</p>
-  <h1 class="pagehead__title">{{ taxonomy.name | capitalize }}</h1>
-  {#- The deck comes from extra.seijaku.<taxonomy>_deck when set. -#}
-  <p class="pagehead__deck">{% set ckey = taxonomy.name ~ "_deck" %}{{ config.extra.seijaku[ckey] | default(value="Everything on the site, filed by subject. Pick a topic to follow the thread.") }}</p>
-</header>
-<ul class="pills">
-  {%- for term in terms %}
-  <li><a class="pill" href="{{ term.permalink | safe }}">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} <small>{{ term.pages | length }}</small></a></li>
-  {%- endfor %}
-</ul>
-{%- endif %}
+{% include "partials/taxonomy_list_body.html" %}
 {% endblock content %}
-{% block crumbs %} → <span aria-current="page">{{ taxonomy.name | capitalize }}</span>{% endblock crumbs %}
+{% block crumbs %} → <span aria-current="page">{% if taxonomy.name == "tags" %}{{ i18n::t(text="Topics", lang=lang, config=config) }}{% else %}{{ i18n::t(text=taxonomy.name | capitalize, lang=lang, config=config) }}{% endif %}</span>{% endblock crumbs %}

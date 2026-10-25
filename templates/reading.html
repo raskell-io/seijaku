@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {#- Reading log: what is being read, what is next, and what has been read, from the reading data
     (config extra.seijaku.reading_data, default data/reading.toml: [[works]] with id, title, author, kind,
     status reading/next/backlog/read/set-aside, started and finished ("YYYY-MM", or "YYYY" when only the year is known), topics, take, cover). Each row shows the cover (graded like article covers),
@@ -22,7 +23,7 @@
 {%- set done = works | filter(attribute="status", value="read") | sort(attribute="finished") | reverse %}
 {%- set aside = works | filter(attribute="status", value="set-aside") %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{% if current | length > 0 %}{{ current | length }} reading · {% endif %}{% if queue | length > 0 %}{{ queue | length }} up next · {% endif %}{{ backlog | length }} in the backlog · {{ done | length }} read</p>
+  <p class="pagehead__eyebrow">{% if current | length > 0 %}{{ current | length }} {{ i18n::t(text="reading", lang=lang, config=config) }} · {% endif %}{% if queue | length > 0 %}{{ queue | length }} {{ i18n::t(text="up next", lang=lang, config=config) }} · {% endif %}{{ backlog | length }} {{ i18n::t(text="in the backlog", lang=lang, config=config) }} · {{ done | length }} {{ i18n::t(text="read", lang=lang, config=config) }}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -38,25 +39,26 @@
 {%- set_global years = [] %}
 {%- for w in done %}{% set y = w.finished | truncate(length=4, end="") %}{% if not y in years %}{% set_global years = years | concat(with=y) %}{% endif %}{% endfor %}
 <div class="shelves" data-shelves>
-  <div class="shelves__bar" hidden><button type="button" class="shelves__all" data-shelves-all>Open all shelves</button></div>
-  {%- if current | length > 0 %}{% set sid = "shelf-reading" %}{% set stitle = "Reading now" %}{% set sworks = current %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
-  {%- if queue | length > 0 %}{% set sid = "shelf-next" %}{% set stitle = "Up next" %}{% set sworks = queue %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
-  {%- if backlog | length > 0 %}{% set sid = "shelf-backlog" %}{% set stitle = "Backlog" %}{% set sworks = backlog %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
+  <div class="shelves__bar" hidden><button type="button" class="shelves__all" data-shelves-all>{{ i18n::t(text="Open all shelves", lang=lang, config=config) }}</button></div>
+  {%- if current | length > 0 %}{% set sid = "shelf-reading" %}{% set stitle = i18n::t(text="Reading now", lang=lang, config=config) %}{% set sworks = current %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if queue | length > 0 %}{% set sid = "shelf-next" %}{% set stitle = i18n::t(text="Up next", lang=lang, config=config) %}{% set sworks = queue %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if backlog | length > 0 %}{% set sid = "shelf-backlog" %}{% set stitle = i18n::t(text="Backlog", lang=lang, config=config) %}{% set sworks = backlog %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- for y in years %}
   {%- set_global yworks = [] %}{% for w in done %}{% if w.finished is starting_with(y) %}{% set_global yworks = yworks | concat(with=w) %}{% endif %}{% endfor %}
   {%- if loop.first %}{% set sid = "shelf-read" %}{% else %}{% set sid = "shelf-read-" ~ y %}{% endif %}
-  {%- set stitle = "Read in " ~ y %}{% set sworks = yworks %}{% if loop.index <= 2 %}{% set smode = "open" %}{% else %}{% set smode = "closed" %}{% endif %}
+  {%- set read_in = i18n::t(text="Read in {year}", lang=lang, config=config) %}{% set stitle = read_in | replace(from="{year}", to=y) %}{% set sworks = yworks %}{% if loop.index <= 2 %}{% set smode = "open" %}{% else %}{% set smode = "closed" %}{% endif %}
   {% include "partials/shelf.html" %}
   {%- endfor %}
-  {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = "Set aside" %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = i18n::t(text="Set aside", lang=lang, config=config) %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
 </div>
 <script>(function(){
   var root = document.querySelector("[data-shelves]"); if (!root) { return; }
+  var T = function(s){var d=window.SEIJAKU_I18N;return d&&d[s]||s};
   var shelves = [].slice.call(root.querySelectorAll("[data-shelf]")), folding = shelves.filter(function (s) { return s.tagName === "DETAILS"; });
   var bar = root.querySelector(".shelves__bar"), all = root.querySelector("[data-shelves-all]");
   // One button: open every shelf, or fold back to how the page started (recent years open, the rest closed).
   folding.forEach(function (s) { s.dataset.start = s.open ? "1" : ""; });
-  function label() { all.textContent = folding.every(function (s) { return s.open; }) ? "Fold older shelves" : "Open all shelves"; }
+  function label() { all.textContent = T(folding.every(function (s) { return s.open; }) ? "Fold older shelves" : "Open all shelves"); }
   if (folding.length) { bar.hidden = false; label(); }
   all.addEventListener("click", function () {
     var everything = !folding.every(function (s) { return s.open; });
@@ -81,7 +83,7 @@
       var rows = s.querySelectorAll(".readlog__item"), shown = 0, count = s.querySelector(".shelf__count");
       rows.forEach(function (r) { if (!r.hidden) { shown++; } });
       s.hidden = active && !shown;
-      count.textContent = active ? shown + " of " + count.dataset.total : count.dataset.total;
+      count.textContent = active ? T("{n} of {total}").replace("{n}", shown).replace("{total}", count.dataset.total) : count.dataset.total;
       if (s.tagName !== "DETAILS") { return; }
       if (active) { if (!("wasOpen" in s.dataset)) { s.dataset.wasOpen = s.open ? "1" : ""; } s.open = shown > 0; }
       else if ("wasOpen" in s.dataset) { s.open = !!s.dataset.wasOpen; delete s.dataset.wasOpen; }

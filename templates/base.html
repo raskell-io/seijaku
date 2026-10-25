@@ -7,6 +7,11 @@
 {%- set_global here_lang = lang | default(value=config.default_language) %}{% set_global here_tag = here_lang %}{% set_global here_locale = config.extra.seijaku.og_locale | default(value="") %}
 {%- for l in langs %}{% if l.code == here_lang %}{% set_global here_tag = l.hreflang | default(value=l.code) %}{% if l.og_locale %}{% set_global here_locale = l.og_locale %}{% endif %}{% endif %}{% endfor %}
 {%- if page is defined %}{% set translations = page.translations %}{% elif section is defined %}{% set translations = section.translations %}{% else %}{% set translations = [] %}{% endif %}
+{#- Taxonomy pages are not translations of each other in Zola's eyes (taxonomies are built per language);
+    tx_name and tx_term identify them so the switch and hreflang can link the same page in every language. -#}
+{%- set tx_name = "" %}{% set tx_term = "" %}
+{%- if taxonomy is defined %}{% set tx_name = taxonomy.name %}{% if term is defined %}{% set tx_term = term.slug %}{% endif %}
+{%- elif page is defined and page.extra.taxonomy is defined %}{% set tx_name = page.extra.taxonomy %}{% if page.extra.term is defined %}{% set tx_term = page.extra.term %}{% endif %}{% endif %}
 <html lang="{{ here_tag }}">
 <head>
   <meta charset="utf-8">
@@ -49,7 +54,13 @@
   <meta property="og:url" content="{{ current_url | default(value=config.base_url) | safe }}">
   <link rel="canonical" href="{{ current_url | default(value=config.base_url) | safe }}">
   {#- hreflang: every language this page exists in, plus x-default for the default language. #}
-  {%- if translations | length > 1 %}
+  {%- if tx_name and langs | length > 1 %}
+  {%- for l in langs %}{% set tx_href = i18n::tax_url(tax=tx_name, term=tx_term, lang=l.code, base=config.default_language, config_base=config.base_url) %}{% if tx_href %}
+  <link rel="alternate" hreflang="{{ l.hreflang | default(value=l.code) }}" href="{{ tx_href | safe }}">
+  {%- if l.code == config.default_language %}
+  <link rel="alternate" hreflang="x-default" href="{{ tx_href | safe }}">
+  {%- endif %}{% endif %}{% endfor %}
+  {%- elif translations | length > 1 %}
   {%- for tr in translations %}{% set_global tr_tag = tr.lang %}{% for l in langs %}{% if l.code == tr.lang %}{% set_global tr_tag = l.hreflang | default(value=l.code) %}{% endif %}{% endfor %}
   <link rel="alternate" hreflang="{{ tr_tag }}" href="{{ tr.permalink | safe }}">
   {%- if tr.lang == config.default_language %}
@@ -87,6 +98,10 @@
   {%- endfor %}
   {%- endif %}
   {%- if config.extra.seijaku.scheme_toggle %}
+  {#- Interface labels for scripts (search, map, filters) on pages in a translated language. -#}
+  {%- if here_lang != config.default_language and config.extra.seijaku.i18n and here_lang in config.extra.seijaku.i18n %}
+  <script>window.SEIJAKU_I18N = {{ config.extra.seijaku.i18n[here_lang].labels | json_encode | safe }};</script>
+  {%- endif %}
   <script>(function(){try{var s=localStorage.getItem("seijaku-scheme");if(s==="light"||s==="dark"){document.documentElement.setAttribute("data-theme",s)}}catch(e){}})();</script>
   {%- endif %}
   <link rel="stylesheet" href="{{ get_url(path="seijaku.css", cachebust=true) | safe }}">
@@ -139,7 +154,7 @@
         <nav class="footer__group" aria-label="Explore">
           <span class="footer__group-title">{{ i18n::t(text="Explore", lang=here_lang, config=config) }}</span>
           {%- for item in config.extra.seijaku.nav %}
-          {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
+          {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
           <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
@@ -148,7 +163,7 @@
         <nav class="footer__group" aria-label="Index">
           <span class="footer__group-title">{{ i18n::t(text="Index", lang=here_lang, config=config) }}</span>
           {%- for item in config.extra.seijaku.explore %}
-          {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
+          {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
           <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
@@ -158,7 +173,7 @@
         <nav class="footer__group" aria-label="{{ g.title }}">
           <span class="footer__group-title">{{ i18n::t(text=g.title, lang=here_lang, config=config) }}</span>
           {%- for item in g.items %}
-          {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% elif item.url is starting_with("/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+          {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
           <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
           {%- endfor %}
         </nav>
@@ -193,6 +208,7 @@
         <ul class="langs__menu">
           {%- for l in langs %}
           {%- set_global l_href = "" %}{% for tr in translations %}{% if tr.lang == l.code %}{% set_global l_href = tr.permalink %}{% endif %}{% endfor %}
+          {%- if tx_name %}{% set_global l_href = i18n::tax_url(tax=tx_name, term=tx_term, lang=l.code, base=config.default_language, config_base=config.base_url) %}{% endif %}
           {%- set l_translated = l_href != "" %}
           {%- if not l_translated %}{% set_global l_href = i18n::url(path="@/_index.md", lang=l.code) %}{% endif %}
           <li><a href="{{ l_href | safe }}" lang="{{ l.hreflang | default(value=l.code) }}" hreflang="{{ l.hreflang | default(value=l.code) }}"{% if l.code == here_lang %} aria-current="true"{% endif %}{% if not l_translated %} title="{{ i18n::t(text="Not translated yet; opens the home page", lang=l.code, config=config) }}"{% endif %}>{{ l.name }}{% if not l_translated %}<small>{{ i18n::t(text="home", lang=l.code, config=config) }}</small>{% endif %}</a></li>
@@ -212,23 +228,27 @@
       {%- endif %}
     </div>
   </footer>
-  {%- if config.build_search_index %}
+  {#- Search runs on every page when the site builds its full-text index. Translated languages build none
+      (Zola has no stemmer for every language), so their pages search the default language's index. -#}
+  {%- set search_on = config.build_search_index %}
+  {%- if here_lang != config.default_language and config.extra.seijaku.search %}{% set search_on = true %}{% endif %}
+  {%- if search_on %}
   {%- set search_lang = config.default_language %}{% set search_index = "search_index." ~ search_lang ~ ".js" %}
   {#- The dialog searches the same index as the search page (config extra.seijaku.search), fetched on first
       open; without that page it searches the writing only, through Zola's full-text index. -#}
   {%- set search_page = config.extra.seijaku.search | default(value="") %}
-  <dialog class="search" id="search" aria-label="Search">
+  <dialog class="search" id="search" aria-label="{{ i18n::t(text="Search", lang=here_lang, config=config) }}">
     <div class="garden garden--dialog" data-garden data-limit="12" data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}"{% if search_page %} data-src="{{ get_url(path=search_page) | safe }}"{% endif %}>
       <form method="dialog" class="garden__bar">
-        <input type="search" name="q" placeholder="{% if search_page %}Search articles, books, projects, links…{% else %}Search the writing{% endif %}" autocomplete="off" spellcheck="false" aria-label="Search the site">
-        <button type="submit" class="search__close" aria-label="Close search">esc</button>
+        <input type="search" name="q" placeholder="{% if search_page %}{{ i18n::t(text="Search articles, books, projects, links…", lang=here_lang, config=config) }}{% else %}{{ i18n::t(text="Search the writing", lang=here_lang, config=config) }}{% endif %}" autocomplete="off" spellcheck="false" aria-label="{{ i18n::t(text="Search the site", lang=here_lang, config=config) }}">
+        <button type="submit" class="search__close" aria-label="{{ i18n::t(text="Close search", lang=here_lang, config=config) }}">esc</button>
       </form>
-      <div class="garden__chips" role="group" aria-label="Show only" hidden></div>
+      <div class="garden__chips" role="group" aria-label="{{ i18n::t(text="Show only", lang=here_lang, config=config) }}" hidden></div>
       <p class="garden__status" role="status"></p>
       <ol class="garden__results"></ol>
-      <button type="button" class="garden__more" hidden>Show more</button>
-      {%- if search_page %}
-      <a class="garden__full" href="{{ get_url(path=search_page) | safe }}">Open the full search →</a>
+      <button type="button" class="garden__more" hidden>{{ i18n::t(text="Show more", lang=here_lang, config=config) }}</button>
+      {%- if search_page %}{% set search_href = i18n::url(path=search_page, lang=here_lang, base=config.default_language) %}
+      <a class="garden__full" href="{{ search_href | safe }}">{{ i18n::t(text="Open the full search", lang=here_lang, config=config) }} →</a>
       {%- endif %}
     </div>
   </dialog>

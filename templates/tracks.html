@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {#- Curated reading tracks: numbered chapters of cover cards.
     Front matter: template = "tracks.html", and per track
       [[extra.tracks]] title, deck, items = [{ path = "articles/x.md", note = "..." }, ...]
@@ -6,9 +7,9 @@
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
-{%- set tracks = page.extra.tracks | default(value=[]) %}
+{%- set tracks = page.extra.tracks | default(value=[]) %}{% set month_fmt = i18n::t(text="%b %Y", lang=lang, config=config) %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{{ tracks | length }} reading tracks</p>
+  <p class="pagehead__eyebrow">{{ tracks | length }} {{ i18n::t(text="reading tracks", lang=lang, config=config) }}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -16,14 +17,14 @@
 {%- if page.content %}<div class="prose tracks-intro">{{ page.content | safe }}</div>{%- endif %}
 
 {%- if tracks | length > 1 %}
-<nav class="tracks-toc" aria-label="Tracks">
+<nav class="tracks-toc" aria-label="{{ i18n::t(text="Tracks", lang=lang, config=config) }}">
   <ol>
     {%- for t in tracks %}
     <li><a href="#track-{{ loop.index }}"><span>{% if loop.index < 10 %}0{% endif %}{{ loop.index }}</span>{{ t.title }}</a></li>
     {%- endfor %}
   </ol>
   {%- if config.extra.seijaku.map %}
-  <p class="tracks-toc__map">Or wander instead: <a href="{{ get_url(path=config.extra.seijaku.map) | safe }}">explore the map →</a></p>
+  {% set map_href = i18n::url(path=config.extra.seijaku.map, lang=lang, base=config.default_language) %}<p class="tracks-toc__map">{{ i18n::t(text="Or wander instead:", lang=lang, config=config) }} <a href="{{ map_href | safe }}">{{ i18n::t(text="explore the map", lang=lang, config=config) }} →</a></p>
   {%- endif %}
 </nav>
 {%- endif %}
@@ -52,10 +53,10 @@
         <span class="trackcard__cover trackcard__cover--blank" aria-hidden="true">{% set mark_class = "trackcard__mark" %}{% include "partials/mark.html" %}</span>
         {%- endif %}
         <span class="trackcard__body">
-          <span class="trackcard__step">{{ loop.index }} of {{ t.items | length }}</span>
+          {% set step_tpl = i18n::t(text="{n} of {total}", lang=lang, config=config) %}{% set step_total = t.items | length %}{% set step_n = loop.index ~ "" %}{% set step_t = step_total ~ "" %}<span class="trackcard__step">{{ step_tpl | replace(from="{n}", to=step_n) | replace(from="{total}", to=step_t) }}</span>
           <span class="trackcard__title">{{ p.title }}</span>
           <span class="trackcard__note">{{ item.note | default(value=p.description) }}</span>
-          <span class="trackcard__meta">{{ p.date | date(format="%b %Y") }} · {{ p.reading_time }} min read</span>
+          <span class="trackcard__meta">{{ p.date | date(format=month_fmt) }} · {{ p.reading_time }} {{ i18n::t(text="min read", lang=lang, config=config) }}</span>
         </span>
       </a>
     </li>

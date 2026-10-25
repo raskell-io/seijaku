@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {#- Map: every article, topic, series, project and work in the reading log drawn as one graph (static/seijaku-map.js),
     with the same index as plain lists underneath for readers without JavaScript.
     Front matter: template = "map.html", extra.project_sections = ["projects", ...]. -#}
@@ -22,7 +23,7 @@
 {%- set rpage = config.extra.seijaku.reading | default(value="") %}
 {%- set n_tags = 0 %}{% if tags %}{% set n_tags = tags.items | length %}{% endif %}
 <header class="pagehead">
-  {%- set nsec = get_section(path="notes/_index.md", required=false) %}<p class="pagehead__eyebrow">{{ sec.pages | length }} articles{% if nsec and nsec.pages | length > 0 %} · {{ nsec.pages | length }} notes{% endif %} · {{ n_tags }} topics · {{ projects | length }} projects{% if works | length > 0 %} · {{ works | length }} readings{% endif %}</p>
+  {%- set nsec = get_section(path="notes/_index.md", required=false) %}<p class="pagehead__eyebrow">{{ sec.pages | length }} {{ i18n::t(text="articles", lang=lang, config=config) }}{% if nsec and nsec.pages | length > 0 %} · {{ nsec.pages | length }} {{ i18n::t(text="notes", lang=lang, config=config) }}{% endif %} · {{ n_tags }} {{ i18n::t(text="topics", lang=lang, config=config) }} · {{ projects | length }} {{ i18n::t(text="projects", lang=lang, config=config) }}{% if works | length > 0 %} · {{ works | length }} {{ i18n::t(text="readings", lang=lang, config=config) }}{% endif %}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -31,35 +32,35 @@
   <canvas class="map__canvas" aria-hidden="true"></canvas>
   {#- Kinds to show: a stack of chips at rest that fans out into labelled pills on hover, keyboard focus, or a
       first tap (static/seijaku-map.js). -#}
-  <div class="map__legend" role="group" aria-label="Show on the map" data-legend>
-    <span class="map__legend-hint" aria-hidden="true">Show</span>
-    <button type="button" data-kind="article" aria-pressed="true"><i></i><span>Articles</span></button>
-    <button type="button" data-kind="note" aria-pressed="true"><i></i><span>Notes</span></button>
+  <div class="map__legend" role="group" aria-label="{{ i18n::t(text="Show on the map", lang=lang, config=config) }}" data-legend>
+    <span class="map__legend-hint" aria-hidden="true">{{ i18n::t(text="Show", lang=lang, config=config) }}</span>
+    <button type="button" data-kind="article" aria-pressed="true"><i></i><span>{{ i18n::t(text="Articles", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="note" aria-pressed="true"><i></i><span>{{ i18n::t(text="Notes", lang=lang, config=config) }}</span></button>
     {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[]) %}{% set tsec = get_section(path="talks/_index.md", required=false) %}
     {%- if tsec and tsec.pages | length > 0 and "talks" in gsecs %}
-    <button type="button" data-kind="talk" aria-pressed="true"><i></i><span>Talks</span></button>
+    <button type="button" data-kind="talk" aria-pressed="true"><i></i><span>{{ i18n::t(text="Talks", lang=lang, config=config) }}</span></button>
     {%- endif %}
-    <button type="button" data-kind="tag" aria-pressed="true"><i></i><span>Topics</span></button>
-    <button type="button" data-kind="series" aria-pressed="true"><i></i><span>Series</span></button>
+    <button type="button" data-kind="tag" aria-pressed="true"><i></i><span>{{ i18n::t(text="Topics", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="series" aria-pressed="true"><i></i><span>{{ i18n::t(text="Series", lang=lang, config=config) }}</span></button>
     {%- set categories = get_taxonomy(kind="categories", required=false) %}
     {%- if categories and categories.items | length > 0 %}
-    <button type="button" data-kind="category" aria-pressed="true"><i></i><span>Categories</span></button>
+    <button type="button" data-kind="category" aria-pressed="true"><i></i><span>{{ i18n::t(text="Categories", lang=lang, config=config) }}</span></button>
     {%- endif %}
-    <button type="button" data-kind="project" aria-pressed="true"><i></i><span>Projects</span></button>
+    <button type="button" data-kind="project" aria-pressed="true"><i></i><span>{{ i18n::t(text="Projects", lang=lang, config=config) }}</span></button>
     {%- if works | length > 0 %}
-    <button type="button" data-kind="work" aria-pressed="true"><i></i><span>Reading</span></button>
+    <button type="button" data-kind="work" aria-pressed="true"><i></i><span>{{ i18n::t(text="Reading", lang=lang, config=config) }}</span></button>
     {%- endif %}
   </div>
   <div class="map__zoom">
-    <button type="button" class="map__full" data-fullscreen aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="map__full-open" d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/><path class="map__full-close" d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5"/></svg><span>Full screen</span></button>
-    <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
-    <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
-    <button type="button" data-zoom="fit" aria-label="Fit the whole map">fit</button>
+    <button type="button" class="map__full" data-fullscreen aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="map__full-open" d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/><path class="map__full-close" d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5"/></svg><span>{{ i18n::t(text="Full screen", lang=lang, config=config) }}</span></button>
+    <button type="button" data-zoom="in" aria-label="{{ i18n::t(text="Zoom in", lang=lang, config=config) }}">+</button>
+    <button type="button" data-zoom="out" aria-label="{{ i18n::t(text="Zoom out", lang=lang, config=config) }}">−</button>
+    <button type="button" data-zoom="fit" aria-label="{{ i18n::t(text="Fit the whole map", lang=lang, config=config) }}">{{ i18n::t(text="fit", lang=lang, config=config) }}</button>
     <details class="map__export">
-      <summary aria-label="Export the map"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>export</summary>
+      <summary aria-label="{{ i18n::t(text="Export the map", lang=lang, config=config) }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>{{ i18n::t(text="export", lang=lang, config=config) }}</summary>
       <div class="map__export-menu">
-        <button type="button" data-export="png">Image <small>PNG</small></button>
-        <button type="button" data-export="json">Graph data <small>JSON</small></button>
+        <button type="button" data-export="png">{{ i18n::t(text="Image", lang=lang, config=config) }} <small>PNG</small></button>
+        <button type="button" data-export="json">{{ i18n::t(text="Graph data", lang=lang, config=config) }} <small>JSON</small></button>
       </div>
     </details>
   </div>
@@ -67,28 +68,28 @@
     <p class="map__card-kind"></p>
     <p class="map__card-title"></p>
     <p class="map__card-desc"></p>
-    <a class="map__card-open" href="#">Open →</a>
+    <a class="map__card-open" href="#">{{ i18n::t(text="Open", lang=lang, config=config) }} →</a>
   </div>
-  <figcaption class="map__hint">Tap a dot to see what it is and what it connects to. Drag to move, pinch or ⌘ + scroll to zoom. Everything on the map is also listed below.</figcaption>
-  <noscript><p class="map__noscript">The map needs JavaScript. The full index is listed below.</p></noscript>
+  <figcaption class="map__hint">{{ i18n::t(text="Tap a dot to see what it is and what it connects to. Drag to move, pinch or ⌘ + scroll to zoom. Everything on the map is also listed below.", lang=lang, config=config) }}</figcaption>
+  <noscript><p class="map__noscript">{{ i18n::t(text="The map needs JavaScript. The full index is listed below.", lang=lang, config=config) }}</p></noscript>
 </figure>
 <script type="application/json" id="map-data">{% set project_sections = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}{% include "partials/graph_data.html" %}</script>
 <script src="{{ get_url(path="seijaku-map.js", cachebust=true) | safe }}" defer></script>
 
 <div class="map-index">
-  {%- if tags %}
+  {%- if tags %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
   <section class="map-index__group" aria-labelledby="map-topics">
-    <h2 id="map-topics">Topics</h2>
+    <h2 id="map-topics">{{ i18n::t(text="Topics", lang=lang, config=config) }}</h2>
     <ul class="pills pills--small">
       {%- for t in tags.items | sort(attribute="name") %}
-      <li><a class="pill" href="{{ t.permalink | safe }}">{{ t.name }} <small>{{ t.pages | length }}</small></a></li>
+      <li>{% if lang != config.default_language %}{% set tdname = t.name %}{% if tagdata and t.slug in tagdata %}{% set tdname = tagdata[t.slug].name %}{% endif %}<a class="pill" href="{{ i18n::topic_url(slug=t.slug, lang=lang, base=config.default_language, used=true) | safe }}">{{ i18n::topic(slug=t.slug, field="name", fallback=tdname, lang=lang, base=config.default_language) }}{% else %}<a class="pill" href="{{ t.permalink | safe }}">{{ t.name }}{% endif %} <small>{{ t.pages | length }}</small></a></li>
       {%- endfor %}
     </ul>
   </section>
   {%- endif %}
   {%- if series and series.items | length > 0 %}
   <section class="map-index__group" aria-labelledby="map-series">
-    <h2 id="map-series">Series</h2>
+    <h2 id="map-series">{{ i18n::t(text="Series", lang=lang, config=config) }}</h2>
     {%- for s in series.items %}
     <h3><a href="{{ s.permalink | safe }}">{{ s.name | replace(from="-", to=" ") | title }}</a></h3>
     <ol>
@@ -102,7 +103,7 @@
   {%- set categories = get_taxonomy(kind="categories", required=false) %}
   {%- if categories and categories.items | length > 0 %}
   <section class="map-index__group" aria-labelledby="map-categories">
-    <h2 id="map-categories">Categories</h2>
+    <h2 id="map-categories">{{ i18n::t(text="Categories", lang=lang, config=config) }}</h2>
     {%- for c in categories.items %}
     <h3><a href="{{ c.permalink | safe }}">{{ c.name | replace(from="-", to=" ") | title }}</a></h3>
     <ul>
@@ -115,7 +116,7 @@
   {%- endif %}
   {%- if projects | length > 0 %}
   <section class="map-index__group" aria-labelledby="map-projects">
-    <h2 id="map-projects">Projects</h2>
+    <h2 id="map-projects">{{ i18n::t(text="Projects", lang=lang, config=config) }}</h2>
     <ul>
       {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
       <li>{% if p.links %}<a href="{{ p.links[0].url | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</li>
@@ -125,10 +126,10 @@
   {%- endif %}
   {%- if works | length > 0 %}
   <section class="map-index__group" aria-labelledby="map-reading">
-    <h2 id="map-reading">{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}">Reading</a>{% else %}Reading{% endif %}</h2>
+    {% if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}<h2 id="map-reading">{% if rpage %}<a href="{{ rpage_href | safe }}">{{ i18n::t(text="Reading", lang=lang, config=config) }}</a>{% else %}{{ i18n::t(text="Reading", lang=lang, config=config) }}{% endif %}</h2>
     <ul>
       {%- for w in works %}
-      <li>{% if rpage %}<a href="{{ get_url(path=rpage) | safe }}#{{ w.id }}">{{ w.title }}</a>{% elif w.url %}<a href="{{ w.url | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <small>{{ w.author }}</small></li>
+      <li>{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}">{{ w.title }}</a>{% elif w.url %}<a href="{{ w.url | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <small>{{ w.author }}</small></li>
       {%- endfor %}
     </ul>
   </section>

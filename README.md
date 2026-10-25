@@ -166,7 +166,7 @@ The theme works with Zola's multilingual sites. Translate a page by adding `<nam
 
 ```toml
 [languages.zh]
-build_search_index = false   # elasticlunr has no Chinese or Korean
+build_search_index = false   # translated pages search the default language's index
 taxonomies = []
 
 [extra.seijaku]
@@ -178,16 +178,33 @@ languages = [
 [extra.seijaku.i18n.zh]
 tagline = "..."              # replaces the footer tagline
 footer_about = "..."         # replaces the footer introduction
-labels = { "Articles" = "文章", "Home" = "首页" }   # English interface text to its translation
+
+[extra.seijaku.i18n.zh.labels]   # English interface text = translation; {name} is a placeholder
+"Articles" = "文章"
+"{n} of {total}" = "{n} / {total}"
+"%b %d" = "%-m月%-d日"        # date formats are labels too
 ```
 
-With `languages` set, the footer gets a language switch (native names; a page without a translation
-links to that language's home page), and every translated page gets `lang`, hreflang alternates with
-`x-default`, and `og:locale` with its alternates. Navigation and footer links follow the reader's language
-when the target is translated. Labels are looked up by their English text, so anything not in `labels`
-stays English, and a site without `i18n` needs no configuration. In templates, use
-`{% import "macros/i18n.html" as i18n %}`, then `i18n::t(text=..., lang=lang, config=config)` and
-`i18n::url(path="@/about.md", lang=lang)`. Chinese and Korean get CJK system font stacks.
+With `languages` set, the footer gets a language switch, and every translated page gets `lang`,
+hreflang alternates with `x-default`, and `og:locale` with its alternates. Links in the navigation, footer,
+and templates go through `i18n::url(path, lang, base)`: an `@/` path follows its translation, and a site
+path such as `/tags/` gets the language prefix, so every page they point to must exist in every language.
+Translated section indexes with no pages of their own list the default language's pages. For tags, series,
+and categories, which Zola builds per language, add a page per language with
+`template = "taxonomy_index.html"`, a `path` such as `"zh/tags"`, and `extra.taxonomy` (plus `extra.term` for
+one term); it renders the default language's taxonomy in that language. Labels reach the theme's scripts as
+`window.SEIJAKU_I18N`. In templates, use `{% import "macros/i18n.html" as i18n %}`, then `i18n::t(text=...,
+lang=lang, config=config)`, `i18n::url(path="@/about.md", lang=lang, base=config.default_language)`, and
+`i18n::status(p=..., lang=lang, config=config)` for project badges. Chinese and Korean get CJK font stacks.
+
+Topics can be translated too: `data/tags.<lang>.toml` gives each slug of the vocabulary a `name` and
+`description` in that language, and `i18n::topic(slug, field, fallback, lang, base)` and
+`i18n::topic_url(slug, lang, base, used)` show and link them; the topic lists, filters, tags under posts, the
+map, and topic pages use these. A topic page in another language is a page named
+`content/taxonomy-tags-<slug>.<lang>.md` with `template = "taxonomy_index.html"`, `path = "<lang>/tags/<slug>"`
+and `extra.term`; generate them rather than writing them by hand. Pages named
+`content/taxonomy-<taxonomy>[-<term>].<lang>.md` are also how the language switch and hreflang find the same
+taxonomy page in another language (`i18n::tax_url`).
 
 ### Building blocks for pages
 

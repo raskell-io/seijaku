@@ -1,8 +1,11 @@
+{%- import "macros/i18n.html" as i18n -%}
+{%- set lml = lang | default(value=config.default_language) %}
 {#- "On the map": where this page (or tag) sits in the site graph. A closed <details> with a one-line
     summary; opening it loads seijaku-map.js and draws the node's neighbourhood from the map page's
     graph data. The links-to / linked-from lists are plain HTML, so they work without JavaScript.
     Set `focus_tag` before including to centre on a tag instead of the current page. -#}
 {%- set mapurl = get_url(path=config.extra.seijaku.map | default(value="@/map.md")) %}
+{%- set mapurl_full = i18n::url(path=config.extra.seijaku.map | default(value="@/map.md"), lang=lml, base=config.default_language) %}
 {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[config.extra.seijaku.main_section | default(value="articles")]) %}
 {%- set_global lpages = [] %}
 {%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global lpages = lpages | concat(with=s.pages) %}{% endif %}{% endfor %}
@@ -21,31 +24,31 @@
 {%- set n_pages = outlinks | length + backlinks | length %}
 <details class="localmap" data-localmap>
   <summary>
-    <span class="localmap__title">On the map</span>
+    <span class="localmap__title">{{ i18n::t(text="On the map", lang=lml, config=config) }}</span>
     <span class="localmap__sum">
-      {%- if focus_tag is defined and focus_tag %}{{ focus_tag.pages | length }} {% if focus_tag.pages | length == 1 %}page{% else %}pages{% endif %} and the topics around it
+      {%- if focus_tag is defined and focus_tag %}{% set lm_n = focus_tag.pages | length %}{% if lm_n == 1 %}{% set lm_tpl = i18n::t(text="{n} page and the topics around it", lang=lml, config=config) %}{% else %}{% set lm_tpl = i18n::t(text="{n} pages and the topics around it", lang=lml, config=config) %}{% endif %}{% set lm_ns = lm_n ~ "" %}{{ lm_tpl | replace(from="{n}", to=lm_ns) }}
       {%- else %}{{ n_topics }} {% if n_topics == 1 %}topic{% else %}topics{% endif %}{% if outlinks | length > 0 %} · links to {{ outlinks | length }}{% endif %}{% if backlinks | length > 0 %} · linked from {{ backlinks | length }}{% endif %}{% endif -%}
     </span>
     <span class="localmap__toggle" aria-hidden="true"></span>
   </summary>
   <div class="localmap__body">
-    <figure class="map map--local" data-focus="{{ focus_id }}" data-src="{{ mapurl | safe }}">
+    <figure class="map map--local" data-focus="{{ focus_id }}" data-src="{{ mapurl_full | safe }}">
       <canvas class="map__canvas" aria-hidden="true"></canvas>
-      <figcaption class="localmap__hint">Tap a dot to select it, tap again to open it.</figcaption>
+      <figcaption class="localmap__hint">{{ i18n::t(text="Tap a dot to select it, tap again to open it.", lang=lml, config=config) }}</figcaption>
     </figure>
-    <p class="localmap__full"><a href="{{ mapurl | safe }}#{{ focus_id }}">Open in the full map →</a></p>
+    <p class="localmap__full"><a href="{{ mapurl_full | safe }}#{{ focus_id }}">{{ i18n::t(text="Open in the full map", lang=lml, config=config) }} →</a></p>
     {%- if outlinks | length > 0 or backlinks | length > 0 %}
     <div class="localmap__lists">
       {%- if outlinks | length > 0 %}
       <section>
-        <h3>Links to</h3>
-        <ul>{% for b in outlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>note</small>{% endif %}</li>{% endfor %}</ul>
+        <h3>{{ i18n::t(text="Links to", lang=lml, config=config) }}</h3>
+        <ul>{% for b in outlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
       </section>
       {%- endif %}
       {%- if backlinks | length > 0 %}
       <section>
-        <h3>Linked from</h3>
-        <ul>{% for b in backlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>note</small>{% endif %}</li>{% endfor %}</ul>
+        <h3>{{ i18n::t(text="Linked from", lang=lml, config=config) }}</h3>
+        <ul>{% for b in backlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
       </section>
       {%- endif %}
     </div>

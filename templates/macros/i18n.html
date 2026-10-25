@@ -1,10 +1,14 @@
 {#- Translation helpers. Import with {% import "macros/i18n.html" as i18n %}.
 
-    i18n::url(path, lang)   A link that follows the reader's language: for an internal path ("@/about.md",
+    i18n::url(path, lang, base="en")
+                            A link that follows the reader's language: for an internal path ("@/about.md",
                             "@/articles/_index.md") the translation into `lang` when one exists, else the
-                            original page; any other URL as it is. Not in shortcodes: they render before
+                            original page; a site path to a page ("/tags/") under the language prefix when
+                            `lang` is not `base` (the default language); any other URL as it is. Not in shortcodes: they render before
                             the pages are loaded, so a translation links a translated page as "@/about.zh.md". URLs stay English (/zh/about/, not a
                             translated slug), because Zola names a translation after its source file.
+    i18n::topic(slug, field, fallback, lang, base="en"), i18n::topic_url(slug, lang, base="en", used=true)
+                            A topic's name or description, and its link, in `lang`.
     i18n::status(p, lang, config)
                             A project's status badge (data/projects/<slug>.toml), translated.
     i18n::t(text, lang, config)
@@ -12,8 +16,13 @@
                             to its translation; anything missing, and everything in the default language,
                             stays English. Sites without i18n need no configuration at all. -#}
 
-{% macro url(path, lang) -%}
-{%- if path is starting_with("@/") -%}
+{% macro url(path, lang, base="en") -%}
+{%- if path is starting_with("/") and lang != base -%}
+{#- A site path to a page (no file extension): the same path under the language prefix. Files such as
+    /rss.xml stay as they are. Every such page must exist in every language (tags, series and categories
+    have per-language index pages for this). -#}
+{%- if path is containing(".") %}{{ path }}{% else %}/{{ lang }}{{ path }}{% endif -%}
+{%- elif path is starting_with("@/") -%}
 {%- set parts = path | trim_start_matches(pat="@/") | split(pat="#") -%}
 {%- set p = parts[0] -%}{% if parts | length > 1 %}{% set frag = "#" ~ parts[1] %}{% else %}{% set frag = "" %}{% endif -%}
 {%- if p is ending_with("_index.md") %}{% set src = get_section(path=p, metadata_only=true) %}{% else %}{% set src = get_page(path=p) %}{% endif -%}
@@ -25,7 +34,11 @@
 
 {% macro t(text, lang, config) -%}
 {%- set all = config.extra.seijaku.i18n | default(value=false) -%}
-{%- if all and lang in all and all[lang].labels and text in all[lang].labels -%}{{ all[lang].labels[text] }}{%- else -%}{{ text }}{%- endif -%}
+{#- Keys are compared in a loop, not looked up as labels[text]: Tera builds a dotted path from the key, so a
+    key with "." or "…" in it would miss or panic. -#}
+{%- set_global found = text -%}
+{%- if all and lang in all and all[lang].labels -%}{% for k, v in all[lang].labels %}{% if k == text %}{% set_global found = v %}{% break %}{% endif %}{% endfor %}{%- endif -%}
+{{ found }}
 {%- endmacro t %}
 
 {#- A project's status badge text (`status_label` wins), in `lang`. -#}
@@ -33,3 +46,34 @@
 {%- if p.status_label %}{% set st = p.status_label %}{% elif p.status == "live" %}{% set st = "Live" %}{% elif p.status == "stable" %}{% set st = "Stable" %}{% elif p.status == "dev" %}{% set st = "In development" %}{% elif p.status == "shipping" %}{% set st = "Shipping" %}{% elif p.status == "early" %}{% set st = "Very early" %}{% elif p.status == "progress" %}{% set st = "In progress" %}{% else %}{% set st = p.status %}{% endif -%}
 {{ self::t(text=st, lang=lang, config=config) }}
 {%- endmacro status %}
+
+{#- A topic's name or description (field) in `lang`, from data/tags.<lang>.toml, falling back to the default
+    language's text (fallback). The vocabulary itself is data/tags.toml. -#}
+{% macro topic(slug, field, fallback, lang, base="en") -%}
+{%- if lang != base -%}
+{%- set tr = load_data(path="data/tags." ~ lang ~ ".toml", required=false) -%}
+{%- if tr and slug in tr and tr[slug][field] %}{{ tr[slug][field] }}{% else %}{{ fallback }}{% endif -%}
+{%- else -%}{{ fallback }}{%- endif -%}
+{%- endmacro topic %}
+
+{#- The link to a topic: its page in `lang` (/zh/tags/<slug>/, written by `mise run topic-pages`), or in the
+    default language its taxonomy page when pages use it (`used`), else its entry on the topics index. -#}
+{% macro topic_url(slug, lang, base="en", used=true) -%}
+{%- if lang != base %}/{{ lang }}/tags/{{ slug }}/{% elif used %}{{ get_taxonomy_url(kind="tags", name=slug) }}{% else %}{{ get_url(path="/tags/") }}#{{ slug }}{% endif -%}
+{%- endmacro topic_url %}
+
+{#- The same taxonomy page (the index of `tax`, or one `term`) in language `lang`, or "" when it does not exist
+    there. In the default language Zola builds it; in other languages it is a page named
+    content/taxonomy-<tax>[-<term>].<lang>.md (template taxonomy_index.html; the topic pages are written by
+    `mise run topic-pages`). Used for the language switch and hreflang on taxonomy pages. -#}
+{% macro tax_url(tax, term, lang, base="en", config_base="") -%}
+{%- if term %}{% set suffix = term ~ "/" %}{% set fname = tax ~ "-" ~ term %}{% else %}{% set suffix = "" %}{% set fname = tax %}{% endif -%}
+{%- if lang == base -%}
+{%- if term %}{% set t = get_taxonomy_term(kind=tax, term=term, lang=base, required=false) %}{% if t %}{{ t.permalink }}{% endif %}
+{%- else %}{{ config_base }}/{{ tax }}/{% endif -%}
+{%- else -%}
+{%- set fpath = "content/taxonomy-" ~ fname ~ "." ~ lang ~ ".md" -%}
+{%- set found = load_data(path=fpath, format="plain", required=false) -%}
+{%- if found %}{{ config_base }}/{{ lang }}/{{ tax }}/{{ suffix }}{% endif -%}
+{%- endif -%}
+{%- endmacro tax_url %}

@@ -4,7 +4,7 @@
 {%- set here = current_path | default(value="") %}
 {%- set cta = config.extra.seijaku.cta | default(value=false) %}
 {%- if cta %}
-{%- if cta.url is starting_with("@/") %}{% set cta_href = i18n::url(path=cta.url, lang=here_lang) %}{% else %}{% set cta_href = cta.url %}{% endif %}
+{%- set cta_href = i18n::url(path=cta.url, lang=here_lang, base=config.default_language) %}
 {%- set cta_name = i18n::t(text=cta.name, lang=here_lang, config=config) %}
 {%- else %}
 {%- set cta_href = get_url(path="/" ~ main ~ "/") %}
@@ -19,7 +19,7 @@
   {%- if config.extra.seijaku.nav %}
   <ul class="topnav__links">
     {%- for item in config.extra.seijaku.nav %}
-    {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
+    {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
     {%- set path = href | replace(from=config.base_url, to="") %}
     {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
     <li><a href="{{ href | safe }}"{% if active %} class="is-active" aria-current="{% if here == path %}page{% else %}true{% endif %}"{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}</a></li>
@@ -39,7 +39,7 @@
     <div class="topnav__sheet">
       {%- if config.extra.seijaku.nav %}
       {%- for item in config.extra.seijaku.nav %}
-      {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
+      {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
       {%- set path = href | replace(from=config.base_url, to="") %}
       {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
       <a href="{{ href | safe }}"{% if active %} class="is-active"{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}</a>

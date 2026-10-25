@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {#- Search across the whole garden: articles, reviews, notes, talks, works from the reading log, projects,
     topics, and every external link the pages cite, with a filter per kind (static/seijaku-search.js).
     The index is inline below (partials/garden_data.html); the search dialog fetches it from this page.
@@ -8,26 +9,29 @@
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">Index</p>
+  <p class="pagehead__eyebrow">{{ i18n::t(text="Index", lang=lang, config=config) }}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
-{%- set search_lang = lang | default(value="en") %}{% set search_index = "search_index." ~ search_lang ~ ".js" %}
-<div class="garden garden--page" data-garden data-limit="40"{% if config.build_search_index %} data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}"{% endif %}>
+{#- Full-text search is built for the default language only (the writing is in it). -#}
+{%- set search_lang = config.default_language %}{% set search_index = "search_index." ~ search_lang ~ ".js" %}
+{%- set search_on = config.build_search_index %}{% if lang != config.default_language %}{% set search_on = true %}{% endif %}
+<div class="garden garden--page" data-garden data-limit="40"{% if search_on %} data-lib="{{ get_url(path="elasticlunr.min.js") | safe }}" data-index="{{ get_url(path=search_index) | safe }}"{% endif %}>
   <form class="garden__bar" role="search" action="" method="get">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
-    <input type="search" name="q" placeholder="Search articles, books, projects, links…" autocomplete="off" spellcheck="false" aria-label="Search the site" autofocus>
+    <input type="search" name="q" placeholder="{{ i18n::t(text="Search articles, books, projects, links…", lang=lang, config=config) }}" autocomplete="off" spellcheck="false" aria-label="{{ i18n::t(text="Search the site", lang=lang, config=config) }}" autofocus>
   </form>
-  <div class="garden__chips" role="group" aria-label="Show only" hidden></div>
+  <div class="garden__chips" role="group" aria-label="{{ i18n::t(text="Show only", lang=lang, config=config) }}" hidden></div>
   <p class="garden__status" role="status"></p>
   <ol class="garden__results"></ol>
-  <button type="button" class="garden__more" hidden>Show more</button>
+  <button type="button" class="garden__more" hidden>{{ i18n::t(text="Show more", lang=lang, config=config) }}</button>
   <noscript>
-    <p class="garden__noscript">Search needs JavaScript. Everything it covers is also browsable:
-      <a href="{{ get_url(path="@/articles/_index.md") | safe }}">articles</a>,
-      {%- if config.extra.seijaku.reading %} <a href="{{ get_url(path=config.extra.seijaku.reading) | safe }}">the reading log</a>,{% endif %}
-      <a href="{{ get_url(path="/tags/") | safe }}">topics</a>, and
-      <a href="{{ get_url(path=config.extra.seijaku.map | default(value="@/map.md")) | safe }}">the map</a>.</p>
+    {%- set u_articles = i18n::url(path="@/articles/_index.md", lang=lang, base=config.default_language) %}{% set u_tags = i18n::url(path="/tags/", lang=lang, base=config.default_language) %}{% set u_map = i18n::url(path=config.extra.seijaku.map | default(value="@/map.md"), lang=lang, base=config.default_language) %}
+    <p class="garden__noscript">{{ i18n::t(text="Search needs JavaScript. Everything it covers is also browsable:", lang=lang, config=config) }}
+      <a href="{{ u_articles | safe }}">{{ i18n::t(text="articles", lang=lang, config=config) }}</a>,
+      {%- if config.extra.seijaku.reading %}{% set u_reading = i18n::url(path=config.extra.seijaku.reading, lang=lang, base=config.default_language) %} <a href="{{ u_reading | safe }}">{{ i18n::t(text="the reading log", lang=lang, config=config) }}</a>,{% endif %}
+      <a href="{{ u_tags | safe }}">{{ i18n::t(text="topics", lang=lang, config=config) }}</a>, {{ i18n::t(text="and", lang=lang, config=config) }}
+      <a href="{{ u_map | safe }}">{{ i18n::t(text="the map", lang=lang, config=config) }}</a>.</p>
   </noscript>
 </div>
 <script type="application/json" id="garden-data">{% set project_sections = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}{% include "partials/garden_data.html" %}</script>

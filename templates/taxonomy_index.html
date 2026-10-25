@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
+{#- A taxonomy index or term page for a language that has no terms of its own (Zola builds taxonomies per
+    language, so /zh/tags/ would be empty while the writing is in the default language). A page in that
+    language sets `template = "taxonomy_index.html"`, its `path` (e.g. "zh/tags"), `extra.taxonomy` ("tags",
+    "series", "categories") and, for one term, `extra.term` (its slug). It renders the default language's
+    taxonomy with the same partials as taxonomy_list.html and taxonomy_single.html, in this page's language. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set tx = get_taxonomy(kind=page.extra.taxonomy, lang=config.default_language) %}
+{%- set taxonomy = tx.kind %}
+{%- if page.extra.term %}
+{%- set term = get_taxonomy_term(kind=page.extra.taxonomy, term=page.extra.term, lang=config.default_language, required=false) %}
+{%- if term %}
+{% include "partials/taxonomy_single_body.html" %}
+{%- else %}
+{#- A topic nothing is filed under yet (it still sits on the map): its name and definition. -#}
+<header class="pagehead">
+  <p class="pagehead__eyebrow"><a href="{{ i18n::url(path="/tags/", lang=lang, base=config.default_language) | safe }}">{{ i18n::t(text="Topics", lang=lang, config=config) }}</a></p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{% endif %}
+</header>
+{%- endif %}
+{%- else %}
+{%- set terms = tx.items %}
+{% include "partials/taxonomy_list_body.html" %}
+{%- endif %}
+{% endblock content %}
+{% block crumbs %}
+{%- set tname = page.extra.taxonomy %}
+{%- if tname == "tags" %}{% set tlabel = i18n::t(text="Topics", lang=lang, config=config) %}{% else %}{% set tcap = tname | capitalize %}{% set tlabel = i18n::t(text=tcap, lang=lang, config=config) %}{% endif %}
+{%- if page.extra.term %}{% set thref = i18n::url(path="/" ~ tname ~ "/", lang=lang, base=config.default_language) %} → <a href="{{ thref | safe }}">{{ tlabel }}</a> → <span aria-current="page">{{ page.title }}</span>
+{%- else %} → <span aria-current="page">{{ tlabel }}</span>{% endif %}
+{%- endblock crumbs %}

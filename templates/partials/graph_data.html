@@ -1,3 +1,7 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- Topic labels, definitions, and links follow the page language on a translated map page (g_tr); map.json
+    and the default language keep the vocabulary as written. -#}
+{%- set g_tr = lang is defined and lang != config.default_language %}
 {#- The site graph as JSON: every page in the graph sections, every tag (with its description and its
     broader tags from the tag vocabulary), every series and category, project, and project group, every work in the
     reading log with its shelf, and the links between them. Rendered by map.html; the end-of-page maps
@@ -31,11 +35,19 @@
 {"id":"a:{{ a.path | safe }}","kind":"{{ gkind }}","label":{{ a.title | json_encode | safe }},"url":{{ a.permalink | json_encode | safe }},"meta":{% set gdate = a.date | date(format="%Y-%m-%d") %}{% if gkind == "article" %}{% set gmeta = gdate ~ " · " ~ a.reading_time ~ " min" %}{% elif gkind == "talk" and a.extra.event %}{% set gmeta = gdate ~ " · " ~ a.extra.event %}{% else %}{% set gmeta = gdate %}{% endif %}{{ gmeta | json_encode | safe }},"desc":{{ a.description | default(value="") | json_encode | safe }}},
 {%- endfor %}
 {%- if tags %}{% for t in tags.items %}{% set td = false %}{% if tagdata and t.slug in tagdata %}{% set td = tagdata[t.slug] %}{% endif %}
+{%- if g_tr %}{% set gl = i18n::topic(slug=t.slug, field="name", fallback=td.name | default(value=t.name), lang=lang, base=config.default_language) %}{% set gd = i18n::topic(slug=t.slug, field="description", fallback=td.description | default(value=""), lang=lang, base=config.default_language) %}{% set gu = i18n::topic_url(slug=t.slug, lang=lang, base=config.default_language) %}{% set gk = td.kind | default(value="") | capitalize %}{% set gkt = i18n::t(text=gk, lang=lang, config=config) %}{% set gn = t.pages | length %}{% if gn == 1 %}{% set gnt = i18n::t(text="{n} page", lang=lang, config=config) %}{% else %}{% set gnt = i18n::t(text="{n} pages", lang=lang, config=config) %}{% endif %}{% set gns = gn ~ "" %}{% set gnt = gnt | replace(from="{n}", to=gns) %}
+{"id":"t:{{ t.slug }}","kind":"tag","label":{{ gl | json_encode | safe }},"url":{{ gu | json_encode | safe }},"meta":{% set gm = gkt ~ " · " ~ gnt %}{{ gm | json_encode | safe }},"desc":{{ gd | json_encode | safe }}},
+{%- else %}
 {"id":"t:{{ t.slug }}","kind":"tag","label":{% if td %}{{ td.name | json_encode | safe }}{% else %}{{ t.name | json_encode | safe }}{% endif %},"url":{{ t.permalink | json_encode | safe }},"meta":"{% if td %}{{ td.kind | capitalize }} · {% endif %}{{ t.pages | length }} {% if t.pages | length == 1 %}page{% else %}pages{% endif %}","desc":{% if td %}{{ td.description | json_encode | safe }}{% else %}""{% endif %}},
+{%- endif %}
 {%- endfor %}{% endif %}
 {#- Vocabulary tags nothing is filed under yet still belong to the graph, linked through their broader tags. -#}
 {%- if tagdata %}{% for slug, td in tagdata %}{% if slug not in tslugs %}
+{%- if g_tr %}{% set gl = i18n::topic(slug=slug, field="name", fallback=td.name, lang=lang, base=config.default_language) %}{% set gd = i18n::topic(slug=slug, field="description", fallback=td.description, lang=lang, base=config.default_language) %}{% set gu = i18n::topic_url(slug=slug, lang=lang, base=config.default_language) %}{% set gk = td.kind | capitalize %}{% set gkt = i18n::t(text=gk, lang=lang, config=config) %}
+{"id":"t:{{ slug }}","kind":"tag","label":{{ gl | json_encode | safe }},"url":{{ gu | json_encode | safe }},"meta":{{ gkt | json_encode | safe }},"desc":{{ gd | json_encode | safe }}},
+{%- else %}
 {"id":"t:{{ slug }}","kind":"tag","label":{{ td.name | json_encode | safe }},"url":{% set turl = get_url(path="/tags/") ~ "#" ~ slug %}{{ turl | json_encode | safe }},"meta":"{{ td.kind | capitalize }} · no pages yet","desc":{{ td.description | json_encode | safe }}},
+{%- endif %}
 {%- endif %}{% endfor %}{% endif %}
 {%- if series %}{% for s in series.items %}
 {"id":"s:{{ s.slug }}","kind":"series","label":{{ s.name | replace(from="-", to=" ") | title | json_encode | safe }},"url":{{ s.permalink | json_encode | safe }},"meta":"{{ s.pages | length }} parts","desc":""},

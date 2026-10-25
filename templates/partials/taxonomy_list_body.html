@@ -1,0 +1,48 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- The index of one taxonomy: `taxonomy` (its config, with .name) and `terms`. Used by taxonomy_list.html and,
+    for languages without their own terms, by taxonomy_index.html with the default language's terms. -#}
+{%- set tlang = lang | default(value=config.default_language) %}
+{%- set tagdata = false %}
+{%- if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% endif %}
+{%- if tagdata %}
+{#- Tags with a vocabulary: grouped by kind, each with its definition and its broader topics. -#}
+{%- set_global used = [] %}{% for term in terms %}{% set_global used = used | concat(with=term.slug) %}{% endfor %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ i18n::t(text="Index", lang=tlang, config=config) }} · {{ tagdata | length }} {{ i18n::t(text="topics", lang=tlang, config=config) }}</p>
+  <h1 class="pagehead__title">{{ i18n::t(text="Topics", lang=tlang, config=config) }}</h1>
+  {%- set map_href = i18n::url(path=config.extra.seijaku.map | default(value="@/map.md"), lang=tlang, base=config.default_language) %}
+  {%- set map_word = i18n::t(text="map", lang=tlang, config=config) %}
+  {%- set map_link = '<a href="' ~ map_href ~ '">' ~ map_word ~ '</a>' %}
+  {%- set deck = i18n::t(text="Everything on the site, filed by subject. Each topic has a definition and its broader topics, so together they form the vocabulary of the {map}.", lang=tlang, config=config) %}
+  <p class="pagehead__deck">{{ deck | replace(from="{map}", to=map_link) | safe }}</p>
+</header>
+{%- for kind in ["domain", "concept", "technology", "site"] %}
+{%- set_global group = [] %}{% for slug, td in tagdata %}{% if td.kind == kind %}{% set_global group = group | concat(with=slug) %}{% endif %}{% endfor %}
+{%- if group | length > 0 %}
+<section class="topics" aria-labelledby="kind-{{ kind }}">
+  <h2 class="topics__kind" id="kind-{{ kind }}">{% if kind == "domain" %}{{ i18n::t(text="Domains", lang=tlang, config=config) }}{% elif kind == "concept" %}{{ i18n::t(text="Concepts", lang=tlang, config=config) }}{% elif kind == "technology" %}{{ i18n::t(text="Technologies", lang=tlang, config=config) }}{% else %}{{ i18n::t(text="This site", lang=tlang, config=config) }}{% endif %}</h2>
+  <ul class="topics__list">
+    {%- for slug in group %}{% set td = tagdata[slug] %}{% set n = 0 %}{% for term in terms %}{% if term.slug == slug %}{% set_global n = term.pages | length %}{% endif %}{% endfor %}
+    <li class="topic" id="{{ slug }}">
+      {%- set tused = slug in used %}<h3 class="topic__name">{% if tused or tlang != config.default_language %}<a href="{{ i18n::topic_url(slug=slug, lang=tlang, base=config.default_language, used=tused) | safe }}">{{ i18n::topic(slug=slug, field="name", fallback=td.name, lang=tlang, base=config.default_language) }}</a>{% else %}{{ i18n::topic(slug=slug, field="name", fallback=td.name, lang=tlang, base=config.default_language) }}{% endif %} <small>{% if tused %}{% for term in terms %}{% if term.slug == slug %}{{ term.pages | length }}{% endif %}{% endfor %}{% else %}0{% endif %}</small></h3>
+      <p class="topic__desc">{{ i18n::topic(slug=slug, field="description", fallback=td.description, lang=tlang, base=config.default_language) }}</p>
+      {%- if td.broader %}<p class="topic__broader">{{ i18n::t(text="within", lang=tlang, config=config) }} {% for b in td.broader %}{% set bused = b in used %}{% if tlang == config.default_language and not bused %}<a href="#{{ b }}">{% else %}<a href="{{ i18n::topic_url(slug=b, lang=tlang, base=config.default_language, used=bused) | safe }}">{% endif %}{{ i18n::topic(slug=b, field="name", fallback=tagdata[b].name, lang=tlang, base=config.default_language) }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+    </li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endif %}
+{%- endfor %}
+{%- else %}
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ i18n::t(text="Index", lang=tlang, config=config) }}</p>
+  <h1 class="pagehead__title">{{ i18n::t(text=taxonomy.name | capitalize, lang=tlang, config=config) }}</h1>
+  {#- The deck comes from extra.seijaku.<taxonomy>_deck when set. -#}
+  <p class="pagehead__deck">{% set ckey = taxonomy.name ~ "_deck" %}{% set deck = config.extra.seijaku[ckey] | default(value="Everything on the site, filed by subject. Pick a topic to follow the thread.") %}{{ i18n::t(text=deck, lang=tlang, config=config) }}</p>
+</header>
+<ul class="pills">
+  {%- for term in terms %}
+  <li><a class="pill" href="{{ term.permalink | safe }}">{% if taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} <small>{{ term.pages | length }}</small></a></li>
+  {%- endfor %}
+</ul>
+{%- endif %}
