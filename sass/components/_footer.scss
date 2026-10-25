@@ -100,6 +100,11 @@
   .footer__grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .footer__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer__meta-end { margin-inline-start: 0; }
+  // The language switch starts its own line, so its menu can open from the left edge, where it always
+  // fits on screen; anchored on the right, it would hang off the left of a narrow screen.
+  .footer__meta > :has(+ .langs) { flex-basis: 100%; }
+  .langs__menu { left: 0; right: auto; }
+  .langs + .scheme { margin-inline-start: 0; }
 }
 
 
