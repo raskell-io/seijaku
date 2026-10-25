@@ -127,7 +127,14 @@
     {% block content %}{% endblock content %}
   </main>
 
-  <footer class="footer">
+  {%- set footer_fx = config.extra.seijaku.footer_fx | default(value="") %}
+  <footer class="footer{% if footer_fx == "aurora" %} footer--aurora{% endif %}">
+    {#- Optional footer effect (config extra.seijaku.footer_fx = "aurora"): four soft blooms in the ring colours
+        drifting slowly along the bottom edge. CSS only; the script below pauses it while the footer is off-screen. -#}
+    {%- if footer_fx == "aurora" %}
+    <div class="footer__aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <script>(function(){var a=document.querySelector(".footer__aurora");if(!a||!("IntersectionObserver" in window)){return}new IntersectionObserver(function(e){a.classList.toggle("is-paused",!e[0].isIntersecting)}).observe(a)})();</script>
+    {%- endif %}
     <div class="footer__grid">
       <div class="footer__brand">
         <a class="footer__logo" href="{{ i18n::url(path="@/_index.md", lang=here_lang) | safe }}">

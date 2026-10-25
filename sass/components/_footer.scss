@@ -22,7 +22,33 @@
     radial-gradient(52rem 20rem at 90% 100%, var(--footer-glow-b), transparent 70%);
 }
 
-.footer > * { position: relative; width: min(var(--shell), calc(100% - (var(--gutter) * 2))); margin-inline: auto; }
+.footer > *:not(.footer__aurora) { position: relative; width: min(var(--shell), calc(100% - (var(--gutter) * 2))); margin-inline: auto; }
+
+// Aurora (config footer_fx = "aurora"): four blurred blooms in the ring colours (champagne, pearl, teal, ice) drift
+// slowly along the bottom edge over the footer's corner glows, each on its own 26 to 40 s cycle. CSS only; the mask
+// lets them rise through the whole footer, softening on the way up so the text stays readable.
+.footer__aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  // Full strength along the bottom edge, then softer the higher it reaches: a faint tint behind the text at the top.
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 18%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.13) 75%, transparent 100%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.5) 18%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.13) 75%, transparent 100%);
+}
+// Light text on light glow has the least contrast, so the dark scheme runs the aurora softer.
+:root[data-theme="dark"] .footer__aurora { opacity: 0.72; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .footer__aurora { opacity: 0.72; } }
+.footer__aurora i { position: absolute; bottom: -22%; width: 60%; height: 95%; border-radius: 50%; filter: blur(56px); opacity: 0.55; }
+.footer__aurora i:nth-child(1) { left: -10%; background: #e9bd70; animation: aurora-a 26s ease-in-out infinite alternate; }
+.footer__aurora i:nth-child(2) { left: 25%; background: #f4f0df; opacity: 0.35; animation: aurora-b 34s ease-in-out infinite alternate; }
+.footer__aurora i:nth-child(3) { right: -10%; background: #62d0d5; animation: aurora-c 30s ease-in-out infinite alternate; }
+.footer__aurora i:nth-child(4) { right: 20%; background: #c8f0ef; opacity: 0.4; animation: aurora-a 40s ease-in-out infinite alternate-reverse; }
+@keyframes aurora-a { to { transform: translate(18%, -12%) scale(1.25, 0.8); } }
+@keyframes aurora-b { to { transform: translate(-22%, -6%) scale(0.8, 1.2); } }
+@keyframes aurora-c { to { transform: translate(-16%, -16%) scale(1.15, 0.9); } }
+.footer__aurora.is-paused i { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .footer__aurora i { animation: none; } }
 
 .footer__grid {
   padding-block: clamp(3.5rem, 7vw, 6rem) clamp(3rem, 6vw, 5rem);
