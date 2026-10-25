@@ -44,6 +44,43 @@
 .map__legend [data-kind="work"] i { width: 0.5rem; height: 0.5rem; border-radius: 1px; background: transparent; box-shadow: inset 0 0 0 1.5px #a9e8e9; transform: rotate(45deg); }
 .map__zoom button { min-width: 2rem; justify-content: center; padding-inline: 0.6rem; font-family: var(--font-mono); }
 
+// The kinds legend at rest: chips stacked over each other, only their markers showing, with a "Show" label in
+// front. Open (.is-open), the chips slide apart and their labels unfold into the usual pills.
+.map__legend-hint { display: none; }
+.map__legend.is-stacked { right: auto; flex-wrap: nowrap; gap: 0; align-items: center; z-index: 3; }
+.map__legend.is-stacked .map__legend-hint {
+  display: inline-flex; align-items: center; min-height: 2rem; padding: 0.3rem 0.85rem 0.3rem 0.8rem; margin-right: 0.15rem;
+  border-radius: 100px; background: rgba(17, 22, 21, 0.86); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  font: 0.78rem/1 var(--font-mono); letter-spacing: 0.02em; color: rgba(244, 240, 223, 0.75); cursor: pointer;
+  transition: opacity 200ms ease, max-width 260ms ease, padding 260ms ease, margin 260ms ease; max-width: 5rem; overflow: hidden;
+}
+.map__legend.is-stacked button {
+  position: relative; gap: 0; padding-inline: 0.6rem; margin-left: -0.55rem; background: rgb(28, 37, 35);
+  box-shadow: 0 0 0 1.5px #0b1412, 0 3px 10px rgba(0, 0, 0, 0.35);
+  transition: margin 260ms cubic-bezier(0.2, 0.7, 0.2, 1), padding 260ms ease, gap 260ms ease, background 150ms ease, opacity 150ms ease;
+}
+.map__legend.is-stacked button:first-of-type { margin-left: 0; }
+.map__legend.is-stacked button span { display: inline-block; max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0; transition: max-width 260ms ease, opacity 180ms ease; }
+.map__legend.is-stacked.is-open { flex-wrap: wrap; gap: 0.4rem; right: 16rem; }
+.map__legend.is-stacked.is-open .map__legend-hint { max-width: 0; padding-inline: 0; margin-right: -0.4rem; opacity: 0; }
+.map__legend.is-stacked.is-open button { margin-left: 0; gap: 0.45rem; padding-inline: 0.8rem; background: rgba(36, 46, 44, 0.96); }
+.map__legend.is-stacked.is-open button:hover { background: rgb(52, 63, 60); }
+.map__legend.is-stacked.is-open button span { max-width: 8rem; opacity: 1; }
+.map__legend.is-stacked button[aria-pressed="false"] { opacity: 0.5; }
+
+// Full screen: the prominent control, and the map filling the screen (real full screen, or covering the page).
+.map__zoom .map__full {
+  gap: 0.45rem; padding-inline: 0.85rem; background: #f4f0df; color: #0b1412; font: 600 0.8rem/1 var(--font-prose);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+.map__zoom .map__full:hover { background: #fff; }
+.map__full .map__full-close, .map__full[aria-pressed="true"] .map__full-open { display: none; }
+.map__full[aria-pressed="true"] .map__full-close { display: inline; }
+.map:fullscreen, .map.is-full { height: 100%; border-radius: 0; box-shadow: none; }
+.map:-webkit-full-screen { width: 100%; height: 100%; border-radius: 0; }
+.map.is-full { position: fixed; inset: 0; z-index: 1000; height: 100svh; }
+.map-is-full, .map-is-full body { overflow: hidden; }
+
 // Export: a small menu under the zoom controls (PNG of the whole graph, or the graph as JSON).
 .map__export { position: relative; }
 .map__export summary {
@@ -89,6 +126,8 @@
 @media (max-width: 44rem) {
   .map { height: 78svh; margin-inline: calc(var(--gutter) * -1 + 0.5rem); border-radius: 1rem; }
   .map__legend { right: 1rem; top: 0.75rem; left: 0.75rem; }
+  .map__legend.is-stacked.is-open { right: 0.75rem; }
+  .map__zoom .map__full span { display: none; }   // the icon alone on a phone
   .map__zoom { top: auto; right: 0.75rem; bottom: 0.75rem; flex-direction: column; align-items: flex-end; }
   .map__export-menu { top: auto; bottom: calc(100% + 0.4rem); }
   .map__hint { display: none; }

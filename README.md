@@ -111,6 +111,15 @@ vocabulary, each post's tags rolled up through `broader`; technologies are the `
 form picks out reviews; length comes from the reading time. The whole section is listed on one page,
 the choice is kept in the URL, and without JavaScript the list shows in full.
 
+### The map
+
+`template = "map.html"` draws the whole site as one graph (`partials/graph_data.html`,
+`static/seijaku-map.js`): pages from `graph_sections`, topics and their `broader` links, series,
+categories, works from the reading log, and projects. The kinds legend rests as a stack of chips and fans
+out into labelled pills on hover, keyboard focus, or a first tap; a Full screen button uses the Fullscreen
+API and covers the page where that is missing (iPhone). Articles, notes, and topics end with a small
+"On the map" view of their own neighbourhood (`partials/local_map.html`).
+
 ### Search
 
 `template = "search.html"` makes a search page over everything the site has: pages from

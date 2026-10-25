@@ -29,25 +29,29 @@
 
 <figure class="map" data-map>
   <canvas class="map__canvas" aria-hidden="true"></canvas>
-  <div class="map__legend" role="group" aria-label="Show on the map">
-    <button type="button" data-kind="article" aria-pressed="true"><i></i>Articles</button>
-    <button type="button" data-kind="note" aria-pressed="true"><i></i>Notes</button>
+  {#- Kinds to show: a stack of chips at rest that fans out into labelled pills on hover, keyboard focus, or a
+      first tap (static/seijaku-map.js). -#}
+  <div class="map__legend" role="group" aria-label="Show on the map" data-legend>
+    <span class="map__legend-hint" aria-hidden="true">Show</span>
+    <button type="button" data-kind="article" aria-pressed="true"><i></i><span>Articles</span></button>
+    <button type="button" data-kind="note" aria-pressed="true"><i></i><span>Notes</span></button>
     {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[]) %}{% set tsec = get_section(path="talks/_index.md", required=false) %}
     {%- if tsec and tsec.pages | length > 0 and "talks" in gsecs %}
-    <button type="button" data-kind="talk" aria-pressed="true"><i></i>Talks</button>
+    <button type="button" data-kind="talk" aria-pressed="true"><i></i><span>Talks</span></button>
     {%- endif %}
-    <button type="button" data-kind="tag" aria-pressed="true"><i></i>Topics</button>
-    <button type="button" data-kind="series" aria-pressed="true"><i></i>Series</button>
+    <button type="button" data-kind="tag" aria-pressed="true"><i></i><span>Topics</span></button>
+    <button type="button" data-kind="series" aria-pressed="true"><i></i><span>Series</span></button>
     {%- set categories = get_taxonomy(kind="categories", required=false) %}
     {%- if categories and categories.items | length > 0 %}
-    <button type="button" data-kind="category" aria-pressed="true"><i></i>Categories</button>
+    <button type="button" data-kind="category" aria-pressed="true"><i></i><span>Categories</span></button>
     {%- endif %}
-    <button type="button" data-kind="project" aria-pressed="true"><i></i>Projects</button>
+    <button type="button" data-kind="project" aria-pressed="true"><i></i><span>Projects</span></button>
     {%- if works | length > 0 %}
-    <button type="button" data-kind="work" aria-pressed="true"><i></i>Reading</button>
+    <button type="button" data-kind="work" aria-pressed="true"><i></i><span>Reading</span></button>
     {%- endif %}
   </div>
   <div class="map__zoom">
+    <button type="button" class="map__full" data-fullscreen aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="map__full-open" d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/><path class="map__full-close" d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5"/></svg><span>Full screen</span></button>
     <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
     <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
     <button type="button" data-zoom="fit" aria-label="Fit the whole map">fit</button>
