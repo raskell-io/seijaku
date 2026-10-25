@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {#- Reading log: what is being read, what is next, and what has been read, from the reading data
     (config extra.seijaku.reading_data, default data/reading.toml: [[works]] with id, title, author, kind,
-    status reading/next/backlog/read/set-aside, started and finished ("YYYY-MM"), topics, take, cover). Each row shows the cover (graded like article covers),
+    status reading/next/backlog/read/set-aside, started and finished ("YYYY-MM", or "YYYY" when only the year is known), topics, take, cover). Each row shows the cover (graded like article covers),
     title, and author, and opens for the rest (partials/work_row.html); read works are grouped by the year
     they were finished. A link to /reading/#<id> opens that row. Reviews are ordinary pages with extra.review = "<id>".
     Front matter: template = "reading.html", optional extra.facets = ["form", "topic"]. -#}
@@ -31,40 +31,63 @@
 {%- endif %}
 {%- if page.extra.facets %}{% set facet_list = page.extra.facets %}{% include "partials/facets.html" %}{% endif %}
 {% include "partials/grade_filter.html" %}
-<ol class="postlist readlog">
-  {%- if current | length > 0 %}
-  <li class="postlist__year" id="shelf-reading"><h2>Reading now</h2></li>
-  {%- for w in current %}{% set wdate = "" %}{% if w.started %}{% set wmonth = w.started ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Started " ~ wlabel %}{% endif %}
-  {% include "partials/work_row.html" %}
+{#- Shelves: what is current stays in view; the rest folds. Reading now and Up next are always open; the
+    backlog, older years, and set-aside works are collapsed, each showing its count and a strip of covers.
+    The two most recent years of reading are open. Filters open every shelf with a match and hide the empty
+    ones; a link to a work (/reading/#<id>) opens its shelf and its row. -#}
+{%- set_global years = [] %}
+{%- for w in done %}{% set y = w.finished | truncate(length=4, end="") %}{% if not y in years %}{% set_global years = years | concat(with=y) %}{% endif %}{% endfor %}
+<div class="shelves" data-shelves>
+  <div class="shelves__bar" hidden><button type="button" class="shelves__all" data-shelves-all>Open all shelves</button></div>
+  {%- if current | length > 0 %}{% set sid = "shelf-reading" %}{% set stitle = "Reading now" %}{% set sworks = current %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if queue | length > 0 %}{% set sid = "shelf-next" %}{% set stitle = "Up next" %}{% set sworks = queue %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if backlog | length > 0 %}{% set sid = "shelf-backlog" %}{% set stitle = "Backlog" %}{% set sworks = backlog %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- for y in years %}
+  {%- set_global yworks = [] %}{% for w in done %}{% if w.finished is starting_with(y) %}{% set_global yworks = yworks | concat(with=w) %}{% endif %}{% endfor %}
+  {%- if loop.first %}{% set sid = "shelf-read" %}{% else %}{% set sid = "shelf-read-" ~ y %}{% endif %}
+  {%- set stitle = "Read in " ~ y %}{% set sworks = yworks %}{% if loop.index <= 2 %}{% set smode = "open" %}{% else %}{% set smode = "closed" %}{% endif %}
+  {% include "partials/shelf.html" %}
   {%- endfor %}
-  {%- endif %}
-  {%- if queue | length > 0 %}
-  <li class="postlist__year" id="shelf-next"><h2>Up next</h2></li>
-  {%- for w in queue %}{% set wdate = "" %}
-  {% include "partials/work_row.html" %}
-  {%- endfor %}
-  {%- endif %}
-  {%- if backlog | length > 0 %}
-  <li class="postlist__year" id="shelf-backlog"><h2>Backlog</h2></li>
-  {%- for w in backlog %}{% set wdate = "" %}
-  {% include "partials/work_row.html" %}
-  {%- endfor %}
-  {%- endif %}
-  {%- set_global current_year = "" %}
-  {%- for w in done %}{% set year = w.finished | truncate(length=4, end="") %}
-  {%- if year != current_year %}{% set_global current_year = year %}
-  <li class="postlist__year"{% if loop.first %} id="shelf-read"{% endif %}><h2>Read in {{ year }}</h2></li>
-  {%- endif %}
-  {%- set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Finished " ~ wlabel %}
-  {% include "partials/work_row.html" %}
-  {%- endfor %}
-  {%- if aside | length > 0 %}
-  <li class="postlist__year" id="shelf-set-aside"><h2>Set aside</h2></li>
-  {%- for w in aside %}{% set wdate = "" %}{% if w.finished %}{% set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wdate = "Set aside " ~ wlabel %}{% endif %}
-  {% include "partials/work_row.html" %}
-  {%- endfor %}
-  {%- endif %}
-</ol>
-<script>(function(){function open(){var id=decodeURIComponent(location.hash.slice(1)),li=id&&document.getElementById(id);if(li&&li.classList.contains("readlog__item")){li.querySelector("details").open=true}}open();addEventListener("hashchange",open)})();</script>
+  {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = "Set aside" %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
+</div>
+<script>(function(){
+  var root = document.querySelector("[data-shelves]"); if (!root) { return; }
+  var shelves = [].slice.call(root.querySelectorAll("[data-shelf]")), folding = shelves.filter(function (s) { return s.tagName === "DETAILS"; });
+  var bar = root.querySelector(".shelves__bar"), all = root.querySelector("[data-shelves-all]");
+  // One button: open every shelf, or fold back to how the page started (recent years open, the rest closed).
+  folding.forEach(function (s) { s.dataset.start = s.open ? "1" : ""; });
+  function label() { all.textContent = folding.every(function (s) { return s.open; }) ? "Fold older shelves" : "Open all shelves"; }
+  if (folding.length) { bar.hidden = false; label(); }
+  all.addEventListener("click", function () {
+    var everything = !folding.every(function (s) { return s.open; });
+    folding.forEach(function (s) { s.open = everything || !!s.dataset.start; });
+    label();
+  });
+  folding.forEach(function (s) { s.addEventListener("toggle", label); });
+  // A link to a work or a shelf opens it, then scrolls there (closed content cannot be scrolled to on load).
+  function reveal() {
+    var id = decodeURIComponent(location.hash.slice(1)), el = id && document.getElementById(id);
+    if (!el) { return; }
+    var shelf = el.closest("details.shelf"); if (shelf) { shelf.open = true; }
+    if (el.classList.contains("readlog__item")) { el.querySelector("details").open = true; }
+    requestAnimationFrame(function () { el.scrollIntoView({ block: "start" }); });
+  }
+  reveal(); addEventListener("hashchange", reveal);
+  // Filters (partials/facets.html) show matches on every shelf: open the shelves that have one, hide the rest,
+  // count what is shown, and put the shelves back as they were once the filters are cleared.
+  document.addEventListener("facets:update", function (e) {
+    var active = e.detail && e.detail.active;
+    shelves.forEach(function (s) {
+      var rows = s.querySelectorAll(".readlog__item"), shown = 0, count = s.querySelector(".shelf__count");
+      rows.forEach(function (r) { if (!r.hidden) { shown++; } });
+      s.hidden = active && !shown;
+      count.textContent = active ? shown + " of " + count.dataset.total : count.dataset.total;
+      if (s.tagName !== "DETAILS") { return; }
+      if (active) { if (!("wasOpen" in s.dataset)) { s.dataset.wasOpen = s.open ? "1" : ""; } s.open = shown > 0; }
+      else if ("wasOpen" in s.dataset) { s.open = !!s.dataset.wasOpen; delete s.dataset.wasOpen; }
+    });
+    label();
+  });
+})();</script>
 {% endblock content %}
 {% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

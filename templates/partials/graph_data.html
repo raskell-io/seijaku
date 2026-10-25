@@ -49,7 +49,7 @@
 {#- A work opens its review when there is one, else its row on the reading page. -#}
 {%- for w in works %}{% set_global wurl = "" %}{% if rbase %}{% set_global wurl = rbase ~ "#" ~ w.id %}{% elif w.url %}{% set_global wurl = w.url %}{% endif %}
 {%- for a in gpages %}{% if a.extra.review and a.extra.review == w.id %}{% set_global wurl = a.permalink %}{% endif %}{% endfor %}
-{%- if w.status == "read" %}{% set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% set wstate = "read " ~ wlabel %}{% elif w.status == "reading" %}{% set wstate = "reading now" %}{% elif w.status == "next" %}{% set wstate = "up next" %}{% elif w.status == "backlog" %}{% set wstate = "in the backlog" %}{% else %}{% set wstate = "set aside" %}{% endif %}
+{%- if w.status == "read" %}{% if w.finished | length == 4 %}{% set wlabel = w.finished %}{% else %}{% set wmonth = w.finished ~ "-01" %}{% set wlabel = wmonth | date(format="%B %Y") %}{% endif %}{% set wstate = "read " ~ wlabel %}{% elif w.status == "reading" %}{% set wstate = "reading now" %}{% elif w.status == "next" %}{% set wstate = "up next" %}{% elif w.status == "backlog" %}{% set wstate = "in the backlog" %}{% else %}{% set wstate = "set aside" %}{% endif %}
 {"id":"w:{{ w.id }}","kind":"work","label":{{ w.title | json_encode | safe }},"url":{{ wurl | json_encode | safe }},"meta":{% set wkind = w.kind | capitalize %}{% set wmeta = wkind ~ " · " ~ w.author ~ " · " ~ wstate %}{{ wmeta | json_encode | safe }},"desc":{% if w.take %}{{ w.take | json_encode | safe }}{% elif w.subtitle %}{{ w.subtitle | json_encode | safe }}{% else %}""{% endif %}},
 {%- endfor %}
 {%- for sh in shelves %}{% if works | filter(attribute="status", value=sh) | length > 0 %}

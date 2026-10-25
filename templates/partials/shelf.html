@@ -1,0 +1,32 @@
+{#- One shelf of the reading log: `sid` (its id, a link target), `stitle`, `sworks` (the works on it), and
+    `smode`: "fixed" for an always-visible shelf (Reading now, Up next), "open" or "closed" for a
+    collapsible one. A closed shelf shows its count and a strip of covers in the summary, so it still
+    reads as a shelf of books. Works are rendered by partials/work_row.html. -#}
+{%- set n = sworks | length %}
+{%- if smode == "fixed" %}
+<section class="shelf shelf--fixed" id="{{ sid }}" data-shelf>
+  <h2 class="shelf__head"><span class="shelf__title">{{ stitle }}</span><span class="shelf__count" data-total="{{ n }}">{{ n }}</span></h2>
+  <ol class="postlist readlog">
+    {%- for w in sworks %}
+    {% include "partials/work_row.html" %}
+    {%- endfor %}
+  </ol>
+</section>
+{%- else %}
+<details class="shelf" id="{{ sid }}" data-shelf{% if smode == "open" %} open{% endif %}>
+  <summary class="shelf__head">
+    <h2 class="shelf__title">{{ stitle }}</h2>
+    <span class="shelf__count" data-total="{{ n }}">{{ n }}</span>
+    <span class="shelf__peek" aria-hidden="true">
+      {%- for w in sworks | slice(end=7) %}{% if w.cover %}<img src="{{ get_url(path=w.cover) | safe }}" alt="" loading="lazy" decoding="async">{% else %}<span class="shelf__peek-tile"></span>{% endif %}{% endfor %}
+      {%- if n > 7 %}<span class="shelf__more">+{{ n - 7 }}</span>{% endif -%}
+    </span>
+    <span class="shelf__toggle" aria-hidden="true"></span>
+  </summary>
+  <ol class="postlist readlog">
+    {%- for w in sworks %}
+    {% include "partials/work_row.html" %}
+    {%- endfor %}
+  </ol>
+</details>
+{%- endif %}
