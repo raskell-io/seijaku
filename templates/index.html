@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "macros/i18n.html" as i18n %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
 {% block body_class %}home{% endblock body_class %}
 {% block content %}
 {%- set main = config.extra.seijaku.main_section | default(value="articles") %}

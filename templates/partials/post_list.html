@@ -1,4 +1,5 @@
 {%- import "macros/i18n.html" as i18n -%}
+{%- import "macros/icons.html" as icons -%}
 {%- set plang = lang | default(value=config.default_language) %}
 {%- set day_fmt = i18n::t(text="%b %d", lang=plang, config=config) %}
 {#- Dense dated rows. Set `group_years = true` before including to break the list by year. -#}
@@ -29,7 +30,7 @@
     <time class="postlist__date" datetime="{{ post.date }}">{% if grouped %}{{ post.date | date(format=day_fmt) }}{% else %}{{ post.date | date(format="%Y-%m-%d") }}{% endif %}</time>
     <div class="postlist__main">
       {%- set isnote = post.components | first == "notes" %}
-      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">{{ i18n::t(text="note", lang=plang, config=config) }}</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">{{ i18n::t(text="talk", lang=plang, config=config) }}</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">{{ i18n::t(text="review", lang=plang, config=config) }}</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
+      <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">{{ icons::kind(k="note") }}{{ i18n::t(text="note", lang=plang, config=config) }}</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">{{ icons::kind(k="talk") }}{{ i18n::t(text="talk", lang=plang, config=config) }}</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">{{ icons::kind(k="review") }}{{ i18n::t(text="review", lang=plang, config=config) }}</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a></h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
       {%- if post.taxonomies.tags %}
       <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ i18n::topic_url(slug=tag, lang=plang, base=config.default_language, used=true) | safe }}">{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=plang, base=config.default_language) }}</a>{% endfor %}</p>

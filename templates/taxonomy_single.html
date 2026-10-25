@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "macros/i18n.html" as i18n %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
 {%- block title %}{% set td = false %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{% set td = tagdata[term.slug] %}{% endif %}{% endif %}{% if td %}{{ td.name }}{% elif taxonomy.name == "tags" %}{{ term.name }}{% else %}{{ term.name | replace(from="-", to=" ") | title }}{% endif %} | {{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
 {%- block description %}{% if taxonomy.name == "tags" %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}{% if tagdata and term.slug in tagdata %}{{ tagdata[term.slug].description }}{% else %}{{ config.description }}{% endif %}{% else %}{% set ckey = taxonomy.name ~ "_descriptions" %}{% set tdescs = config.extra.seijaku[ckey] | default(value=false) %}{% if tdescs and term.slug in tdescs %}{{ tdescs[term.slug] }}{% else %}{{ config.description }}{% endif %}{% endif %}{% endblock description %}
 {% block content %}

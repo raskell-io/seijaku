@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "macros/i18n.html" as i18n %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
 {% block title %}{{ taxonomy.name | capitalize }} | {{ config.title }}{% endblock title %}
 {% block content %}
 {% include "partials/taxonomy_list_body.html" %}

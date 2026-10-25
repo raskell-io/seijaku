@@ -1,4 +1,5 @@
 {%- import "macros/i18n.html" as i18n -%}
+{%- import "macros/icons.html" as icons -%}
 {#- One work in the reading log: the cover on the left, title and author in view, and the rest (year,
     edition, when, the take, who suggested it, reviews, topics) in a <details> that opens from the row.
     Needs `w` (an entry of the reading data; its date line follows its status), `gpages`
@@ -30,19 +31,19 @@
     {%- endif %}
   </div>
   {%- else %}
-  <div class="readlog__cover readlog__cover--tile" aria-hidden="true"><span class="readlog__tile-kind">{{ i18n::t(text=w.kind, lang=lang, config=config) }}</span><span class="readlog__tile-title">{{ w.title }}</span></div>
+  <div class="readlog__cover readlog__cover--tile" aria-hidden="true"><span class="readlog__tile-kind">{{ icons::kind(k=w.kind) }}{{ i18n::t(text=w.kind, lang=lang, config=config) }}</span><span class="readlog__tile-title">{{ w.title }}</span></div>
   {%- endif %}
   <details class="readlog__more">
     <summary>
       <span class="readlog__head">
-        <span class="postlist__title readlog__title" role="heading" aria-level="3">{% if wreviews | length > 0 %}<span class="postlist__kind">{{ i18n::t(text="reviewed", lang=lang, config=config) }}</span><a href="{{ wreviews[0].permalink | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %}</span>
+        <span class="postlist__title readlog__title" role="heading" aria-level="3">{% if wreviews | length > 0 %}<span class="postlist__kind">{{ icons::kind(k="reviewed") }}{{ i18n::t(text="reviewed", lang=lang, config=config) }}</span><a href="{{ wreviews[0].permalink | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %}</span>
         <span class="readlog__by">{{ w.author }}</span>
       </span>
       <span class="readlog__toggle" aria-hidden="true"></span>
     </summary>
     <div class="readlog__body">
       <p class="readlog__facts">
-        <span>{{ i18n::t(text=w.kind | capitalize, lang=lang, config=config) }}{% if w.year %}, {{ w.year }}{% endif %}</span>
+        <span class="readlog__kind">{{ icons::kind(k=w.kind) }}{{ i18n::t(text=w.kind | capitalize, lang=lang, config=config) }}{% if w.year %}, {{ w.year }}{% endif %}</span>
         {%- if w.edition %}<span>{{ w.edition }}</span>{% elif w.publisher %}<span>{{ w.publisher }}</span>{% endif %}
         {%- if wdate %}<span>{{ wdate }}</span>{% endif %}
         {%- if w.rating %}<span>{{ i18n::t(text="Rated", lang=lang, config=config) }} {{ w.rating }} / 10</span>{% endif %}

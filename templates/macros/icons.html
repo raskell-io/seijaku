@@ -1,0 +1,12 @@
+{#- Resource-type icons. Import with {% import "macros/icons.html" as icons %}.
+
+    icons::kind(k)          The icon for a kind of resource, drawn from the sprite in partials/kind_icons.html
+                            (base.html includes it once per page): article, note, talk, project, series, review
+                            ("reviewed" too), and the reading log's book, novel, paper, report, essay, journal; topic and link for search.
+                            Sized to the text around it (1em) and coloured by it; empty for any other kind. -#}
+{%- macro kind(k) -%}
+{%- if k == "reviewed" %}{% set k = "review" %}{% endif -%}
+{%- if k in ["article", "note", "talk", "project", "series", "review", "book", "novel", "paper", "report", "essay", "journal", "topic", "link"] -%}
+<svg class="kicon" aria-hidden="true" focusable="false"><use href="#kicon-{{ k }}"/></svg>
+{%- endif -%}
+{%- endmacro kind -%}

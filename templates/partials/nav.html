@@ -1,4 +1,4 @@
-{% import "macros/i18n.html" as i18n -%}
+{% import "macros/i18n.html" as i18n -%}{% import "macros/icons.html" as icons %}
 {#- Labels and links follow the page's language (macros/i18n.html); here_lang comes from base.html. -#}
 {%- set main = config.extra.seijaku.main_section | default(value="articles") %}
 {%- set here = current_path | default(value="") %}

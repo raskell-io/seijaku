@@ -84,3 +84,11 @@
 .cite__copy { padding: 0.25rem 0.7rem; border: 1px solid var(--line-strong); border-radius: 100px; background: none; color: var(--ink); font: 0.75rem/1.4 var(--font-mono); cursor: pointer; }
 .cite__copy:hover { border-color: var(--ink); }
 @media (max-width: 44rem) { .cite__row { grid-template-columns: 1fr auto; } .cite__text { grid-column: 1 / -1; grid-row: 2; } }
+
+// Resource-type icons (macros/icons.html): Phosphor duotone from the sprite in partials/kind_icons.html,
+// one text-size glyph in the colour of the label it prefixes.
+.kicon { display: inline-block; flex: none; width: 1.15em; height: 1.15em; margin-inline-end: 0.35em; vertical-align: -0.2em; fill: currentColor; }
+.postlist__kind .kicon { width: 1.2em; height: 1.2em; margin-inline-end: 0.3em; }
+.facet .kicon { align-self: center; margin-inline-end: -0.1em; opacity: 0.85; }
+.pagehead__eyebrow .kicon { width: 1.1em; height: 1.1em; vertical-align: -0.18em; }
+.readlog__tile-kind .kicon { display: block; width: 1.6rem; height: 1.6rem; margin: 0 0 0.35rem; }

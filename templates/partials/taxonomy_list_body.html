@@ -1,4 +1,4 @@
-{%- import "macros/i18n.html" as i18n -%}
+{%- import "macros/i18n.html" as i18n -%}{% import "macros/icons.html" as icons %}
 {#- The index of one taxonomy: `taxonomy` (its config, with .name) and `terms`. Used by taxonomy_list.html and,
     for languages without their own terms, by taxonomy_index.html with the default language's terms. -#}
 {%- set tlang = lang | default(value=config.default_language) %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "macros/i18n.html" as i18n %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
 {% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}

@@ -1,4 +1,4 @@
-{%- import "macros/i18n.html" as i18n -%}
+{%- import "macros/i18n.html" as i18n -%}{% import "macros/icons.html" as icons %}
 <nav class="pagination" aria-label="{{ i18n::t(text="Pagination", lang=lang, config=config) }}">
   {%- if paginator.previous %}<a class="button button--outline button--small" href="{{ paginator.previous | safe }}">← {{ i18n::t(text="Newer", lang=lang, config=config) }}</a>{% else %}<span class="button button--outline button--small is-disabled" aria-hidden="true">← {{ i18n::t(text="Newer", lang=lang, config=config) }}</span>{% endif %}
   <span class="pagination__where">{{ i18n::t(text="Page", lang=lang, config=config) }} {{ paginator.current_index }} / {{ paginator.number_pagers }}</span>

@@ -162,6 +162,17 @@ opens it. Pages that discuss a work without reviewing it name it in `reads = ["<
 map, works are outlined diamonds joined to their shelf, their topics, their reviews and mentions,
 and any page that links to the work's `url`.
 
+### Resource-type icons
+
+Every label that names a kind of resource carries its icon: the note, talk, and review badges in post
+lists, the section and category in a page's eyebrow, the form filters, and the kind of each work in the
+reading log (on its row and on the tile shown when a work has no cover). The icons are
+[Phosphor](https://phosphoricons.com) duotone (MIT), kept as one sprite in `partials/kind_icons.html` that
+`base.html` includes once per page, and drawn with `icons::kind(k)` from `macros/icons.html`: article,
+note, talk, project, series, review, book, novel, paper, report, essay, journal, and topic and link for the search results and chips (`static/seijaku-search.js` draws the same sprite). They take the size and
+colour of the text around them. A new kind gets a `<symbol id="kicon-<kind>">` in the sprite and its name
+in the macro's list. Import the macro beside `i18n` in any template that includes a partial using it.
+
 ### Translations
 
 The theme works with Zola's multilingual sites. Translate a page by adding `<name>.<code>.md` next to it

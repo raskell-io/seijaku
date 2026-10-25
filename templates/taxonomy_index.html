@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% import "macros/i18n.html" as i18n %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
 {#- A taxonomy index or term page for a language that has no terms of its own (Zola builds taxonomies per
     language, so /zh/tags/ would be empty while the writing is in the default language). A page in that
     language sets `template = "taxonomy_index.html"`, its `path` (e.g. "zh/tags"), `extra.taxonomy` ("tags",

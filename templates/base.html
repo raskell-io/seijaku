@@ -1,4 +1,4 @@
-{% import "macros/i18n.html" as i18n -%}
+{% import "macros/i18n.html" as i18n -%}{% import "macros/icons.html" as icons %}
 <!DOCTYPE html>
 {#- Languages (extra.seijaku.languages = [{ code, name, hreflang, og_locale }]): the first is the default.
     `lang` is the language of the page being rendered; its BCP 47 tag (zh-Hans) can differ from Zola's code (zh).
@@ -110,6 +110,7 @@
   {%- block extra_head %}{% endblock extra_head %}
 </head>
 <body class="{% block body_class %}interior{% endblock body_class %}">
+  {% include "partials/kind_icons.html" %}
   <a class="skip-link" href="#main-content">skip to content</a>
   {%- if config.extra.seijaku.banner %}
   <aside class="callout" role="note" aria-label="Site notice">
