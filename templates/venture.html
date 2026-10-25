@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {#- A venture or investor brief: a hero card in the project's brand colours (extra.project names a file in
     data/projects/), section links from the page's h2s (as on articles), then the prose and its building blocks.
     extra.eyebrow labels the page ("Investor brief"); extra.parent = { name, url } is the page it belongs to. -#}
@@ -15,18 +16,18 @@
       <div class="venture__brand">{% include "partials/brand_marks.html" %}</div>
       {%- endif %}
       {%- if p and p.status %}
-      <span class="project__notch venture__status"><span class="status status--{{ p.status }}">{% if p.status_label %}{{ p.status_label }}{% elif p.status == "live" %}Live{% elif p.status == "stable" %}Stable{% elif p.status == "dev" %}In development{% elif p.status == "shipping" %}Shipping{% elif p.status == "early" %}Very early{% elif p.status == "progress" %}In progress{% else %}{{ p.status }}{% endif %}</span></span>
+      <span class="project__notch venture__status"><span class="status status--{{ p.status }}">{{ i18n::status(p=p, lang=lang, config=config) }}</span></span>
       {%- endif %}
     </div>
-    <p class="venture__eyebrow">{% if parent %}<a href="{{ get_url(path=parent.url) | safe }}">{{ parent.name }}</a> / {% endif %}{{ page.extra.eyebrow | default(value="Venture") }}</p>
+    <p class="venture__eyebrow">{% if parent %}<a href="{{ i18n::url(path=parent.url, lang=lang) | safe }}">{{ parent.name }}</a> / {% endif %}{{ page.extra.eyebrow | default(value="Venture") }}</p>
     <h1 class="venture__title">{{ page.title }}</h1>
     {%- if page.description %}<p class="venture__deck" data-ai-summary>{{ page.description }}</p>{% endif %}
     <div class="venture__links">
       {%- if page.extra.contact_anchor | default(value="") %}
-      <a class="cardcta cardcta--main" href="#{{ page.extra.contact_anchor }}">Talk about investing<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
+      <a class="cardcta cardcta--main" href="#{{ page.extra.contact_anchor }}">{{ i18n::t(text="Talk about investing", lang=lang, config=config) }}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg></a>
       {%- endif %}
       {%- if p and p.links %}{% for l in p.links %}
-      <a class="cardcta" href="{{ l.url | safe }}">{{ l.name }}</a>
+      <a class="cardcta" href="{{ l.url | safe }}">{{ i18n::t(text=l.name, lang=lang, config=config) }}</a>
       {%- endfor %}{% endif %}
     </div>
   </header>
@@ -43,4 +44,4 @@
 {% endblock content %}
 {% block crumbs %}
 {%- set parent = page.extra.parent | default(value=false) %}
-{%- if parent %} → <a href="{{ get_url(path=parent.url) | safe }}">{{ parent.name }}</a>{% endif %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}
+{%- if parent %} → <a href="{{ i18n::url(path=parent.url, lang=lang) | safe }}">{{ parent.name }}</a>{% endif %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

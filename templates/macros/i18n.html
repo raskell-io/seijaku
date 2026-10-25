@@ -2,8 +2,11 @@
 
     i18n::url(path, lang)   A link that follows the reader's language: for an internal path ("@/about.md",
                             "@/articles/_index.md") the translation into `lang` when one exists, else the
-                            original page; any other URL as it is. URLs stay English (/zh/about/, not a
+                            original page; any other URL as it is. Not in shortcodes: they render before
+                            the pages are loaded, so a translation links a translated page as "@/about.zh.md". URLs stay English (/zh/about/, not a
                             translated slug), because Zola names a translation after its source file.
+    i18n::status(p, lang, config)
+                            A project's status badge (data/projects/<slug>.toml), translated.
     i18n::t(text, lang, config)
                             A label in `lang`: config extra.seijaku.i18n.<lang>.labels maps the English text
                             to its translation; anything missing, and everything in the default language,
@@ -24,3 +27,9 @@
 {%- set all = config.extra.seijaku.i18n | default(value=false) -%}
 {%- if all and lang in all and all[lang].labels and text in all[lang].labels -%}{{ all[lang].labels[text] }}{%- else -%}{{ text }}{%- endif -%}
 {%- endmacro t %}
+
+{#- A project's status badge text (`status_label` wins), in `lang`. -#}
+{% macro status(p, lang, config) -%}
+{%- if p.status_label %}{% set st = p.status_label %}{% elif p.status == "live" %}{% set st = "Live" %}{% elif p.status == "stable" %}{% set st = "Stable" %}{% elif p.status == "dev" %}{% set st = "In development" %}{% elif p.status == "shipping" %}{% set st = "Shipping" %}{% elif p.status == "early" %}{% set st = "Very early" %}{% elif p.status == "progress" %}{% set st = "In progress" %}{% else %}{% set st = p.status %}{% endif -%}
+{{ self::t(text=st, lang=lang, config=config) }}
+{%- endmacro status %}
