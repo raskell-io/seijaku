@@ -68,6 +68,28 @@
 .footer__meta-end { margin-inline-start: auto; }
 
 // Optional colour-scheme control (config: scheme_toggle = true). Hidden until its script runs.
+// Language switch: a pill like the scheme toggle beside it; its menu opens upwards, above the footer edge.
+.langs { position: relative; }
+.langs > summary {
+  display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.75rem; border: 1px solid var(--footer-line); border-radius: 100px;
+  color: var(--footer-muted); font-size: 0.82rem; font-weight: 500; line-height: 1; list-style: none; cursor: pointer;
+}
+.langs > summary::-webkit-details-marker { display: none; }
+.langs > summary:hover, .langs[open] > summary { color: var(--footer-ink); border-color: var(--footer-muted); }
+.langs > summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.langs__chevron { transition: transform 150ms ease; }
+.langs[open] .langs__chevron { transform: rotate(180deg); }
+.langs__menu {
+  position: absolute; right: 0; bottom: calc(100% + 0.5rem); z-index: 5; min-width: 11rem; margin: 0; padding: 0.35rem; list-style: none;
+  border: 1px solid var(--footer-line); border-radius: 0.9rem; background: var(--footer-bg); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+}
+.langs__menu a { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.5rem 0.7rem; border-radius: 0.55rem; color: var(--footer-ink); font-size: 0.9rem; text-decoration: none; }
+.langs__menu a:hover { background: color-mix(in srgb, var(--footer-ink) 8%, transparent); }
+.langs__menu a[aria-current="true"] { font-weight: 600; }
+.langs__menu a[aria-current="true"]::after { content: "✓"; color: var(--footer-muted); font-weight: 400; }
+.langs__menu small { color: var(--footer-muted); font-size: 0.72rem; }
+.langs + .scheme { margin-inline-start: 0.5rem; }
+
 .scheme { display: inline-flex; gap: 0.15rem; padding: 0.2rem; border: 1px solid var(--footer-line); border-radius: 100px; }
 .scheme button { appearance: none; margin: 0; padding: 0.35rem 0.8rem; border: 0; border-radius: 100px; background: transparent; color: var(--footer-muted); font: inherit; font-size: 0.78rem; font-weight: 500; line-height: 1; cursor: pointer; }
 .scheme button:hover { color: var(--footer-ink); }

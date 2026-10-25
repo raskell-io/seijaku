@@ -159,6 +159,36 @@ opens it. Pages that discuss a work without reviewing it name it in `reads = ["<
 map, works are outlined diamonds joined to their shelf, their topics, their reviews and mentions,
 and any page that links to the work's `url`.
 
+### Translations
+
+The theme works with Zola's multilingual sites. Translate a page by adding `<name>.<code>.md` next to it
+(`about.zh.md`, `_index.ko.md`); its URL keeps the original name under a language prefix (`/zh/about/`).
+
+```toml
+[languages.zh]
+build_search_index = false   # elasticlunr has no Chinese or Korean
+taxonomies = []
+
+[extra.seijaku]
+languages = [
+  { code = "en", name = "English", hreflang = "en", og_locale = "en_US" },
+  { code = "zh", name = "简体中文", hreflang = "zh-Hans", og_locale = "zh_CN" },
+]
+
+[extra.seijaku.i18n.zh]
+tagline = "..."              # replaces the footer tagline
+footer_about = "..."         # replaces the footer introduction
+labels = { "Articles" = "文章", "Home" = "首页" }   # English interface text to its translation
+```
+
+With `languages` set, the footer gets a language switch (native names; a page without a translation
+links to that language's home page), and every translated page gets `lang`, hreflang alternates with
+`x-default`, and `og:locale` with its alternates. Navigation and footer links follow the reader's language
+when the target is translated. Labels are looked up by their English text, so anything not in `labels`
+stays English, and a site without `i18n` needs no configuration. In templates, use
+`{% import "macros/i18n.html" as i18n %}`, then `i18n::t(text=..., lang=lang, config=config)` and
+`i18n::url(path="@/about.md", lang=lang)`. Chinese and Korean get CJK system font stacks.
+
 ### Building blocks for pages
 
 Shortcodes that set parts of a page apart from the running text:

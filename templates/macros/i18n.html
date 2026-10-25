@@ -1,0 +1,25 @@
+{#- Translation helpers. Import with {% import "macros/i18n.html" as i18n %}.
+
+    i18n::url(path, lang)   A link that follows the reader's language: for an internal path ("@/about.md",
+                            "@/articles/_index.md") the translation into `lang` when one exists, else the
+                            original page; any other URL as it is. URLs stay English (/zh/about/, not a
+                            translated slug), because Zola names a translation after its source file.
+    i18n::t(text, lang, config)
+                            A label in `lang`: config extra.seijaku.i18n.<lang>.labels maps the English text
+                            to its translation; anything missing, and everything in the default language,
+                            stays English. Sites without i18n need no configuration at all. -#}
+
+{% macro url(path, lang) -%}
+{%- if path is starting_with("@/") -%}
+{%- set p = path | trim_start_matches(pat="@/") -%}
+{%- if p is ending_with("_index.md") %}{% set src = get_section(path=p, metadata_only=true) %}{% else %}{% set src = get_page(path=p) %}{% endif -%}
+{%- set_global found = src.permalink -%}
+{%- for tr in src.translations %}{% if tr.lang == lang %}{% set_global found = tr.permalink %}{% endif %}{% endfor -%}
+{{ found }}
+{%- else -%}{{ path }}{%- endif -%}
+{%- endmacro url %}
+
+{% macro t(text, lang, config) -%}
+{%- set all = config.extra.seijaku.i18n | default(value=false) -%}
+{%- if all and lang in all and all[lang].labels and text in all[lang].labels -%}{{ all[lang].labels[text] }}{%- else -%}{{ text }}{%- endif -%}
+{%- endmacro t %}

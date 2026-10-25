@@ -135,3 +135,8 @@ a {
   .page, .home .page { width: 100%; padding: 0; }
   body, .interior { background: #fff; color: #000; }
 }
+
+// Chinese and Korean: the theme's Latin fonts carry no CJK glyphs, so name good system fonts for them
+// before the generic fallback (and keep Latin words in the theme's own font).
+:lang(zh) { --font-prose: "Seijaku Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif; }
+:lang(ko) { --font-prose: "Seijaku Sans", "Apple SD Gothic Neo", "Noto Sans KR", "Noto Sans CJK KR", "Malgun Gothic", system-ui, sans-serif; word-break: keep-all; }

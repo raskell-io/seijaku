@@ -176,3 +176,6 @@
 .nowlist h3 a { color: inherit; text-decoration: none; }
 .nowlist h3 a:hover { text-decoration: underline; text-underline-offset: 0.16em; }
 .nowlist p { margin-block-start: 0.35rem; color: var(--muted); line-height: 1.45; text-wrap: pretty; }
+
+// A translated home page notes that the writing listed below is in English.
+.home-note { margin: -0.5rem 0 1.25rem; color: var(--muted); font-size: 0.92rem; }

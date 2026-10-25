@@ -1,15 +1,17 @@
+{% import "macros/i18n.html" as i18n -%}
+{#- Labels and links follow the page's language (macros/i18n.html); here_lang comes from base.html. -#}
 {%- set main = config.extra.seijaku.main_section | default(value="articles") %}
 {%- set here = current_path | default(value="") %}
 {%- set cta = config.extra.seijaku.cta | default(value=false) %}
 {%- if cta %}
-{%- if cta.url is starting_with("@/") %}{% set cta_href = get_url(path=cta.url) %}{% else %}{% set cta_href = cta.url %}{% endif %}
-{%- set cta_name = cta.name %}
+{%- if cta.url is starting_with("@/") %}{% set cta_href = i18n::url(path=cta.url, lang=here_lang) %}{% else %}{% set cta_href = cta.url %}{% endif %}
+{%- set cta_name = i18n::t(text=cta.name, lang=here_lang, config=config) %}
 {%- else %}
 {%- set cta_href = get_url(path="/" ~ main ~ "/") %}
 {%- set cta_name = "Start reading" %}
 {%- endif %}
 <nav class="topnav" aria-label="Main">
-  <a href="{{ get_url(path="/") | safe }}" class="topnav__brand">
+  <a href="{{ i18n::url(path="@/_index.md", lang=here_lang) | safe }}" class="topnav__brand">
     {%- set mark_class = "topnav__mark" %}{% set mark_play = true %}
     {% include "partials/mark.html" %}
     <span>{{ config.title }}</span>
@@ -17,10 +19,10 @@
   {%- if config.extra.seijaku.nav %}
   <ul class="topnav__links">
     {%- for item in config.extra.seijaku.nav %}
-    {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+    {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
     {%- set path = href | replace(from=config.base_url, to="") %}
     {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
-    <li><a href="{{ href | safe }}"{% if active %} class="is-active" aria-current="{% if here == path %}page{% else %}true{% endif %}"{% endif %}>{{ item.name }}</a></li>
+    <li><a href="{{ href | safe }}"{% if active %} class="is-active" aria-current="{% if here == path %}page{% else %}true{% endif %}"{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}</a></li>
     {%- endfor %}
   </ul>
   {%- endif %}
@@ -33,18 +35,18 @@
     <a class="topnav__action button button--small" href="{{ cta_href | safe }}">{{ cta_name }}</a>
   </div>
   <details class="topnav__menu">
-    <summary aria-label="Menu"><span></span></summary>
+    <summary aria-label="{{ i18n::t(text="Menu", lang=here_lang, config=config) }}"><span></span></summary>
     <div class="topnav__sheet">
       {%- if config.extra.seijaku.nav %}
       {%- for item in config.extra.seijaku.nav %}
-      {%- if item.url is starting_with("@/") %}{% set href = get_url(path=item.url) %}{% else %}{% set href = item.url %}{% endif %}
+      {%- if item.url is starting_with("@/") %}{% set href = i18n::url(path=item.url, lang=here_lang) %}{% else %}{% set href = item.url %}{% endif %}
       {%- set path = href | replace(from=config.base_url, to="") %}
       {%- set active = path != "/" and path is not ending_with(".xml") and here is starting_with(path) %}
-      <a href="{{ href | safe }}"{% if active %} class="is-active"{% endif %}>{{ item.name }}</a>
+      <a href="{{ href | safe }}"{% if active %} class="is-active"{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}</a>
       {%- endfor %}
       {%- endif %}
       {%- if config.build_search_index %}
-      <a href="#search" data-search-open>Search</a>
+      <a href="#search" data-search-open>{{ i18n::t(text="Search", lang=here_lang, config=config) }}</a>
       {%- endif %}
       <a class="button button--dark button--small" href="{{ cta_href | safe }}">{{ cta_name }}</a>
     </div>
