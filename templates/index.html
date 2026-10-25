@@ -90,7 +90,7 @@
   <header class="home-head">
     <h2>{{ i18n::t(text=psec.title, lang=lang, config=config) }}</h2>
     {%- set ptl = psec.title | lower %}{% set all_projects = "All " ~ ptl %}
-    <a href="{{ psec.permalink | safe }}">{{ i18n::t(text=all_projects, lang=lang, config=config) }} →</a>
+    <a href="{{ i18n::url(path="@/" ~ config.extra.seijaku.projects_section ~ "/_index.md", lang=lang) | safe }}">{{ i18n::t(text=all_projects, lang=lang, config=config) }} →</a>
   </header>
   <ul class="projects projects--strip">
     {%- for p in featured | slice(end=4) %}

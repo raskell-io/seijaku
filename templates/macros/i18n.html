@@ -11,11 +11,12 @@
 
 {% macro url(path, lang) -%}
 {%- if path is starting_with("@/") -%}
-{%- set p = path | trim_start_matches(pat="@/") -%}
+{%- set parts = path | trim_start_matches(pat="@/") | split(pat="#") -%}
+{%- set p = parts[0] -%}{% if parts | length > 1 %}{% set frag = "#" ~ parts[1] %}{% else %}{% set frag = "" %}{% endif -%}
 {%- if p is ending_with("_index.md") %}{% set src = get_section(path=p, metadata_only=true) %}{% else %}{% set src = get_page(path=p) %}{% endif -%}
 {%- set_global found = src.permalink -%}
 {%- for tr in src.translations %}{% if tr.lang == lang %}{% set_global found = tr.permalink %}{% endif %}{% endfor -%}
-{{ found }}
+{{ found }}{{ frag }}
 {%- else -%}{{ path }}{%- endif -%}
 {%- endmacro url %}
 

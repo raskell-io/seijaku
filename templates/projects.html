@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}
 {% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
 {%- set_global total = 0 %}
 {%- for tier in section.extra.tiers %}{% set n = tier.projects | length %}{% set_global total = total + n %}{% endfor %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{{ total }} {{ section.extra.count_label | default(value="projects") }}</p>
+  <p class="pagehead__eyebrow">{{ total }} {{ i18n::t(text=section.extra.count_label | default(value="projects"), lang=lang, config=config) }}</p>
   <h1 class="pagehead__title">{{ section.title }}</h1>
   {%- if section.description %}
   <p class="pagehead__deck">{{ section.description }}</p>
@@ -29,7 +30,7 @@
     </div>
     {%- if tier.cta.links %}
     <div class="panel__actions">
-      {%- for l in tier.cta.links %}{% if l.url is starting_with("@/") %}{% set href = get_url(path=l.url) %}{% else %}{% set href = l.url %}{% endif %}
+      {%- for l in tier.cta.links %}{% set href = i18n::url(path=l.url, lang=lang) %}
       <a class="cardcta{% if loop.first %} cardcta--main{% endif %}" href="{{ href | safe }}">{{ l.name }}{% if loop.first %}<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg>{% endif %}</a>
       {%- endfor %}
     </div>
