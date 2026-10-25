@@ -28,7 +28,10 @@ technical publication rather than a product company.
   `extra.toc = true/false` in front matter overrides
 - **Structured footer** — a brand column with a short introduction, small-type
   link groups, and a legal line; light on paper, charcoal in dark mode,
-  ring-gradient rule on top
+  ring-gradient rule on top. `extra.seijaku.footer_columns` lays the groups out
+  column by column (`[[{ title, items = [{ name, url }] }, …], …]`, or
+  `{ title, social = true }` for the social profiles) so the columns stay
+  balanced; `footer_fx = "aurora"` adds slow blooms in the ring colours
 - **Article covers** — `extra.cover` (and `extra.cover_alt`) shows an image beside the
   title on wide screens and under the metadata on phones. Covers get a tritone grade in the
   theme palette, film grain, and a ring border, so mixed imagery reads as one series; hover or

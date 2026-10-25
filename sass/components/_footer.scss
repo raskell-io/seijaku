@@ -79,6 +79,10 @@
 .footer__group { break-inside: avoid; margin-block-end: clamp(2.25rem, 4vw, 3.25rem); }
 .footer__group { display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem; }
 .footer__group:last-child { margin-block-end: 0; }
+// Explicit columns (config footer_columns): a grid, each column its groups top to bottom.
+.footer__groups--cols { columns: auto; display: grid; grid-template-columns: repeat(var(--footer-cols, 3), minmax(0, 1fr)); gap: clamp(2.25rem, 4vw, 3.25rem) clamp(1.75rem, 3.5vw, 3.5rem); }
+.footer__col { display: flex; flex-direction: column; gap: clamp(2.25rem, 4vw, 3.25rem); min-width: 0; }
+.footer__col .footer__group { margin-block-end: 0; }
 .footer__group-title { margin-block-end: 0.35rem; color: var(--footer-muted); font-family: var(--font-mono); font-size: 0.78rem; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; }
 .footer__group a { color: inherit; text-decoration: none; }
 .footer__group a:visited { color: inherit; }
@@ -125,6 +129,9 @@
 @media (max-width: 48rem) {
   .footer__grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .footer__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  // Two columns on small screens: the groups pair up in reading order (each column's two groups side by side).
+  .footer__groups--cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer__col { display: contents; }
   .footer__meta-end { margin-inline-start: 0; }
   // The language switch starts its own line, so its menu can open from the left edge, where it always
   // fits on screen; anchored on the right, it would hang off the left of a narrow screen.

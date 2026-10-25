@@ -156,6 +156,21 @@
           <a href="{{ i18n::url(path="@/_index.md", lang=here_lang) | safe }}">{{ i18n::t(text="Home", lang=here_lang, config=config) }}</a>{% block crumbs %}{% endblock crumbs %}
         </nav>
       </div>
+      {#- extra.seijaku.footer_columns = [[group, group], [group, group], ...]: each inner list is one column, top to
+          bottom, so the columns stay balanced by design; a group is { title, items = [{ name, url }] } or
+          { title, social = true }. Without it, the navigation, explore list, footer_groups, and social profiles
+          flow into columns on their own. -#}
+      {%- if config.extra.seijaku.footer_columns | default(value=false) %}
+      <div class="footer__groups footer__groups--cols" style="--footer-cols: {{ config.extra.seijaku.footer_columns | length }}">
+        {%- for col in config.extra.seijaku.footer_columns %}
+        <div class="footer__col">
+          {%- for g in col %}
+          {% include "partials/footer_group.html" %}
+          {%- endfor %}
+        </div>
+        {%- endfor %}
+      </div>
+      {%- else %}
       <div class="footer__groups">
         {%- if config.extra.seijaku.nav %}
         <nav class="footer__group" aria-label="Explore">
@@ -195,6 +210,7 @@
         </nav>
         {%- endif %}
       </div>
+      {%- endif %}
     </div>
     <div class="footer__meta">
       {#- Copyright line; extra.seijaku.copyright = false hides it (e.g. when the licence line says enough). -#}
@@ -211,7 +227,7 @@
       {%- if langs | length > 1 %}
       <details class="langs footer__meta-end">
         {%- set_global cur_name = here_lang %}{% for l in langs %}{% if l.code == here_lang %}{% set_global cur_name = l.name %}{% endif %}{% endfor %}
-        <summary aria-label="{{ i18n::t(text="Language", lang=here_lang, config=config) }}: {{ cur_name }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M1.8 8h12.4M8 1.7c1.8 1.9 2.7 4 2.7 6.3S9.8 12.4 8 14.3C6.2 12.4 5.3 10.3 5.3 8S6.2 3.6 8 1.7Z"/></svg><span>{{ cur_name }}</span><svg class="langs__chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
+        <summary aria-label="{{ i18n::t(text="Language", lang=here_lang, config=config) }}: {{ cur_name }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.6 1.3v1.3M1.4 3.1h6.4M2.7 3.7c.8 2.3 2.4 3.8 4.8 4.6M6.5 3.7c-.8 2.3-2.4 3.8-4.8 4.6M8.7 14.7l2.8-7.1 2.8 7.1M9.6 12.5h3.8"/></svg><span>{{ cur_name }}</span><svg class="langs__chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
         <ul class="langs__menu">
           {%- for l in langs %}
           {%- set_global l_href = "" %}{% for tr in translations %}{% if tr.lang == l.code %}{% set_global l_href = tr.permalink %}{% endif %}{% endfor %}

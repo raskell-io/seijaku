@@ -1,0 +1,17 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- One link group of the footer: `g` = { title, items = [{ name, url }] }, or { title, social = true } for the
+    extra.seijaku.social profiles with their icons. Used by base.html for extra.seijaku.footer_columns. -#}
+<nav class="footer__group" aria-label="{{ g.title }}">
+  <span class="footer__group-title">{{ i18n::t(text=g.title, lang=here_lang, config=config) }}</span>
+  {%- if g.social | default(value=false) %}
+  {%- for item in config.extra.seijaku.social | default(value=[]) %}
+  {%- set href = item.url %}{% set_global is_ext = href is starting_with("http") %}
+  <a class="footer__social" href="{{ href | safe }}" rel="me noopener">{% include "partials/social_icon.html" %}<span>{{ item.name }}</span>{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
+  {%- endfor %}
+  {%- else %}
+  {%- for item in g.items | default(value=[]) %}
+  {%- set href = i18n::url(path=item.url, lang=here_lang, base=config.default_language) %}
+  <a href="{{ href | safe }}"{% if href is starting_with("http") and href is not starting_with(config.base_url) %} rel="noopener"{% set_global is_ext = true %}{% else %}{% set_global is_ext = false %}{% endif %}>{{ i18n::t(text=item.name, lang=here_lang, config=config) }}{% if is_ext %}<svg class="footer__ext" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4"/></svg><span class="visually-hidden"> (external)</span>{% endif %}</a>
+  {%- endfor %}
+  {%- endif %}
+</nav>
