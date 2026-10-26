@@ -67,10 +67,16 @@
     {%- if rnow | length > 0 %}
     {%- set rpage = config.extra.seijaku.reading | default(value="") %}
     {%- if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}
-    <li class="nowlist__wide">
+    <li class="nowlist__wide nowlist__reading">
+      {#- The cover of each book being read, in colour, in the reading page's frame; a work without a cover is text only. -#}
+      {%- for w in rnow %}{% if w.cover %}{% set wsrc = get_url(path=w.cover) %}
+      <a class="readlog__cover nowlist__cover" href="{% if rpage %}{{ rpage_href | safe }}#{{ w.id }}{% else %}#{% endif %}" aria-label="{{ w.title }}"><img src="{{ wsrc | safe }}" alt="" loading="lazy" decoding="async"></a>
+      {%- endif %}{% endfor %}
+      <div class="nowlist__body">
       {%- if item.name %}{% set rname = item.name %}{% else %}{% set rname = i18n::t(text="Reading", lang=lang, config=config) %}{% endif %}
       <h3>{% if rpage %}<a href="{{ rpage_href | safe }}">{{ rname }}</a>{% else %}{{ rname }}{% endif %}</h3>
       <p>{% for w in rnow %}{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} {{ i18n::t(text="by", lang=lang, config=config) }} {{ w.author }}{% if not loop.last %}, {% endif %}{% endfor %}.{% if item.text %} {{ item.text }}{% endif %}</p>
+      </div>
     </li>
     {%- endif %}
     {%- continue %}
