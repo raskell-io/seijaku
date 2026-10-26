@@ -141,9 +141,14 @@ with form extended to articles, notes and talks.
 
 `template = "map.html"` draws the whole site as one graph (`partials/graph_data.html`,
 `static/seijaku-map.js`): pages from `graph_sections`, topics and their `broader` links, series,
-categories, works from the reading log, and projects. The kinds legend rests as a stack of chips and fans
+categories, works from the reading log, and projects. Every node is the same disc, ringed in its kind's colour
+and carrying its kind's icon from `partials/kind_icons.html` (reviews, and the kind of each work, have their own),
+sized by its links; the legend shows the same icons. The kinds legend rests as a stack of chips and fans
 out into labelled pills on hover, keyboard focus, or a first tap; a Full screen button uses the Fullscreen
-API and covers the page where that is missing (iPhone). Articles, notes, and topics end with a small
+API and covers the page where that is missing (iPhone). Under the map, Export saves the graph as a PNG, an AVIF, or
+an SVG (AVIF uses the browser's encoder or, where there is none, the WebAssembly codec of `@jsquash/avif` in
+`static/vendor/avif/`, loaded only when asked for; the SVG embeds the site's font), and "The map as data" shows the same JSON as `/map.json`, with copy buttons for the
+JSON and its URL. Articles, notes, and topics end with a small
 "On the map" view of their own neighbourhood (`partials/local_map.html`).
 
 ### Search
@@ -182,7 +187,7 @@ and get their own social card.
 A review is any article or note with `review = "<id>"` under `[extra]`: it gets a "Review of" row
 (notes: an "On ..." line), a review label in post lists, and the work's title on the reading page
 opens it. Pages that discuss a work without reviewing it name it in `reads = ["<id>", ...]`. On the
-map, works are outlined diamonds joined to their shelf, their topics, their reviews and mentions,
+map, works are nodes with their kind's icon (book, paper, report, ...) joined to their shelf, their topics, their reviews and mentions,
 and any page that links to the work's `url`.
 
 ### Resource-type icons

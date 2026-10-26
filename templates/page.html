@@ -70,7 +70,6 @@
       <img src="{{ cover_src | safe }}" alt="{{ cover_alt }}" decoding="async">
       {%- if graded %}
       {#- Tritone grade in the theme palette (green-black, sea teal, champagne, pearl); hover or focus fades back to the original. -#}
-      {% include "partials/grade_filter.html" %}
       <img class="pagehead__cover-grade" src="{{ cover_src | safe }}" alt="" aria-hidden="true" decoding="async">
       {%- endif %}
     </figure>

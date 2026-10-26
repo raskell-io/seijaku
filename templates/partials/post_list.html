@@ -50,7 +50,7 @@
       <summary aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}"><span class="postlist__toggle" aria-hidden="true"></span></summary>
       <div class="postlist__peek">
         {%- if post.reading_time %}<p class="postlist__peek-time">{{ post.reading_time }} {{ i18n::t(text="min read", lang=plang, config=config) }}{% if post.toc | length > 0 %}{% set nch = post.toc | length %}{% set chl = i18n::t(text="{n} chapters", lang=plang, config=config) %} · {{ chl | replace(from="{n}", to=nch ~ "") }}{% endif %}</p>{% endif %}
-        {%- if phero %}<a class="postlist__hero" href="{{ post.permalink | safe }}" tabindex="-1" aria-hidden="true"><img src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"></a>{% endif %}
+        {%- if phero %}<a class="postlist__hero" href="{{ post.permalink | safe }}" tabindex="-1" aria-hidden="true"><img src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"><img class="postlist__grade" src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"></a>{% endif %}
         {%- if post.toc | length > 0 %}
         <nav class="postlist__toc" aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}">
           <p class="postlist__toc-label">{{ i18n::t(text="Contents", lang=plang, config=config) }}</p>

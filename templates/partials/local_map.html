@@ -42,13 +42,13 @@
       {%- if outlinks | length > 0 %}
       <section>
         <h3>{{ i18n::t(text="Links to", lang=lml, config=config) }}</h3>
-        <ul>{% for b in outlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
+        <ul>{% for b in outlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ icons::kind(k="note") }}{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
       </section>
       {%- endif %}
       {%- if backlinks | length > 0 %}
       <section>
         <h3>{{ i18n::t(text="Linked from", lang=lml, config=config) }}</h3>
-        <ul>{% for b in backlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
+        <ul>{% for b in backlinks %}<li><a href="{{ b.permalink | safe }}">{{ b.title }}</a>{% if b.components | first == "notes" %} <small>{{ icons::kind(k="note") }}{{ i18n::t(text="note", lang=lml, config=config) }}</small>{% endif %}</li>{% endfor %}</ul>
       </section>
       {%- endif %}
     </div>

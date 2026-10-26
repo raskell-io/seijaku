@@ -31,7 +31,6 @@
 <div class="readlog__intro prose">{{ page.content | safe }}</div>
 {%- endif %}
 {%- if page.extra.facets %}{% set facet_list = page.extra.facets %}{% include "partials/facets.html" %}{% endif %}
-{% include "partials/grade_filter.html" %}
 {#- Shelves: what is current stays in view; the rest folds. Reading now and Up next are always open; the
     backlog, older years, and set-aside works are collapsed, each showing its count and a strip of covers.
     The two most recent years of reading are open. Filters open every shelf with a match and hide the empty

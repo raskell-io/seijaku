@@ -1,0 +1,11 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- The language links of the switches in the nav and the footer (base.html, partials/nav.html), as <li>s: each
+    language opens this page in that language when a translation exists, and that language's home page otherwise.
+    Needs `langs`, `translations`, `tx_name` and `tx_term` from base.html. -#}
+{%- for l in langs %}
+{%- set_global l_href = "" %}{% for tr in translations %}{% if tr.lang == l.code %}{% set_global l_href = tr.permalink %}{% endif %}{% endfor %}
+{%- if tx_name %}{% set_global l_href = i18n::tax_url(tax=tx_name, term=tx_term, lang=l.code, base=config.default_language, config_base=config.base_url) %}{% endif %}
+{%- set l_translated = l_href != "" %}
+{%- if not l_translated %}{% set_global l_href = i18n::url(path="@/_index.md", lang=l.code) %}{% endif %}
+<li><a href="{{ l_href | safe }}" lang="{{ l.hreflang | default(value=l.code) }}" hreflang="{{ l.hreflang | default(value=l.code) }}"{% if l.code == here_lang %} aria-current="true"{% endif %}{% if not l_translated %} title="{{ i18n::t(text="Not translated yet; opens the home page", lang=l.code, config=config) }}"{% endif %}>{{ l.name }}{% if not l_translated %}<small>{{ i18n::t(text="home", lang=l.code, config=config) }}</small>{% endif %}</a></li>
+{%- endfor %}

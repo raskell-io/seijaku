@@ -27,42 +27,44 @@
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
+{#- The key to the map (config extra.seijaku.ontology): a card between the header and the map, with one node in
+    each of the map's three colours. -#}
+{%- if config.extra.seijaku.ontology %}{% set onto_href = i18n::url(path=config.extra.seijaku.ontology, lang=lang, base=config.default_language) %}
+<a class="mapkey" href="{{ onto_href | safe }}">
+  <span class="mapkey__nodes" aria-hidden="true"><span class="onto-node" style="--c: #f4f0df">{{ icons::kind(k="article") }}</span><span class="onto-node" style="--c: #efd093">{{ icons::kind(k="project") }}</span><span class="onto-node" style="--c: #72d7dc">{{ icons::kind(k="topic") }}</span></span>
+  <span class="mapkey__text"><span class="mapkey__title">{{ i18n::t(text="How to read the map", lang=lang, config=config) }}</span><span class="mapkey__deck">{{ i18n::t(text="Every icon, colour, and line on the map, explained on one page.", lang=lang, config=config) }}</span></span>
+  <span class="mapkey__go">{{ i18n::t(text="Open the ontology", lang=lang, config=config) }} →</span>
+</a>
+{%- endif %}
 
-<figure class="map" data-map>
+<figure class="map" id="site-map" data-map>
   <canvas class="map__canvas" aria-hidden="true"></canvas>
   {#- Kinds to show: a stack of chips at rest that fans out into labelled pills on hover, keyboard focus, or a
       first tap (static/seijaku-map.js). -#}
   <div class="map__legend" role="group" aria-label="{{ i18n::t(text="Show on the map", lang=lang, config=config) }}" data-legend>
     <span class="map__legend-hint" aria-hidden="true">{{ i18n::t(text="Show", lang=lang, config=config) }}</span>
-    <button type="button" data-kind="article" aria-pressed="true"><i></i><span>{{ i18n::t(text="Articles", lang=lang, config=config) }}</span></button>
-    <button type="button" data-kind="note" aria-pressed="true"><i></i><span>{{ i18n::t(text="Notes", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="article" aria-pressed="true">{{ icons::kind(k="article") }}<span>{{ i18n::t(text="Articles", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="note" aria-pressed="true">{{ icons::kind(k="note") }}<span>{{ i18n::t(text="Notes", lang=lang, config=config) }}</span></button>
     {%- set gsecs = config.extra.seijaku.graph_sections | default(value=[]) %}{% set tsec = get_section(path="talks/_index.md", required=false) %}
     {%- if tsec and tsec.pages | length > 0 and "talks" in gsecs %}
-    <button type="button" data-kind="talk" aria-pressed="true"><i></i><span>{{ i18n::t(text="Talks", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="talk" aria-pressed="true">{{ icons::kind(k="talk") }}<span>{{ i18n::t(text="Talks", lang=lang, config=config) }}</span></button>
     {%- endif %}
-    <button type="button" data-kind="tag" aria-pressed="true"><i></i><span>{{ i18n::t(text="Topics", lang=lang, config=config) }}</span></button>
-    <button type="button" data-kind="series" aria-pressed="true"><i></i><span>{{ i18n::t(text="Series", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="tag" aria-pressed="true">{{ icons::kind(k="topic") }}<span>{{ i18n::t(text="Topics", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="series" aria-pressed="true">{{ icons::kind(k="series") }}<span>{{ i18n::t(text="Series", lang=lang, config=config) }}</span></button>
     {%- set categories = get_taxonomy(kind="categories", required=false) %}
     {%- if categories and categories.items | length > 0 %}
-    <button type="button" data-kind="category" aria-pressed="true"><i></i><span>{{ i18n::t(text="Categories", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="category" aria-pressed="true">{{ icons::kind(k="category") }}<span>{{ i18n::t(text="Categories", lang=lang, config=config) }}</span></button>
     {%- endif %}
-    <button type="button" data-kind="project" aria-pressed="true"><i></i><span>{{ i18n::t(text="Projects", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="project" aria-pressed="true">{{ icons::kind(k="project") }}<span>{{ i18n::t(text="Projects", lang=lang, config=config) }}</span></button>
     {%- if works | length > 0 %}
-    <button type="button" data-kind="work" aria-pressed="true"><i></i><span>{{ i18n::t(text="Reading", lang=lang, config=config) }}</span></button>
+    <button type="button" data-kind="work" aria-pressed="true">{{ icons::kind(k="book") }}<span>{{ i18n::t(text="Reading", lang=lang, config=config) }}</span></button>
     {%- endif %}
   </div>
   <div class="map__zoom">
-    <button type="button" class="map__full" data-fullscreen aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="map__full-open" d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/><path class="map__full-close" d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5"/></svg><span>{{ i18n::t(text="Full screen", lang=lang, config=config) }}</span></button>
     <button type="button" data-zoom="in" aria-label="{{ i18n::t(text="Zoom in", lang=lang, config=config) }}">+</button>
     <button type="button" data-zoom="out" aria-label="{{ i18n::t(text="Zoom out", lang=lang, config=config) }}">−</button>
-    <button type="button" data-zoom="fit" aria-label="{{ i18n::t(text="Fit the whole map", lang=lang, config=config) }}">{{ i18n::t(text="fit", lang=lang, config=config) }}</button>
-    <details class="map__export">
-      <summary aria-label="{{ i18n::t(text="Export the map", lang=lang, config=config) }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>{{ i18n::t(text="export", lang=lang, config=config) }}</summary>
-      <div class="map__export-menu">
-        <button type="button" data-export="png">{{ i18n::t(text="Image", lang=lang, config=config) }} <small>PNG</small></button>
-        <button type="button" data-export="json">{{ i18n::t(text="Graph data", lang=lang, config=config) }} <small>JSON</small></button>
-      </div>
-    </details>
+    <button type="button" data-zoom="fit" aria-label="{{ i18n::t(text="Fit the whole map", lang=lang, config=config) }}" title="{{ i18n::t(text="Fit the whole map", lang=lang, config=config) }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="4.6"/><circle cx="8" cy="8" r="1.1" fill="currentColor" stroke="none"/><path d="M8 1.2v2.2M8 12.6v2.2M1.2 8h2.2M12.6 8h2.2"/></svg></button>
+    <button type="button" class="map__full" data-fullscreen aria-pressed="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="map__full-open" d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/><path class="map__full-close" d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5"/></svg><span>{{ i18n::t(text="Full screen", lang=lang, config=config) }}</span></button>
   </div>
   <div class="map__card" hidden>
     <p class="map__card-kind"></p>
@@ -73,23 +75,49 @@
   <figcaption class="map__hint">{{ i18n::t(text="Tap a dot to see what it is and what it connects to. Drag to move, pinch or ⌘ + scroll to zoom. Everything on the map is also listed below.", lang=lang, config=config) }}</figcaption>
   <noscript><p class="map__noscript">{{ i18n::t(text="The map needs JavaScript. The full index is listed below.", lang=lang, config=config) }}</p></noscript>
 </figure>
+{#- Under the map, at its bottom right: export the graph as a picture (PNG, AVIF, or SVG). Then the graph as data,
+    the same JSON as /map.json, filled in by static/seijaku-map.js, to copy into an agent along with its URL. -#}
+<div class="map__below" data-map-tools="site-map">
+  <details class="map__export">
+    <summary aria-label="{{ i18n::t(text="Export the map", lang=lang, config=config) }}"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>{{ i18n::t(text="export", lang=lang, config=config) }}</summary>
+    <div class="map__export-menu">
+      <button type="button" data-export="png">{{ i18n::t(text="Image", lang=lang, config=config) }} <small>PNG</small></button>
+      <button type="button" data-export="avif">{{ i18n::t(text="Image, smaller", lang=lang, config=config) }} <small>AVIF</small></button>
+      <button type="button" data-export="svg">{{ i18n::t(text="Vector", lang=lang, config=config) }} <small>SVG</small></button>
+    </div>
+  </details>
+</div>
+{%- set mapjson = get_url(path="map.json") %}
+<section class="mapdata" aria-labelledby="mapdata-title">
+  <h2 class="mapdata__title" id="mapdata-title">{{ i18n::t(text="The map as data", lang=lang, config=config) }}</h2>
+  <p class="mapdata__deck">{{ i18n::t(text="Every node and link on the map as JSON, the same as map.json. Copy it into an agent, or give the agent the URL.", lang=lang, config=config) }}</p>
+  {%- set copied = i18n::t(text="Copied", lang=lang, config=config) %}
+  <p class="mapdata__url"><a href="{{ mapjson | safe }}">{{ mapjson }}</a><button type="button" class="mapdata__copy mapdata__copy--url" data-copy="url" data-url="{{ mapjson | safe }}" data-done="{{ copied }}"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.6"/><path d="M10.5 5.5V3.9c0-.8-.6-1.4-1.4-1.4H3.9c-.8 0-1.4.6-1.4 1.4v5.2c0 .8.6 1.4 1.4 1.4h1.6"/></svg><span>{{ i18n::t(text="Copy URL", lang=lang, config=config) }}</span></button></p>
+  <div class="mapdata__block">
+    <pre class="mapdata__code" tabindex="0"><code data-map-json>{{ i18n::t(text="The graph appears here once the map has loaded.", lang=lang, config=config) }}</code></pre>
+    <button type="button" class="mapdata__copy mapdata__copy--code" data-copy="json" data-done="{{ i18n::t(text="copied", lang=lang, config=config) }}" aria-label="{{ i18n::t(text="Copy JSON", lang=lang, config=config) }}"><span>{{ i18n::t(text="copy", lang=lang, config=config) }}</span></button>
+  </div>
+</section>
 <script type="application/json" id="map-data">{% set project_sections = page.extra.project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}{% include "partials/graph_data.html" %}</script>
 <script src="{{ get_url(path="seijaku-map.js", cachebust=true) | safe }}" defer></script>
 
 <div class="map-index">
   {%- if tags %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
-  <section class="map-index__group" aria-labelledby="map-topics">
-    <h2 id="map-topics">{{ i18n::t(text="Topics", lang=lang, config=config) }}</h2>
+  <details class="shelf map-index__group" id="map-topics">
+    <summary class="shelf__head">{{ icons::kind(k="topic") }}<h2 class="shelf__title">{{ i18n::t(text="Topics", lang=lang, config=config) }}</h2><span class="shelf__count">{{ tags.items | length }}</span><span class="shelf__toggle" aria-hidden="true"></span></summary>
+    <div class="map-index__body">
     <ul class="pills pills--small">
       {%- for t in tags.items | sort(attribute="name") %}
       <li>{% if lang != config.default_language %}{% set tdname = t.name %}{% if tagdata and t.slug in tagdata %}{% set tdname = tagdata[t.slug].name %}{% endif %}<a class="pill" href="{{ i18n::topic_url(slug=t.slug, lang=lang, base=config.default_language, used=true) | safe }}">{{ i18n::topic(slug=t.slug, field="name", fallback=tdname, lang=lang, base=config.default_language) }}{% else %}<a class="pill" href="{{ t.permalink | safe }}">{{ t.name }}{% endif %} <small>{{ t.pages | length }}</small></a></li>
       {%- endfor %}
     </ul>
-  </section>
+    </div>
+  </details>
   {%- endif %}
   {%- if series and series.items | length > 0 %}
-  <section class="map-index__group" aria-labelledby="map-series">
-    <h2 id="map-series">{{ i18n::t(text="Series", lang=lang, config=config) }}</h2>
+  <details class="shelf map-index__group" id="map-series">
+    <summary class="shelf__head">{{ icons::kind(k="series") }}<h2 class="shelf__title">{{ i18n::t(text="Series", lang=lang, config=config) }}</h2><span class="shelf__count">{{ series.items | length }}</span><span class="shelf__toggle" aria-hidden="true"></span></summary>
+    <div class="map-index__body">
     {%- for s in series.items %}
     <h3><a href="{{ s.permalink | safe }}">{{ s.name | replace(from="-", to=" ") | title }}</a></h3>
     <ol>
@@ -98,12 +126,14 @@
       {%- endfor %}
     </ol>
     {%- endfor %}
-  </section>
+    </div>
+  </details>
   {%- endif %}
   {%- set categories = get_taxonomy(kind="categories", required=false) %}
   {%- if categories and categories.items | length > 0 %}
-  <section class="map-index__group" aria-labelledby="map-categories">
-    <h2 id="map-categories">{{ i18n::t(text="Categories", lang=lang, config=config) }}</h2>
+  <details class="shelf map-index__group" id="map-categories">
+    <summary class="shelf__head">{{ icons::kind(k="category") }}<h2 class="shelf__title">{{ i18n::t(text="Categories", lang=lang, config=config) }}</h2><span class="shelf__count">{{ categories.items | length }}</span><span class="shelf__toggle" aria-hidden="true"></span></summary>
+    <div class="map-index__body">
     {%- for c in categories.items %}
     <h3><a href="{{ c.permalink | safe }}">{{ c.name | replace(from="-", to=" ") | title }}</a></h3>
     <ul>
@@ -112,27 +142,33 @@
       {%- endfor %}
     </ul>
     {%- endfor %}
-  </section>
+    </div>
+  </details>
   {%- endif %}
   {%- if projects | length > 0 %}
-  <section class="map-index__group" aria-labelledby="map-projects">
-    <h2 id="map-projects">{{ i18n::t(text="Projects", lang=lang, config=config) }}</h2>
+  <details class="shelf map-index__group" id="map-projects">
+    <summary class="shelf__head">{{ icons::kind(k="project") }}<h2 class="shelf__title">{{ i18n::t(text="Projects", lang=lang, config=config) }}</h2><span class="shelf__count">{{ projects | length }}</span><span class="shelf__toggle" aria-hidden="true"></span></summary>
+    <div class="map-index__body">
     <ul>
       {%- for p in projects %}{% set pslug = pslugs[loop.index0] %}
       <li>{% if p.links %}<a href="{{ p.links[0].url | safe }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</li>
       {%- endfor %}
     </ul>
-  </section>
+    </div>
+  </details>
   {%- endif %}
   {%- if works | length > 0 %}
-  <section class="map-index__group" aria-labelledby="map-reading">
-    {% if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}<h2 id="map-reading">{% if rpage %}<a href="{{ rpage_href | safe }}">{{ i18n::t(text="Reading", lang=lang, config=config) }}</a>{% else %}{{ i18n::t(text="Reading", lang=lang, config=config) }}{% endif %}</h2>
+  {% if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}<details class="shelf map-index__group" id="map-reading">
+    <summary class="shelf__head">{{ icons::kind(k="book") }}<h2 class="shelf__title">{{ i18n::t(text="Reading", lang=lang, config=config) }}</h2><span class="shelf__count">{{ works | length }}</span><span class="shelf__toggle" aria-hidden="true"></span></summary>
+    <div class="map-index__body">
+    {%- if rpage %}<p class="map-index__more"><a href="{{ rpage_href | safe }}">{{ i18n::t(text="The reading log", lang=lang, config=config) }} →</a></p>{% endif %}
     <ul>
       {%- for w in works %}
       <li>{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}">{{ w.title }}</a>{% elif w.url %}<a href="{{ w.url | safe }}">{{ w.title }}</a>{% else %}{{ w.title }}{% endif %} <small>{{ w.author }}</small></li>
       {%- endfor %}
     </ul>
-  </section>
+    </div>
+  </details>
   {%- endif %}
 </div>
 {% endblock content %}

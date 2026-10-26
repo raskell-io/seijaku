@@ -1,0 +1,45 @@
+// The ontology page (templates/ontology.html): kinds drawn as their nodes on the map, in the map's colours,
+// grouped by colour; the relations as icon triples; topic kinds and reading statuses as short glossaries.
+.onto-intro { margin-block-end: clamp(1rem, 2vw, 1.5rem); }
+.onto { margin-block-start: clamp(3rem, 6vw, 5rem); padding-block-start: clamp(1.5rem, 3vw, 2.25rem); border-top: 1px solid var(--line); }
+.onto__title { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
+.onto__deck { max-width: 42rem; margin-block-start: 0.7rem; color: var(--muted); font-size: clamp(1.02rem, 1.3vw, 1.15rem); line-height: 1.45; text-wrap: pretty; }
+
+.onto-group { margin-block-start: clamp(2rem, 4vw, 3rem); }
+.onto-group__title { display: flex; align-items: center; gap: 0.6rem; font-size: 1.15rem; font-weight: 500; letter-spacing: -0.01em; }
+.onto-group__swatch { width: 0.85rem; height: 0.85rem; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent), 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent); }
+.onto-group__deck { max-width: 42rem; margin-block-start: 0.4rem; color: var(--muted); font-size: 0.98rem; line-height: 1.45; }
+.onto-kinds { list-style: none; margin: 1.1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr)); gap: 0.75rem; }
+.onto-kind { display: flex; gap: 0.95rem; align-items: flex-start; padding: 1rem 1.1rem; border-radius: 0.9rem; background: var(--tint-bar); }
+
+// A kind as its map node: the dark disc, ringed and iconed in the group's colour.
+.onto-node { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: #0b1412; box-shadow: inset 0 0 0 2px var(--c, #f4f0df); color: var(--c, #f4f0df); }
+.onto-node .kicon { width: 1.35rem; height: 1.35rem; margin: 0; vertical-align: 0; }
+.onto-kind__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.onto-kind__head { display: flex; align-items: baseline; gap: 0.55rem; }
+.onto-kind__name { font-size: 1.05rem; font-weight: 500; letter-spacing: -0.01em; }
+.onto-kind__n { color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.onto-kind__desc { color: var(--muted); font-size: 0.93rem; line-height: 1.45; text-wrap: pretty; }
+.onto-kind__where { align-self: flex-start; margin-block-start: 0.15rem; padding: 0.1rem 0.4rem; border-radius: 0.3rem; background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--muted); font-family: var(--font-mono); font-size: 0.72rem; }
+
+.onto-rels { list-style: none; margin: 1.4rem 0 0; padding: 0; border-top: 1px solid var(--line); }
+.onto-rel { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: 0.5rem 1.75rem; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid var(--line); }
+.onto-rel__triple { display: flex; align-items: center; gap: 0.55rem; }
+.onto-rel__verb { color: var(--ink); font-family: var(--font-mono); font-size: 0.82rem; }
+.onto-chip { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: #0b1412; color: #f4f0df; }
+// Each end of a relation in its kind's map colour (the map's three groups).
+.onto-chip[data-k="topic"] { color: #72d7dc; }
+.onto-chip:is([data-k="book"], [data-k="novel"], [data-k="paper"], [data-k="report"], [data-k="essay"], [data-k="journal"]) { color: #a9e8e9; }
+.onto-chip:is([data-k="talk"], [data-k="series"], [data-k="category"], [data-k="project"]) { color: #efd093; }
+.onto-chip .kicon { width: 1.05rem; height: 1.05rem; margin: 0; vertical-align: 0; }
+.onto-rel__desc { color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
+
+.onto-terms { margin: 1.25rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr)); gap: 0.75rem; }
+.onto-term { padding: 1rem 1.1rem; border-radius: 0.9rem; background: var(--tint-bar); }
+.onto-term dt { display: flex; align-items: baseline; gap: 0.55rem; }
+.onto-term__name { font-size: 1.05rem; font-weight: 500; }
+.onto-term dd { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.93rem; line-height: 1.45; }
+
+@media (max-width: 44rem) {
+  .onto-rel { grid-template-columns: minmax(0, 1fr); }
+}

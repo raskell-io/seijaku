@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
+{#- The site's ontology: every kind of resource, drawn as its node on the map, grouped by the map's colours; the
+    relations that become the map's edges; the kinds of topic; and the reading statuses. The words come from the
+    page (so each language translates its own); the counts come from the site at build time.
+    Front matter, under [extra]:
+      groups = [{ title, deck, color = "#hex", kinds = [{ key, name, desc, where, icon, color }] }]   key: an icon and a count
+      relations = [{ from, verb, to, desc }]          from/to: kind keys, drawn as their icons
+      topic_kinds = [{ key, name, desc }]              key: a topic kind in the vocabulary (domain, concept, ...)
+      statuses = [{ key, name, desc }]                 key: a reading status (reading, next, backlog, read, set-aside)
+      headings = { kinds, relations, topics, statuses } and decks = { ... } for the section heads
+    Keys counted: article, review, note, talk, topic, series, category, project, group, shelf, and each kind of work
+    (book, novel, paper, report, essay, journal). `icon` picks another icon than the key's (a shelf: journal). -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set ex = page.extra %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
+{%- set works = [] %}{% if rdata %}{% set works = rdata.works %}{% endif %}
+{%- set asec = get_section(path="articles/_index.md", required=false) %}
+{%- set nsec = get_section(path="notes/_index.md", required=false) %}
+{%- set tsec = get_section(path="talks/_index.md", required=false) %}
+{%- set series = get_taxonomy(kind="series", required=false) %}
+{%- set categories = get_taxonomy(kind="categories", required=false) %}
+{%- set_global n_reviews = 0 %}{% if categories %}{% for c in categories.items %}{% if c.slug == "reviews" %}{% set_global n_reviews = c.pages | length %}{% endif %}{% endfor %}{% endif %}
+{%- set_global n_projects = 0 %}{% set_global n_groups = 0 %}
+{%- for sp in ex.project_sections | default(value=["projects", "apps"]) %}{% set ps = get_section(path=sp ~ "/_index.md", required=false) %}{% if ps %}
+  {%- for tier in ps.extra.tiers | default(value=[]) %}{% if tier.projects | length > 0 %}{% set_global n_groups = n_groups + 1 %}{% set tn = tier.projects | length %}{% set_global n_projects = n_projects + tn %}{% endif %}{% endfor %}
+{%- endif %}{% endfor %}
+{%- set_global n_shelves = 0 %}{% for s in ["reading", "next", "backlog", "read", "set-aside"] %}{% if works | filter(attribute="status", value=s) | length > 0 %}{% set_global n_shelves = n_shelves + 1 %}{% endif %}{% endfor %}
+{%- set_global n_kinds = 0 %}{% for g in ex.groups | default(value=[]) %}{% set gn = g.kinds | length %}{% set_global n_kinds = n_kinds + gn %}{% endfor %}
+
+<header class="pagehead">
+  <p class="pagehead__eyebrow">{{ n_kinds }} {{ i18n::t(text="kinds", lang=lang, config=config) }} · {{ ex.relations | default(value=[]) | length }} {{ i18n::t(text="relations", lang=lang, config=config) }}</p>
+  <h1 class="pagehead__title">{{ page.title }}</h1>
+  {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
+</header>
+{%- if page.content %}<div class="prose onto-intro">{{ page.content | safe }}</div>{%- endif %}
+
+{#- Kinds, by the map's colour groups. -#}
+<section class="onto" id="kinds" aria-labelledby="kinds-title">
+  <h2 class="onto__title" id="kinds-title">{{ ex.headings.kinds }}</h2>
+  {%- if ex.decks.kinds %}<p class="onto__deck">{{ ex.decks.kinds }}</p>{% endif %}
+  {%- for g in ex.groups | default(value=[]) %}
+  <div class="onto-group" style="--c: {{ g.color }}">
+    <h3 class="onto-group__title"><span class="onto-group__swatch" aria-hidden="true"></span>{{ g.title }}</h3>
+    {%- if g.deck %}<p class="onto-group__deck">{{ g.deck }}</p>{% endif %}
+    <ul class="onto-kinds">
+      {%- for k in g.kinds %}
+      {%- set n = "" %}
+      {%- if k.key == "article" and asec %}{% set n = asec.pages | length %}
+      {%- elif k.key == "review" %}{% set n = n_reviews %}
+      {%- elif k.key == "note" and nsec %}{% set n = nsec.pages | length %}
+      {%- elif k.key == "talk" and tsec %}{% set n = tsec.pages | length %}
+      {%- elif k.key == "topic" and tagdata %}{% set n = tagdata | length %}
+      {%- elif k.key == "series" and series %}{% set n = series.items | length %}
+      {%- elif k.key == "category" and categories %}{% set n = categories.items | length %}
+      {%- elif k.key == "project" %}{% set n = n_projects %}
+      {%- elif k.key == "group" %}{% set n = n_groups %}
+      {%- elif k.key == "shelf" %}{% set n = n_shelves %}
+      {%- else %}{% set n = works | filter(attribute="kind", value=k.key) | length %}{% endif %}
+      <li class="onto-kind"{% if k.color %} style="--c: {{ k.color }}"{% endif %}>
+        <span class="onto-node" aria-hidden="true">{{ icons::kind(k=k.icon | default(value=k.key)) }}</span>
+        <span class="onto-kind__body">
+          <span class="onto-kind__head"><span class="onto-kind__name">{{ k.name }}</span><span class="onto-kind__n">{{ n }}</span></span>
+          <span class="onto-kind__desc">{{ k.desc }}</span>
+          {%- if k.where %}<code class="onto-kind__where">{{ k.where }}</code>{% endif %}
+        </span>
+      </li>
+      {%- endfor %}
+    </ul>
+  </div>
+  {%- endfor %}
+</section>
+
+{#- Relations: what becomes a line on the map. -#}
+{%- if ex.relations %}
+<section class="onto" id="relations" aria-labelledby="relations-title">
+  <h2 class="onto__title" id="relations-title">{{ ex.headings.relations }}</h2>
+  {%- if ex.decks.relations %}<p class="onto__deck">{{ ex.decks.relations }}</p>{% endif %}
+  <ul class="onto-rels">
+    {%- for r in ex.relations %}
+    <li class="onto-rel">
+      <span class="onto-rel__triple"><span class="onto-chip" data-k="{{ r.from }}">{{ icons::kind(k=r.from) }}</span><span class="onto-rel__verb">{{ r.verb }}</span><span class="onto-chip" data-k="{{ r.to }}">{{ icons::kind(k=r.to) }}</span></span>
+      <span class="onto-rel__desc">{{ r.desc }}</span>
+    </li>
+    {%- endfor %}
+  </ul>
+</section>
+{%- endif %}
+
+{#- Topic kinds and reading statuses, with their counts. -#}
+{%- if ex.topic_kinds %}
+<section class="onto" id="topics" aria-labelledby="topics-title">
+  <h2 class="onto__title" id="topics-title">{{ ex.headings.topics }}</h2>
+  {%- if ex.decks.topics %}<p class="onto__deck">{{ ex.decks.topics }}</p>{% endif %}
+  <dl class="onto-terms">
+    {%- for tk in ex.topic_kinds %}{% set_global nt = 0 %}{% if tagdata %}{% for slug, t in tagdata %}{% if t.kind == tk.key %}{% set_global nt = nt + 1 %}{% endif %}{% endfor %}{% endif %}
+    <div class="onto-term"><dt><span class="onto-term__name">{{ tk.name }}</span><span class="onto-kind__n">{{ nt }}</span></dt><dd>{{ tk.desc }}</dd></div>
+    {%- endfor %}
+  </dl>
+</section>
+{%- endif %}
+{%- if ex.statuses %}
+<section class="onto" id="statuses" aria-labelledby="statuses-title">
+  <h2 class="onto__title" id="statuses-title">{{ ex.headings.statuses }}</h2>
+  {%- if ex.decks.statuses %}<p class="onto__deck">{{ ex.decks.statuses }}</p>{% endif %}
+  <dl class="onto-terms">
+    {%- for s in ex.statuses %}
+    <div class="onto-term"><dt><span class="onto-term__name">{{ s.name }}</span><span class="onto-kind__n">{{ works | filter(attribute="status", value=s.key) | length }}</span></dt><dd>{{ s.desc }}</dd></div>
+    {%- endfor %}
+  </dl>
+</section>
+{%- endif %}
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

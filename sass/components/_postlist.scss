@@ -72,8 +72,11 @@
 .postlist__peek { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 1.5rem 1.75rem; align-items: start; max-width: 52rem; padding-block: 1.1rem 0.25rem; }
 .postlist__peek:not(:has(.postlist__hero)) { grid-template-columns: minmax(0, 1fr); }
 .postlist__peek-time { grid-column: 1 / -1; color: var(--muted); font-family: var(--font-mono); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
-.postlist__hero { display: block; border: 1px solid var(--line); border-radius: 0.6rem; overflow: hidden; background: var(--tint-bar); }
-.postlist__hero img { display: block; width: 100%; height: auto; }
+.postlist__hero { position: relative; display: block; border: 1px solid var(--line); border-radius: 0.6rem; overflow: hidden; background: var(--tint-bar); }
+.postlist__hero img { display: block; width: 100%; height: auto; transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1); }
+.postlist__hero .postlist__grade { position: absolute; inset: 0; height: 100%; object-fit: cover; filter: url(#seijaku-grade); transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.4, 0, 0.2, 1); }
+.postlist__hero:hover .postlist__grade { opacity: 0; }
+.postlist__hero:hover img { transform: scale(1.03); }
 .postlist__toc { font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.45; }
 .postlist__toc-label { margin-block-end: 0.6rem; color: var(--muted); letter-spacing: 0.04em; }
 .postlist__toc ol { list-style: none; margin: 0; padding: 0; border-inline-start: 1px solid var(--line); counter-reset: chapter; }
@@ -82,7 +85,7 @@
 .postlist__toc a { display: block; padding-inline-start: 0.9rem; color: var(--muted); text-decoration: none; }
 .postlist__toc a::before { content: counter(chapter, decimal-leading-zero) "  "; white-space: pre; opacity: 0.55; }
 .postlist__toc a:hover { color: var(--ink); text-decoration: underline; }
-@media (prefers-reduced-motion: reduce) { .postlist__toggle::before, .postlist__toggle::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .postlist__toggle::before, .postlist__toggle::after, .postlist__hero img { transition: none; } .postlist__hero:hover img { transform: none; } }
 
 @media (max-width: 44rem) {
   .postlist__item { grid-template-columns: minmax(0, 1fr) auto; gap: 0.4rem 1rem; }
