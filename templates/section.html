@@ -21,6 +21,8 @@
 <div class="section__intro prose">{{ section.content | safe }}</div>
 {%- endif %}
 {%- set group_years = true %}
+{#- `extra.show_kinds = true` labels articles too, for a section that wants every row typed. -#}
+{%- set show_kinds = section.extra.show_kinds | default(value=false) %}
 {#- With facets the whole section is listed on one page, so the filters see every post. -#}
 {%- if section.extra.facets %}
 {%- set with_facets = true %}

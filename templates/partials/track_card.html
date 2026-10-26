@@ -1,0 +1,65 @@
+{%- import "macros/i18n.html" as i18n -%}{% import "macros/icons.html" as icons %}
+{#- One card in a reading track (tracks.html). `item` is one of:
+      { path = "articles/x.md" }        a page (article, note, talk): its cover, date and reading time; a review
+                                        without a cover borrows the cover of the work it reviews
+      { work = "<id>" }                 a work from the reading log: its cover upright, author and year; links to
+                                        its row on the reading page
+      { project = "<slug>" }            a project (data/projects/<slug>.toml): its logo on its brand colour; links
+                                        to its first link
+      { url = "...", title = "..." }    any other link
+    `note` replaces the description in every case. Set before including: `rdata` (the reading log), `month_fmt`,
+    `step` ("1 of 4", or empty), and `compact = true` for a card without a cover. -#}
+{%- set c_kind = "" %}{% set c_href = "" %}{% set c_title = "" %}{% set c_note = item.note | default(value="") %}{% set c_meta = "" %}
+{%- set c_cover = "" %}{% set c_book = "" %}{% set c_logo = "" %}{% set c_accent = "" %}{% set c_ext = false %}
+{%- if item.path %}
+  {%- set p = get_page(path=item.path) %}
+  {%- set c_top = p.components | first %}
+  {%- if p.extra.review %}{% set c_kind = "review" %}{% elif c_top == "notes" %}{% set c_kind = "note" %}{% elif c_top == "talks" %}{% set c_kind = "talk" %}{% else %}{% set c_kind = "article" %}{% endif %}
+  {%- set c_href = p.permalink %}{% set c_title = p.title %}
+  {%- if not c_note %}{% set c_note = p.description | default(value="") %}{% endif %}
+  {%- set c_meta = p.date | date(format=month_fmt) %}{% if p.reading_time %}{% set c_min = i18n::t(text="min read", lang=lang, config=config) %}{% set c_meta = c_meta ~ " · " ~ p.reading_time ~ " " ~ c_min %}{% endif %}
+  {%- if p.extra.cover %}{% set c_cover = p.extra.cover %}
+  {%- elif p.extra.review and rdata %}{% set c_rw = rdata.works | filter(attribute="id", value=p.extra.review) %}{% if c_rw | length > 0 %}{% set c_book = c_rw[0].cover | default(value="") %}{% endif %}{% endif %}
+{%- elif item.work and rdata %}
+  {%- set c_w = rdata.works | filter(attribute="id", value=item.work) | first %}
+  {%- set c_kind = c_w.kind %}{% set c_title = c_w.title %}{% set c_book = c_w.cover | default(value="") %}
+  {%- set c_rhref = i18n::url(path=config.extra.seijaku.reading | default(value="@/reading.md"), lang=lang, base=config.default_language) %}{% set c_href = c_rhref ~ "#" ~ c_w.id %}
+  {%- if not c_note %}{% set c_note = c_w.take | default(value=c_w.subtitle | default(value="")) %}{% endif %}
+  {%- set c_meta = c_w.author %}{% if c_w.year %}{% set c_meta = c_meta ~ " · " ~ c_w.year %}{% endif %}
+{%- elif item.project %}
+  {%- set c_p = load_data(path="data/projects/" ~ item.project ~ ".toml") %}
+  {%- set c_kind = "project" %}{% set c_title = c_p.title %}{% set c_logo = c_p.logo | default(value="") %}
+  {%- if c_p.accents %}{% set c_accent = c_p.accents | first %}{% endif %}
+  {%- if not c_note %}{% set c_note = c_p.description %}{% if c_p.i18n and lang in c_p.i18n and c_p.i18n[lang].description %}{% set c_note = c_p.i18n[lang].description %}{% endif %}{% endif %}
+  {%- if c_p.links %}{% set c_l = c_p.links | first %}{% set c_href = c_l.url %}{% set c_meta = c_l.name ~ " ↗" %}{% set c_ext = true %}{% endif %}
+{%- else %}
+  {%- set c_kind = "link" %}{% set c_href = item.url %}{% set c_title = item.title %}{% set c_ext = true %}
+  {%- set c_host = item.url | split(pat="/") | nth(n=2) | trim_start_matches(pat="www.") %}{% set c_meta = c_host ~ " ↗" %}
+{%- endif %}
+<a class="trackcard__link" href="{{ c_href | safe }}"{% if c_ext %} rel="noopener" target="_blank"{% endif %}>
+  {%- if not compact | default(value=false) %}
+  {%- if c_cover %}
+  <span class="trackcard__cover">
+    <img src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async">
+    <img class="trackcard__grade" src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+  </span>
+  {%- elif c_book %}
+  <span class="trackcard__cover trackcard__cover--book">
+    <span class="trackcard__book">
+      <img src="{{ get_url(path=c_book) | safe }}" alt="" loading="lazy" decoding="async">
+      <img class="trackcard__grade" src="{{ get_url(path=c_book) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+    </span>
+  </span>
+  {%- elif c_logo %}
+  <span class="trackcard__cover trackcard__cover--project"{% if c_accent %} style="--accent: {{ c_accent }}"{% endif %}><img src="{{ get_url(path=c_logo) | safe }}" alt="" loading="lazy" decoding="async"></span>
+  {%- else %}
+  <span class="trackcard__cover trackcard__cover--blank" aria-hidden="true">{% set mark_class = "trackcard__mark" %}{% include "partials/mark.html" %}</span>
+  {%- endif %}
+  {%- endif %}
+  <span class="trackcard__body">
+    <span class="trackcard__step">{% if step | default(value="") %}<span>{{ step }}</span>{% endif %}<span class="postlist__kind">{{ icons::kind(k=c_kind) }}{{ i18n::t(text=c_kind, lang=lang, config=config) }}</span></span>
+    <span class="trackcard__title">{{ c_title }}</span>
+    {%- if c_note %}<span class="trackcard__note">{{ c_note }}</span>{% endif %}
+    {%- if c_meta %}<span class="trackcard__meta">{{ c_meta }}</span>{% endif %}
+  </span>
+</a>

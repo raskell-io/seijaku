@@ -106,10 +106,22 @@ project's colours, section links from the headings, and the page's building bloc
 Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, Ko-fi, ...) and
 `tagline` for the `support_cards` shortcode.
 
+### Reading tracks
+
+A page with `template = "tracks.html"` lists `[[extra.tracks]]` (title, deck, items), drawn as numbered rows of
+cards, and an optional `[extra.quick]` (title, deck, items) as a row of compact cards above them. An item is a page
+(`path = "articles/x.md"`), a work from the reading log (`work = "<id>"`, its cover upright, linking to its row on
+the reading page), a project (`project = "<slug>"`, its logo on its brand colour, linking to its first link), or a
+link (`url`, `title`); `note` replaces the description. Every card shows its kind with its icon; a review without
+a cover of its own shows the cover of the work it reviews. Items whose page is still a draft are left out until
+the page is published, and the step count ("2 of 4") counts only what is shown. Four cards sit in one row of four.
+
 ### Kind labels and language squares
 
 Post lists label notes, talks and reviews in front of the title; lists that mix kinds (the home page's latest
-writing, topic pages) label articles too (`show_kinds = true` before including `partials/post_list.html`).
+writing, topic pages) label articles too (`show_kinds = true` before including `partials/post_list.html`), and so
+does a section with `show_kinds = true` under `[extra]` in its `_index.md`. Each row gets one label; a review is
+labelled a review.
 When a page exists in more than one language, small squares after its title in lists and in its page
 eyebrow name the other languages (ZH, KO, EN) and link to them (`partials/lang_squares.html`, from
 `extra.seijaku.languages`). The home page's now list takes its heading from `extra.seijaku.now_title`

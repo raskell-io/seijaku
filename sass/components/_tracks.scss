@@ -48,7 +48,39 @@
 .trackcard__note { color: var(--muted); font-size: 0.98rem; line-height: 1.45; text-wrap: pretty; }
 .trackcard__meta { margin-block-start: auto; padding-block-start: 0.6rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; }
 
+// A track of four sits in one row of four on wide screens, two by two below that, never three and one.
+.track__items:has(> :nth-child(4):last-child) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.5rem), 1fr)); }
+@media (max-width: 72rem) { .track__items:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 40rem) { .track__items:has(> :nth-child(4):last-child) { grid-template-columns: minmax(0, 1fr); } }
+
+// The kind of each card (partials/track_card.html) sits beside its step, as the badge used in post lists.
+.trackcard__step { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.6rem; }
+.trackcard__step .postlist__kind { margin: 0; background: color-mix(in srgb, var(--ink) 7%, transparent); vertical-align: 0; }
+
+// A work from the reading log stands upright on the dark cover, in the site's tritone until hovered.
+.trackcard__cover--book { display: grid; place-items: center; background: radial-gradient(circle at 75% 25%, rgba(233, 189, 112, 0.16), transparent 50%), #0b1412; }
+.trackcard__book { position: relative; height: 84%; aspect-ratio: 2 / 3; border-radius: 0.2rem; overflow: hidden; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45); transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1); }
+.trackcard__cover--book .trackcard__book img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.trackcard__link:hover .trackcard__cover--book img { transform: none; }
+.trackcard__link:hover .trackcard__book { transform: translateY(-3px) rotate(-1.5deg); }
+
+// A project shows its logo on a glow of its own brand colour.
+.trackcard__cover--project { display: grid; place-items: center; background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--accent, #72d7dc) 42%, transparent), transparent 62%), #0b1412; }
+.trackcard__cover--project img { position: static; width: auto; height: 46%; max-width: 60%; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4)); }
+
+// The shortest ways in: a row of compact cards without covers, above the tracks.
+.quick { margin-block: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4vw, 3rem); }
+.quick__title { font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 500; line-height: 1.1; letter-spacing: -0.03em; }
+.quick__deck { max-width: 40rem; margin-block-start: 0.6rem; color: var(--muted); font-size: 1.05rem; line-height: 1.4; }
+.quick__items { list-style: none; margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: clamp(0.75rem, 2vw, 1.25rem); }
+.quick__items > :nth-child(3n+1) .trackcard__link { background: var(--tint-3); }
+.quick__items > :nth-child(3n+2) .trackcard__link { background: var(--tint-1); }
+.quick__items > :nth-child(3n+3) .trackcard__link { background: var(--tint-5); }
+.trackcard--compact .trackcard__body { padding: 1.1rem 1.2rem 1.2rem; gap: 0.45rem; }
+.trackcard--compact .trackcard__title { font-size: clamp(1.1rem, 1.4vw, 1.25rem); }
+.trackcard--compact .trackcard__note { font-size: 0.93rem; }
+
 @media (prefers-reduced-motion: reduce) {
-  .trackcard__link, .trackcard__cover img, .trackcard__grade { transition: none !important; }
+  .trackcard__link, .trackcard__cover img, .trackcard__grade, .trackcard__book { transition: none !important; }
   .trackcard__link:hover { transform: none; }
 }
