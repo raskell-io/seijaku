@@ -39,14 +39,17 @@
       <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ i18n::topic_url(slug=tag, lang=plang, base=config.default_language, used=true) | safe }}">{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=plang, base=config.default_language) }}</a>{% endfor %}</p>
       {%- endif %}
     </div>
-    {%- if post.reading_time and not isnote %}<span class="postlist__time">{{ post.reading_time }} {{ i18n::t(text="min", lang=plang, config=config) }}</span>{%- endif %}
-    {#- An article opens to show its cover (extra.cover, else the hero extra.image) and its chapters, each linking
-        to its heading. The image loads only when the row is opened. -#}
+    {#- An article opens to show its reading time, its cover (extra.cover, else the hero extra.image) and its chapters,
+        each linking to its heading; the toggle takes the reading time's place in the margin. The image loads only
+        when the row is opened. -#}
     {%- set phero = post.extra.cover | default(value=post.extra.image | default(value="")) %}
-    {%- if post.components | first == "articles" and (post.toc | length > 0 or phero) %}
+    {%- set peek = post.components | first == "articles" and (post.toc | length > 0 or phero) %}
+    {%- if post.reading_time and not isnote and not peek %}<span class="postlist__time">{{ post.reading_time }} {{ i18n::t(text="min", lang=plang, config=config) }}</span>{%- endif %}
+    {%- if peek %}
     <details class="postlist__more">
       <summary aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}"><span class="postlist__toggle" aria-hidden="true"></span></summary>
       <div class="postlist__peek">
+        {%- if post.reading_time %}<p class="postlist__peek-time">{{ post.reading_time }} {{ i18n::t(text="min read", lang=plang, config=config) }}{% if post.toc | length > 0 %}{% set nch = post.toc | length %}{% set chl = i18n::t(text="{n} chapters", lang=plang, config=config) %} · {{ chl | replace(from="{n}", to=nch ~ "") }}{% endif %}</p>{% endif %}
         {%- if phero %}<a class="postlist__hero" href="{{ post.permalink | safe }}" tabindex="-1" aria-hidden="true"><img src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"></a>{% endif %}
         {%- if post.toc | length > 0 %}
         <nav class="postlist__toc" aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}">
