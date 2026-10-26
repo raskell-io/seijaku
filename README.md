@@ -112,7 +112,9 @@ Set `facets = ["topic", "technology", "form", "length", "series"]` under `[extra
 to put filters above its list (any subset, in that order). Topics are the `domain` tags of the tag
 vocabulary, each post's tags rolled up through `broader`; technologies are the `technology` tags;
 form picks out reviews; length comes from the reading time. The whole section is listed on one page,
-the choice is kept in the URL, and without JavaScript the list shows in full.
+the choice is kept in the URL, and without JavaScript the list shows in full. Topic pages (one term of the
+`tags` taxonomy, and series and category pages) carry the same filters over everything filed under the term,
+with form extended to articles, notes and talks.
 
 ### The map
 

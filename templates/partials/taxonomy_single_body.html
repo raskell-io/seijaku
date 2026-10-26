@@ -23,6 +23,10 @@
   {%- endif %}
 </header>
 {%- if taxonomy.name == "tags" %}{% set focus_tag = term %}{% include "partials/local_map.html" %}{% endif %}
+{#- Filters over everything filed under the term: what kind of page, which domain it rolls up to, which
+    technology, how long. The chips come from the pages present; empty ones are dropped by the script. -#}
+{%- set facet_list = ["form", "topic", "technology", "length"] %}{% set with_facets = true %}{% set form_kinds = true %}
+{% include "partials/facets.html" %}
 {%- set pages = term.pages %}
 {%- set group_years = true %}
 {% include "partials/post_list.html" %}
