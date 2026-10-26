@@ -43,19 +43,21 @@
   {%- set nsec = get_section(path="notes/_index.md", required=false) %}
   {%- if nsec %}{% set_global latest = latest | concat(with=nsec.pages) | sort(attribute="date") | reverse %}{% endif %}
   {%- if latest | length > 0 %}
-  {%- set pages = latest | slice(end=8) %}
+  {%- set pages = latest | slice(end=8) %}{% set show_kinds = true %}
   {% include "partials/post_list.html" %}
   {%- endif %}
 </section>
 
-{#- Optional "now" list: [[extra.now]] blocks (name, text, url) in content/_index.md. A block with
+{#- Optional "now" list: [[extra.now]] blocks (name, text, url) in content/_index.md, under the heading
+    extra.seijaku.now_title (default "What I am working on"). A block with
     `reading = true` shows what the reading log says is being read (status "reading"), linked to its row
-    on the reading page; `text` is added after it, `name` defaults to "Reading", and the block is left out
-    while nothing is being read. -#}
+    on the reading page; `text` is added after it, `name` defaults to "Reading", it spans the full width,
+    and the block is left out while nothing is being read. -#}
 {%- if section.extra.now %}
 <section class="home-now">
   <header class="home-head">
-    <h2>{{ i18n::t(text="What I am working on", lang=lang, config=config) }}</h2>
+    {%- set now_title = config.extra.seijaku.now_title | default(value="What I am working on") %}
+    <h2>{{ i18n::t(text=now_title, lang=lang, config=config) }}</h2>
   </header>
   <ul class="nowlist">
     {%- for item in section.extra.now %}
@@ -65,7 +67,7 @@
     {%- if rnow | length > 0 %}
     {%- set rpage = config.extra.seijaku.reading | default(value="") %}
     {%- if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}
-    <li>
+    <li class="nowlist__wide">
       {%- if item.name %}{% set rname = item.name %}{% else %}{% set rname = i18n::t(text="Reading", lang=lang, config=config) %}{% endif %}
       <h3>{% if rpage %}<a href="{{ rpage_href | safe }}">{{ rname }}</a>{% else %}{{ rname }}{% endif %}</h3>
       <p>{% for w in rnow %}{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} {{ i18n::t(text="by", lang=lang, config=config) }} {{ w.author }}{% if not loop.last %}, {% endif %}{% endfor %}.{% if item.text %} {{ item.text }}{% endif %}</p>

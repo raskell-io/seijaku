@@ -29,7 +29,7 @@
       <img class="banner__portrait" src="{{ get_url(path=page.extra.portrait) | safe }}" alt="{{ page.extra.portrait_alt | default(value="") }}">
       {%- endif %}
       <div class="banner__intro">
-        <p class="pagehead__eyebrow">{{ page.title }}</p>
+        <p class="pagehead__eyebrow">{{ page.title }}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
         {%- if page.description %}<p class="pagehead__deck" data-ai-summary>{{ page.description }}</p>{%- endif %}
       </div>
     </div>
@@ -52,9 +52,9 @@
     {%- if page.ancestors | length > 1 %}
     {%- set sec = get_section(path=page.ancestors | last) %}
     {%- set skind = page.components | first | trim_end_matches(pat="s") %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ icons::kind(k=skind) }}{{ sec.title }}</a>{% for c in page.taxonomies.categories | default(value=[]) %} · <a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{% if c == "reviews" %}{{ icons::kind(k="review") }}{% endif %}{{ c | replace(from="-", to=" ") | title }}</a>{% endfor %}</p>
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ icons::kind(k=skind) }}{{ sec.title }}</a>{% for c in page.taxonomies.categories | default(value=[]) %} · <a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{% if c == "reviews" %}{{ icons::kind(k="review") }}{% endif %}{{ c | replace(from="-", to=" ") | title }}</a>{% endfor %}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
     {%- elif page.extra.headline %}
-    <p class="pagehead__eyebrow">{{ page.title }}</p>
+    <p class="pagehead__eyebrow">{{ page.title }}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
     {%- endif %}
     <h1 class="pagehead__title{% if page.extra.headline %} pagehead__title--headline{% endif %}">{% if page.extra.headline %}{{ page.extra.headline | safe }}{% else %}{{ page.title }}{% endif %}</h1>
     {%- if page.description %}<p class="pagehead__deck" data-ai-summary>{{ page.description }}</p>{%- endif %}

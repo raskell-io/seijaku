@@ -8,7 +8,7 @@
 <article class="post post--note">
   <header class="pagehead pagehead--note">
     {%- set sec = get_section(path=page.ancestors | last) %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{% if page.extra.review %}Reading note{% else %}Note{% endif %}</a> · <time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time>{% if page.updated %} · updated <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>{% endif %}</p>
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{% if page.extra.review %}Reading note{% else %}Note{% endif %}</a> · <time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time>{% if page.updated %} · updated <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time>{% endif %}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
     <h1 class="pagehead__title">{{ page.title }}</h1>
     {%- if page.extra.review %}
     <p class="note__work">On {% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</p>

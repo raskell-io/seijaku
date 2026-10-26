@@ -106,6 +106,15 @@ project's colours, section links from the headings, and the page's building bloc
 Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, Ko-fi, ...) and
 `tagline` for the `support_cards` shortcode.
 
+### Kind labels and language squares
+
+Post lists label notes, talks and reviews in front of the title; lists that mix kinds (the home page's latest
+writing, topic pages) label articles too (`show_kinds = true` before including `partials/post_list.html`).
+When a page exists in more than one language, small squares after its title in lists and in its page
+eyebrow name the other languages (ZH, KO, EN) and link to them (`partials/lang_squares.html`, from
+`extra.seijaku.languages`). The home page's now list takes its heading from `extra.seijaku.now_title`
+(default "What I am working on"), and the reading item spans the full width.
+
 ### Facet filters on a post list
 
 Set `facets = ["topic", "technology", "form", "length", "series"]` under `[extra]` in a section's `_index.md`

@@ -1,0 +1,12 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- Small squares naming the other languages a page exists in, each linking to that version: ZH on an English
+    page that has a Chinese translation, EN and KO on the Chinese one. Include with `lp` (a page or section,
+    read for .translations) and `lhere` (the language being rendered). Languages come from
+    extra.seijaku.languages; a page that exists in one language only shows nothing. -#}
+{%- set_global sq_html = "" %}
+{%- for l in config.extra.seijaku.languages | default(value=[]) %}{% if l.code != lhere %}
+{%- for tr in lp.translations | default(value=[]) %}{% if tr.lang == l.code %}
+{%- set tag = l.hreflang | default(value=l.code) %}{% set code = l.code | upper %}
+{%- set_global sq_html = sq_html ~ '<a class="langsq" href="' ~ tr.permalink ~ '" lang="' ~ tag ~ '" hreflang="' ~ tag ~ '" title="' ~ l.name ~ '">' ~ code ~ '</a>' %}
+{%- endif %}{% endfor %}{% endif %}{% endfor %}
+{%- if sq_html %}<span class="langsqs" aria-label="{{ i18n::t(text="Also available in", lang=lhere, config=config) }}">{{ sq_html | safe }}</span>{% endif %}

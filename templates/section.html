@@ -11,7 +11,7 @@
 {%- endif %}
 <header class="pagehead">
   {%- if paginator and not fallback %}{% set total = paginator.total_pages %}{% else %}{% set total = all_pages | length %}{% endif %}
-  <p class="pagehead__eyebrow">{{ total }} {% if total == 1 %}{{ i18n::t(text="entry", lang=lang, config=config) }}{% else %}{{ i18n::t(text="entries", lang=lang, config=config) }}{% endif %}</p>
+  <p class="pagehead__eyebrow">{{ total }} {% if total == 1 %}{{ i18n::t(text="entry", lang=lang, config=config) }}{% else %}{{ i18n::t(text="entries", lang=lang, config=config) }}{% endif %}{% set lp = section %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
   <h1 class="pagehead__title">{{ section.title }}</h1>
   {%- if section.description %}
   <p class="pagehead__deck">{{ section.description }}</p>

@@ -50,6 +50,13 @@
 .postlist__tags a::before { content: "#"; opacity: 0.6; }
 .postlist__tags a:hover { color: var(--ink); text-decoration: underline; }
 
+// Language squares (partials/lang_squares.html): the other languages a page exists in, each a small mono
+// square linking to that version, after a title in a list or in a page's eyebrow.
+.langsqs { display: inline-flex; gap: 0.3rem; margin-inline-start: 0.55rem; vertical-align: 0.15em; }
+.langsq { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); border-radius: 0.2rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; line-height: 1; text-decoration: none; }
+.langsq:hover, .langsq:focus-visible { color: var(--ink); border-color: var(--ink); text-decoration: none; }
+.pagehead__eyebrow .langsqs { vertical-align: -0.25em; }
+
 @media (max-width: 44rem) {
   .postlist__item { grid-template-columns: minmax(0, 1fr) auto; gap: 0.4rem 1rem; }
   .postlist__date { grid-row: 1; grid-column: 1; }
