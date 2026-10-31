@@ -1,0 +1,10 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- The short version of a long page, above the prose: front matter `extra.in_short = ["...", "..."]`, three to five
+    plain sentences, shown as one paragraph in a box that starts closed. The same text goes into the page's JSON-LD
+    (abstract) and its Markdown copy for agents. -#}
+{%- if page.extra.in_short %}
+<details class="in-short">
+  <summary><span class="in-short__label">{{ i18n::t(text="In short", lang=lang, config=config) }}</span><span class="in-short__toggle" aria-hidden="true"></span></summary>
+  <p class="in-short__text">{{ page.extra.in_short | join(sep=" ") | markdown(inline=true) | safe }}</p>
+</details>
+{%- endif %}

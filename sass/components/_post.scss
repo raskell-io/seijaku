@@ -133,3 +133,16 @@
   .banner__portrait { width: 6.5rem; margin-block-start: -3.25rem; }
   .banner__intro { padding-block-start: 1rem; }
 }
+
+// "In short": the summary of a long page, above the prose, closed until the reader opens it.
+.prose .in-short { margin-block: 0 2.75rem; border: 1px solid var(--line); border-radius: 0.9rem; background: var(--tint-bar); }
+.prose .in-short > summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem 1.25rem; cursor: pointer; list-style: none; }
+.prose .in-short > summary::-webkit-details-marker { display: none; }
+.prose .in-short > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 0.9rem; }
+.prose .in-short__label { color: var(--muted); font-size: 0.85em; letter-spacing: 0.04em; }
+.prose .in-short > summary:hover .in-short__label { color: var(--ink); }
+.prose .in-short__toggle { width: 1.5rem; height: 1.5rem; flex: none; border-radius: 50%; background: color-mix(in srgb, var(--ink) 6%, transparent); position: relative; }
+.prose .in-short__toggle::before, .prose .in-short__toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 0.55rem; height: 1.5px; margin: -0.75px 0 0 -0.275rem; background: currentColor; transition: transform 200ms ease; }
+.prose .in-short__toggle::after { transform: rotate(90deg); }
+.prose .in-short[open] .in-short__toggle::after { transform: rotate(0deg); }
+.prose .in-short__text { margin: 0; padding: 0 1.25rem 1.2rem; }

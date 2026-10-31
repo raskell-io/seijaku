@@ -1,7 +1,7 @@
 {%- import "macros/i18n.html" as i18n -%}
 {%- import "macros/icons.html" as icons -%}
 {#- One work in the reading log: the cover on the left, title and author in view, and the rest (year,
-    edition, when, the take, who suggested it, reviews, topics) in a <details> that opens from the row.
+    edition, when, what the work is about, the take, who suggested it, reviews, topics) in a <details> that opens from the row.
     Needs `w` (an entry of the reading data; its date line follows its status), `gpages`
     (pages that may review or mention it), `tagdata`, `tslugs` (tags that have pages; the others link to
     their entry on /tags/).
@@ -49,6 +49,7 @@
         {%- if w.rating %}<span>{{ i18n::t(text="Rated", lang=lang, config=config) }} {{ w.rating }} / 10</span>{% endif %}
       </p>
       {%- if w.subtitle %}<p class="readlog__subtitle">{{ w.subtitle }}</p>{% endif %}
+      {%- if w.about %}<p class="readlog__about">{{ w.about }}</p>{% endif %}
       {%- if w.take %}<p class="readlog__take">{{ w.take }}</p>{% endif %}
       {%- if w.suggested_by %}
       <p class="readlog__suggested">{{ i18n::t(text="Suggested by", lang=lang, config=config) }} {% if w.suggested_url %}<a href="{{ w.suggested_url | safe }}" rel="noopener" target="_blank">{{ w.suggested_by }}</a>{% else %}{{ w.suggested_by }}{% endif %}{% if w.suggested_note %}: “{{ w.suggested_note }}”{% endif %}</p>

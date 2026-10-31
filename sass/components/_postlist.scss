@@ -223,6 +223,8 @@ summary.shelf__head:hover .shelf__toggle { background: color-mix(in srgb, var(--
 .readlog__facts { display: flex; flex-wrap: wrap; gap: 0.2rem 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; }
 .readlog__facts span + span::before { content: "·"; margin-inline: 0.55rem; opacity: 0.6; }
 .readlog__subtitle { margin-block-start: 0.6rem; font-size: 1rem; line-height: 1.45; }
+.readlog__about { margin-block-start: 0.6rem; color: var(--ink); font-size: 1rem; line-height: 1.55; text-wrap: pretty; }
+.readlog__about + .readlog__take { margin-block-start: 0.5rem; }
 .readlog__take { margin-block-start: 0.6rem; color: var(--muted); font-size: 1rem; line-height: 1.5; text-wrap: pretty; }
 .readlog__suggested { margin-block-start: 0.6rem; font-size: 0.95rem; line-height: 1.5; }
 .readlog__suggested a { color: var(--ink); }

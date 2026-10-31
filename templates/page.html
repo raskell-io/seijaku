@@ -82,6 +82,7 @@
   <div class="post__body{% if show_toc %} post__body--toc{% endif %}">
     {% include "partials/toc.html" %}
     <div class="prose">
+      {% include "partials/in_short.html" %}
       {{ page.content | safe }}
     </div>
     {% include "partials/toc_script.html" %}
