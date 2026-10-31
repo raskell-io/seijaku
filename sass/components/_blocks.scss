@@ -28,7 +28,7 @@
 .panel__body p + p { margin-block-start: 0.6em; }
 .panel__body a { color: var(--ink); text-decoration-color: var(--line-strong); }
 .panel__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
-.panel--tier { margin-block: 0 clamp(1.75rem, 3.5vw, 3rem); }
+.panel--tier { margin-block: clamp(1.75rem, 3.5vw, 3rem) 0; }
 @media (max-width: 44rem) {
   .panel { grid-template-columns: 1fr; }
   .panel__actions { justify-content: flex-start; }

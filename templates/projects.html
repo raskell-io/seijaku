@@ -20,7 +20,13 @@
     <h2 class="tier__title" id="tier-{{ tier.key }}">{{ tier.title }}</h2>
     {%- if tier.deck %}<p class="tier__deck">{{ tier.deck }}</p>{%- endif %}
   </header>
-  {#- tiers[].cta = { eyebrow, title, text, links = [{ name, url }] }: a call to action between the head and the cards. -#}
+  <ul class="projects projects--{{ tier.key }}{% if tier.size %} projects--{{ tier.size }}{% endif %}">
+    {%- for slug in tier.projects %}
+    {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
+    {% include "partials/project_card.html" %}
+    {%- endfor %}
+  </ul>
+  {#- tiers[].cta = { eyebrow, title, text, links = [{ name, url }] }: a call to action below the cards. -#}
   {%- if tier.cta %}
   <aside class="panel panel--tier">
     <div class="panel__text">
@@ -37,12 +43,6 @@
     {%- endif %}
   </aside>
   {%- endif %}
-  <ul class="projects projects--{{ tier.key }}{% if tier.size %} projects--{{ tier.size }}{% endif %}">
-    {%- for slug in tier.projects %}
-    {%- set p = load_data(path="data/projects/" ~ slug ~ ".toml") %}
-    {% include "partials/project_card.html" %}
-    {%- endfor %}
-  </ul>
 </section>
 {%- endif %}
 {%- endfor %}
