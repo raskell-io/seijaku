@@ -126,6 +126,7 @@
 
 .home-latest > * { width: min(var(--shell), 100%); margin-inline: auto; }
 .home-latest { padding-block: clamp(3.5rem, 6vw, 5.5rem); }
+.home-selected + .home-latest { padding-block-start: 0; }
 
 // Compact section heads on the homepage: a plain label and a text link, no campaign headlines.
 .home-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-block-end: 1.25rem; }

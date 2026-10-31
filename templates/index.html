@@ -29,6 +29,26 @@
   </div>
 </section>
 
+{#- Optional selected writing: `selected` under [extra] in the default language's content/_index.md, a list of
+    content paths ("articles/x.md"). Shown above the latest writing, as the page's translation where there is
+    one, and left out of the latest list below so nothing appears twice. -#}
+{%- set home_en = get_section(path="_index.md") %}
+{%- set_global selected = [] %}{% set_global selected_paths = [] %}
+{%- for sp_path in home_en.extra.selected | default(value=[]) %}
+  {%- set sp = get_page(path=sp_path) %}{% set_global pick = sp %}
+  {%- if lang != config.default_language %}{% for tr in sp.translations %}{% if tr.lang == lang %}{% set_global pick = get_page(path=sp_path | replace(from=".md", to="." ~ lang ~ ".md")) %}{% endif %}{% endfor %}{% endif %}
+  {%- set_global selected = selected | concat(with=pick) %}{% set_global selected_paths = selected_paths | concat(with=sp.path) %}
+{%- endfor %}
+{%- if selected | length > 0 %}
+<section class="home-latest home-selected">
+  <header class="home-head">
+    <h2>{{ i18n::t(text="Selected writing", lang=lang, config=config) }}</h2>
+  </header>
+  {%- set pages = selected %}{% set show_kinds = true %}
+  {% include "partials/post_list.html" %}
+</section>
+{%- endif %}
+
 <section class="home-latest">
   <header class="home-head">
     <h2>{{ i18n::t(text="Latest writing", lang=lang, config=config) }}</h2>
@@ -36,12 +56,15 @@
     <a href="{{ sec_href | safe }}">{{ i18n::t(text=all_label, lang=lang, config=config) }} →</a>
   </header>
   {%- if lang != config.default_language %}
-  {#- The writing itself is in the default language; say so on a translated home page. -#}
-  <p class="home-note">{{ i18n::t(text="The writing on this site is in English.", lang=lang, config=config) }}</p>
+  {#- Most of the writing is in the default language; say so on a translated home page. -#}
+  <p class="home-note">{{ i18n::t(text="Most of the writing on this site is in English; the pieces below are translated.", lang=lang, config=config) }}</p>
   {%- endif %}
   {%- set_global latest = sec.pages %}
   {%- set nsec = get_section(path="notes/_index.md", required=false) %}
   {%- if nsec %}{% set_global latest = latest | concat(with=nsec.pages) | sort(attribute="date") | reverse %}{% endif %}
+  {%- set_global unpicked = [] %}
+  {%- for lp in latest %}{% set lp_en = lp.path %}{% if lang != config.default_language %}{% set lp_en = lp.path | trim_start_matches(pat="/" ~ lang) %}{% endif %}{% if lp_en not in selected_paths %}{% set_global unpicked = unpicked | concat(with=lp) %}{% endif %}{% endfor %}
+  {%- set_global latest = unpicked %}
   {%- if latest | length > 0 %}
   {%- set pages = latest | slice(end=8) %}{% set show_kinds = true %}
   {% include "partials/post_list.html" %}
