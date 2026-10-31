@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "macros/icons.html" as icons %}
+{% import "macros/i18n.html" as i18n %}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block body_class %}interior{% if page.extra.banner %} has-banner{% endif %}{% endblock body_class %}
@@ -52,7 +53,10 @@
     {%- if page.ancestors | length > 1 %}
     {%- set sec = get_section(path=page.ancestors | last) %}
     {%- set skind = page.components | first | trim_end_matches(pat="s") %}
-    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ icons::kind(k=skind) }}{{ sec.title }}</a>{% for c in page.taxonomies.categories | default(value=[]) %} · <a href="{{ get_taxonomy_url(kind="categories", name=c) | safe }}">{% if c == "reviews" %}{{ icons::kind(k="review") }}{% endif %}{{ c | replace(from="-", to=" ") | title }}</a>{% endfor %}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
+    {#- A translation has no taxonomies of its own: its categories come from the original. -#}
+    {%- set ecats = page.taxonomies.categories | default(value=[]) %}
+    {%- if lang != config.default_language %}{% set esrc = get_page(path=page.relative_path | replace(from="." ~ lang ~ ".md", to=".md"), required=false) %}{% if esrc %}{% set ecats = esrc.taxonomies.categories | default(value=[]) %}{% endif %}{% endif %}
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ icons::kind(k=skind) }}{{ sec.title }}</a>{% for c in ecats %}{% set c_href = "" %}{% if lang != config.default_language %}{% set c_href = i18n::tax_url(tax="categories", term=c, lang=lang, base=config.default_language, config_base=config.base_url) %}{% endif %}{% if not c_href %}{% set c_href = get_taxonomy_url(kind="categories", name=c, lang=config.default_language) %}{% endif %} · <a href="{{ c_href | safe }}">{% if c == "reviews" %}{{ icons::kind(k="review") }}{% endif %}{{ i18n::t(text=c | replace(from="-", to=" ") | title, lang=lang, config=config) }}</a>{% endfor %}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
     {%- elif page.extra.headline %}
     <p class="pagehead__eyebrow">{{ page.title }}{% set lp = page %}{% set lhere = lang %}{% include "partials/lang_squares.html" %}</p>
     {%- endif %}

@@ -50,12 +50,14 @@
 .postlist__tags a::before { content: "#"; opacity: 0.6; }
 .postlist__tags a:hover { color: var(--ink); text-decoration: underline; }
 
-// Language squares (partials/lang_squares.html): the other languages a page exists in, each a small mono
-// square linking to that version, after a title in a list or in a page's eyebrow.
-.langsqs { display: inline-flex; gap: 0.3rem; margin-inline-start: 0.55rem; vertical-align: 0.15em; }
-.langsq { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); border-radius: 0.2rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; line-height: 1; text-decoration: none; }
-.langsq:hover, .langsq:focus-visible { color: var(--ink); border-color: var(--ink); text-decoration: none; }
-.pagehead__eyebrow .langsqs { vertical-align: -0.25em; }
+// Language squares (partials/lang_squares.html): every language a page exists in, the same row on each
+// version, each a small square in its own script. The language shown is filled; the others fill on hover
+// and press. Selectors are doubled so eyebrow and list link styles (underline on hover) do not reach them.
+.langsqs { display: inline-flex; gap: 0.3rem; margin-inline-start: 0.55rem; vertical-align: middle; position: relative; top: -0.07em; }
+.langsqs .langsq { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); border-radius: 0.2rem; color: var(--muted); font-family: var(--font-mono); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; line-height: 1; text-decoration: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
+.langsqs .langsq:is(:lang(zh), :lang(ko)) { font-family: inherit; font-size: 0.72rem; letter-spacing: 0; }
+.langsqs .langsq:hover, .langsqs .langsq:focus-visible, .langsqs .langsq:active, .langsqs .langsq--here { border-color: var(--ink); background: var(--ink); color: var(--paper); text-decoration: none; }
+.langsqs .langsq--here { cursor: default; }
 
 // An article row opens (partials/post_list.html) to its cover and chapters: the round toggle sits under the
 // reading time, the panel spans the title and time columns below the row.

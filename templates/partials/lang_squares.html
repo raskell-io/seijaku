@@ -1,12 +1,16 @@
 {%- import "macros/i18n.html" as i18n -%}
-{#- Small squares naming the other languages a page exists in, each linking to that version: ZH on an English
-    page that has a Chinese translation, EN and KO on the Chinese one. Include with `lp` (a page or section,
-    read for .translations) and `lhere` (the language being rendered). Languages come from
-    extra.seijaku.languages; a page that exists in one language only shows nothing. -#}
-{%- set_global sq_html = "" %}
-{%- for l in config.extra.seijaku.languages | default(value=[]) %}{% if l.code != lhere %}
-{%- for tr in lp.translations | default(value=[]) %}{% if tr.lang == l.code %}
-{%- set tag = l.hreflang | default(value=l.code) %}{% set code = l.code | upper %}
-{%- set_global sq_html = sq_html ~ '<a class="langsq" href="' ~ tr.permalink ~ '" lang="' ~ tag ~ '" hreflang="' ~ tag ~ '" title="' ~ l.name ~ '">' ~ code ~ '</a>' %}
+{#- A fixed row of small squares, one per language a page exists in, in the order of extra.seijaku.languages:
+    the same row on every version of the page, with the language being shown filled and the others linking to
+    their version. Each square shows the language's `mark` (its own script: EN, 中, 한), else its code. Include
+    with `lp` (a page or section, read for .translations) and `lhere` (the language being rendered); a page that
+    exists in one language only shows nothing. -#}
+{%- set_global sq_html = "" %}{% set_global sq_n = 0 %}
+{%- for l in config.extra.seijaku.languages | default(value=[]) %}
+{%- set tag = l.hreflang | default(value=l.code) %}{% set mark = l.mark | default(value=l.code | upper) %}
+{%- if l.code == lhere %}
+{%- set_global sq_html = sq_html ~ '<span class="langsq langsq--here" lang="' ~ tag ~ '" title="' ~ l.name ~ '" aria-current="page">' ~ mark ~ '</span>' %}
+{%- else %}{% for tr in lp.translations | default(value=[]) %}{% if tr.lang == l.code %}
+{%- set_global sq_n = sq_n + 1 %}
+{%- set_global sq_html = sq_html ~ '<a class="langsq" href="' ~ tr.permalink ~ '" lang="' ~ tag ~ '" hreflang="' ~ tag ~ '" title="' ~ l.name ~ '">' ~ mark ~ '</a>' %}
 {%- endif %}{% endfor %}{% endif %}{% endfor %}
-{%- if sq_html %}<span class="langsqs" aria-label="{{ i18n::t(text="Also available in", lang=lhere, config=config) }}">{{ sq_html | safe }}</span>{% endif %}
+{%- if sq_n > 0 %}<span class="langsqs" role="group" aria-label="{{ i18n::t(text="Language", lang=lhere, config=config) }}">{{ sq_html | safe }}</span>{% endif %}

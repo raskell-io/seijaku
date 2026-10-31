@@ -122,9 +122,10 @@ Post lists label notes, talks and reviews in front of the title; lists that mix 
 writing, topic pages) label articles too (`show_kinds = true` before including `partials/post_list.html`), and so
 does a section with `show_kinds = true` under `[extra]` in its `_index.md`. Each row gets one label; a review is
 labelled a review.
-When a page exists in more than one language, small squares after its title in lists and in its page
-eyebrow name the other languages (ZH, KO, EN) and link to them (`partials/lang_squares.html`, from
-`extra.seijaku.languages`). The home page's now list takes its heading from `extra.seijaku.now_title`
+When a page exists in more than one language, a row of small squares after its title in lists and in its page
+eyebrow shows every language it exists in, each in its own script (`mark`, such as EN, 中, 한; the code
+otherwise), in the same order on every version: the language shown is filled, the others link to their
+version and fill on hover (`partials/lang_squares.html`, from `extra.seijaku.languages`). The home page's now list takes its heading from `extra.seijaku.now_title`
 (default "What I am working on"), and the reading item spans the full width.
 
 ### Facet filters on a post list
@@ -213,8 +214,8 @@ taxonomies = []
 
 [extra.seijaku]
 languages = [
-  { code = "en", name = "English", hreflang = "en", og_locale = "en_US" },
-  { code = "zh", name = "简体中文", hreflang = "zh-Hans", og_locale = "zh_CN" },
+  { code = "en", name = "English", mark = "EN", hreflang = "en", og_locale = "en_US" },
+  { code = "zh", name = "简体中文", mark = "中", hreflang = "zh-Hans", og_locale = "zh_CN" },
 ]
 
 [extra.seijaku.i18n.zh]
