@@ -1,10 +1,11 @@
 {%- import "macros/i18n.html" as i18n -%}
-{#- Labels and dates follow the page's language. A translation has no taxonomies of its own, so its topics come
-    from the original; Chinese reading time is counted in characters (about 450 a minute). -#}
+{#- Labels and dates follow the page's language. A translation has no taxonomies of its own, so its topics and
+    series come from the original; Chinese reading time is counted in characters (about 450 a minute). -#}
 {%- set mlang = page.lang | default(value=config.default_language) %}
 {%- set dfmt = i18n::t(text="%B %-d, %Y", lang=mlang, config=config) %}
 {%- set mtags = page.taxonomies.tags | default(value=[]) %}
-{%- if mlang != config.default_language %}{% set msrc = get_page(path=page.relative_path | replace(from="." ~ mlang ~ ".md", to=".md"), required=false) %}{% if msrc %}{% set mtags = msrc.taxonomies.tags | default(value=[]) %}{% endif %}{% endif %}
+{%- set mseries = page.taxonomies.series | default(value=[]) %}
+{%- if mlang != config.default_language %}{% set msrc = get_page(path=page.relative_path | replace(from="." ~ mlang ~ ".md", to=".md"), required=false) %}{% if msrc %}{% set mtags = msrc.taxonomies.tags | default(value=[]) %}{% set mseries = msrc.taxonomies.series | default(value=[]) %}{% endif %}{% endif %}
 {%- set mrt = page.reading_time | default(value=0) %}
 {%- if mlang == "zh" %}{% set mchars = page.content | striptags | length %}{% set mrt = mchars / 450 %}{% set mrt = mrt | round(method="ceil") | int %}{% endif %}
 <table class="meta">
@@ -17,9 +18,8 @@
     {%- elif page.date %}
     <tr><th scope="row">{{ i18n::t(text="Published", lang=mlang, config=config) }}</th><td><time datetime="{{ page.date }}">{{ page.date | date(format=dfmt) }}</time></td></tr>
     {%- endif %}
-    {%- set series_key = page.taxonomies.series | default(value=[]) | join(sep=",") %}
-    {%- if series_key %}
-    <tr><th scope="row">{{ i18n::t(text="Series", lang=mlang, config=config) }}</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {%- if mseries | length > 0 %}
+    <tr><th scope="row">{{ i18n::t(text="Series", lang=mlang, config=config) }}</th><td>{% for sr in mseries %}{% set sr_href = "" %}{% if mlang != config.default_language %}{% set sr_href = i18n::tax_url(tax="series", term=sr, lang=mlang, base=config.default_language, config_base=config.base_url) %}{% endif %}{% if not sr_href %}{% set sr_href = get_taxonomy_url(kind="series", name=sr, lang=config.default_language) %}{% endif %}<a href="{{ sr_href | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
     {%- if page.extra.review %}
     <tr><th scope="row">{{ i18n::t(text="Review of", lang=mlang, config=config) }}</th><td>{% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</td></tr>
