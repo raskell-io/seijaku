@@ -3,11 +3,18 @@
 {% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
-{#- A translated section with no pages of its own (the writing is in the default language) lists the
-    default language's pages, in the translated page's chrome. -#}
+{#- A translated section lists the default language's pages, in the translated page's chrome, with each page
+    replaced by its translation where one exists (`<slug>.<lang>.md` beside the original), so a section with a
+    few translations still lists everything. -#}
 {%- set fallback = false %}{% set all_pages = section.pages %}
-{%- if lang != config.default_language and section.pages | length == 0 %}
-{%- set fallback = true %}{% set suffix = "." ~ lang ~ ".md" %}{% set en_path = section.relative_path | replace(from=suffix, to=".md") %}{% set en_section = get_section(path=en_path) %}{% set all_pages = en_section.pages %}
+{%- if lang != config.default_language %}
+{%- set fallback = true %}{% set suffix = "." ~ lang ~ ".md" %}{% set en_path = section.relative_path | replace(from=suffix, to=".md") %}{% set en_section = get_section(path=en_path) %}
+{%- set_global merged = [] %}
+{%- for p in en_section.pages %}{% set_global pick = p %}
+{%- for tr in p.translations %}{% if tr.lang == lang %}{% set_global pick = get_page(path=p.relative_path | replace(from=".md", to=suffix)) %}{% endif %}{% endfor %}
+{%- set_global merged = merged | concat(with=pick) %}
+{%- endfor %}
+{%- set all_pages = merged %}
 {%- endif %}
 <header class="pagehead">
   {%- if paginator and not fallback %}{% set total = paginator.total_pages %}{% else %}{% set total = all_pages | length %}{% endif %}

@@ -10,6 +10,12 @@
 {%- set_global current_year = "" %}
 <ol class="postlist">
   {%- for post in pages %}
+  {#- A translation has no taxonomies of its own (translated languages carry none): its topics are the original's.
+      Chinese has no spaces between words, so its reading time is counted in characters (about 450 a minute). -#}
+  {%- set ptags = post.taxonomies.tags | default(value=[]) %}
+  {%- if post.lang != config.default_language %}{% set psrc = get_page(path=post.relative_path | replace(from="." ~ post.lang ~ ".md", to=".md")) %}{% set ptags = psrc.taxonomies.tags | default(value=[]) %}{% endif %}
+  {%- set prt = post.reading_time | default(value=0) %}
+  {%- if post.lang == "zh" %}{% set pchars = post.content | striptags | length %}{% set prt = pchars / 450 %}{% set prt = prt | round(method="ceil") | int %}{% endif %}
   {%- set year = post.date | date(format="%Y") %}
   {%- if grouped and year != current_year %}
   {%- set_global current_year = year %}
@@ -20,10 +26,10 @@
       form (review, for pages with extra.review; plus article, note or talk when `form_kinds` is set, as on
       topic pages), length from the reading time, and series. Comma-separated:
       the HTML minifier drops attribute values that start with a space. -#}
-  {%- set rt = post.reading_time | default(value=0) %}
+  {%- set rt = prt %}
   {%- if rt < 10 %}{% set flen = "short" %}{% elif rt < 20 %}{% set flen = "medium" %}{% else %}{% set flen = "long" %}{% endif %}
-  <li class="postlist__item" data-topic="{% set rtags = post.taxonomies.tags | default(value=[]) %}{% include "partials/topic_rollup.html" %}" data-technology="
-    {%- for tag in post.taxonomies.tags | default(value=[]) %}{% if tagdata and tag in tagdata %}{% set t1 = tagdata[tag] %}
+  <li class="postlist__item" data-topic="{% set rtags = ptags %}{% include "partials/topic_rollup.html" %}" data-technology="
+    {%- for tag in ptags %}{% if tagdata and tag in tagdata %}{% set t1 = tagdata[tag] %}
       {%- if t1.kind == "technology" %}{{ tag }},{% endif %}
       {%- for b in t1.broader | default(value=[]) %}{% if b in tagdata and tagdata[b].kind == "technology" %}{{ b }},{% endif %}{% endfor %}
     {%- endif %}{% endfor %}" data-form="{% if form_kinds | default(value=false) %}{% if post.components | first == "notes" %}note,{% elif post.components | first == "talks" %}talk,{% else %}article,{% endif %}{% endif %}{% if post.extra.review %}review{% endif %}" data-length="{{ flen }}" data-series="{{ post.taxonomies.series | default(value=[]) | join(sep=" ") }}">
@@ -35,8 +41,8 @@
       {%- set isnote = post.components | first == "notes" %}
       <h3 class="postlist__title">{% if isnote %}<span class="postlist__kind">{{ icons::kind(k="note") }}{{ i18n::t(text="note", lang=plang, config=config) }}</span>{% elif post.components | first == "talks" %}<span class="postlist__kind">{{ icons::kind(k="talk") }}{{ i18n::t(text="talk", lang=plang, config=config) }}</span>{% elif show_kinds | default(value=false) and not post.extra.review %}<span class="postlist__kind">{{ icons::kind(k="article") }}{{ i18n::t(text="article", lang=plang, config=config) }}</span>{% endif %}{% if post.extra.review %}<span class="postlist__kind">{{ icons::kind(k="review") }}{{ i18n::t(text="review", lang=plang, config=config) }}</span>{% endif %}<a href="{{ post.permalink | safe }}">{{ post.title }}</a>{% set lp = post %}{% set lhere = plang %}{% include "partials/lang_squares.html" %}</h3>
       {%- if post.description %}<p class="postlist__desc">{{ post.description }}</p>{%- endif %}
-      {%- if post.taxonomies.tags %}
-      <p class="postlist__tags">{% for tag in post.taxonomies.tags %}<a href="{{ i18n::topic_url(slug=tag, lang=plang, base=config.default_language, used=true) | safe }}">{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=plang, base=config.default_language) }}</a>{% endfor %}</p>
+      {%- if ptags | length > 0 %}
+      <p class="postlist__tags">{% for tag in ptags %}<a href="{{ i18n::topic_url(slug=tag, lang=plang, base=config.default_language, used=true) | safe }}">{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=plang, base=config.default_language) }}</a>{% endfor %}</p>
       {%- endif %}
     </div>
     {#- An article opens to show its reading time, its cover (extra.cover, else the hero extra.image) and its chapters,
@@ -44,12 +50,12 @@
         when the row is opened. -#}
     {%- set phero = post.extra.cover | default(value=post.extra.image | default(value="")) %}
     {%- set peek = post.components | first == "articles" and (post.toc | length > 0 or phero) %}
-    {%- if post.reading_time and not isnote and not peek %}<span class="postlist__time">{{ post.reading_time }} {{ i18n::t(text="min", lang=plang, config=config) }}</span>{%- endif %}
+    {%- if prt and not isnote and not peek %}<span class="postlist__time">{{ prt }} {{ i18n::t(text="min", lang=plang, config=config) }}</span>{%- endif %}
     {%- if peek %}
     <details class="postlist__more">
       <summary aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}"><span class="postlist__toggle" aria-hidden="true"></span></summary>
       <div class="postlist__peek">
-        {%- if post.reading_time %}<p class="postlist__peek-time">{{ post.reading_time }} {{ i18n::t(text="min read", lang=plang, config=config) }}{% if post.toc | length > 0 %}{% set nch = post.toc | length %}{% set chl = i18n::t(text="{n} chapters", lang=plang, config=config) %} · {{ chl | replace(from="{n}", to=nch ~ "") }}{% endif %}</p>{% endif %}
+        {%- if prt %}<p class="postlist__peek-time">{{ prt }} {{ i18n::t(text="min read", lang=plang, config=config) }}{% if post.toc | length > 0 %}{% set nch = post.toc | length %}{% set chl = i18n::t(text="{n} chapters", lang=plang, config=config) %} · {{ chl | replace(from="{n}", to=nch ~ "") }}{% endif %}</p>{% endif %}
         {%- if phero %}<a class="postlist__hero" href="{{ post.permalink | safe }}" tabindex="-1" aria-hidden="true"><img src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"><img class="postlist__grade" src="{{ get_url(path=phero) | safe }}" alt="" loading="lazy" decoding="async"></a>{% endif %}
         {%- if post.toc | length > 0 %}
         <nav class="postlist__toc" aria-label="{{ i18n::t(text="Contents", lang=plang, config=config) }}: {{ post.title }}">

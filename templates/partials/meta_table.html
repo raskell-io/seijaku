@@ -1,31 +1,40 @@
+{%- import "macros/i18n.html" as i18n -%}
+{#- Labels and dates follow the page's language. A translation has no taxonomies of its own, so its topics come
+    from the original; Chinese reading time is counted in characters (about 450 a minute). -#}
+{%- set mlang = page.lang | default(value=config.default_language) %}
+{%- set dfmt = i18n::t(text="%B %-d, %Y", lang=mlang, config=config) %}
+{%- set mtags = page.taxonomies.tags | default(value=[]) %}
+{%- if mlang != config.default_language %}{% set msrc = get_page(path=page.relative_path | replace(from="." ~ mlang ~ ".md", to=".md"), required=false) %}{% if msrc %}{% set mtags = msrc.taxonomies.tags | default(value=[]) %}{% endif %}{% endif %}
+{%- set mrt = page.reading_time | default(value=0) %}
+{%- if mlang == "zh" %}{% set mchars = page.content | striptags | length %}{% set mrt = mchars / 450 %}{% set mrt = mrt | round(method="ceil") | int %}{% endif %}
 <table class="meta">
   <tbody>
-    {%- if page.reading_time %}
-    <tr><th scope="row">Duration</th><td>{{ page.reading_time }} minute read</td></tr>
+    {%- if mrt %}
+    <tr><th scope="row">{{ i18n::t(text="Duration", lang=mlang, config=config) }}</th><td>{{ mrt }} {{ i18n::t(text="minute read", lang=mlang, config=config) }}</td></tr>
     {%- endif %}
     {%- if page.updated %}
-    <tr><th scope="row">Updated</th><td><time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %-d, %Y") }}</time></td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Updated", lang=mlang, config=config) }}</th><td><time datetime="{{ page.updated }}">{{ page.updated | date(format=dfmt) }}</time></td></tr>
     {%- elif page.date %}
-    <tr><th scope="row">Published</th><td><time datetime="{{ page.date }}">{{ page.date | date(format="%B %-d, %Y") }}</time></td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Published", lang=mlang, config=config) }}</th><td><time datetime="{{ page.date }}">{{ page.date | date(format=dfmt) }}</time></td></tr>
     {%- endif %}
     {%- set series_key = page.taxonomies.series | default(value=[]) | join(sep=",") %}
     {%- if series_key %}
-    <tr><th scope="row">Series</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Series", lang=mlang, config=config) }}</th><td>{% for sr in page.taxonomies.series %}<a href="{{ get_taxonomy_url(kind="series", name=sr) | safe }}">{{ sr | replace(from="-", to=" ") | title }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
     {%- if page.extra.review %}
-    <tr><th scope="row">Review of</th><td>{% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Review of", lang=mlang, config=config) }}</th><td>{% set wid = page.extra.review %}{% include "partials/work_ref.html" %}</td></tr>
     {#- The rating is looked up here rather than passed back from the include: a set_global inside an
         included template does not reach the including one. -#}
     {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
     {%- if rdata and rdata.works %}{% for w in rdata.works %}{% if w.id == page.extra.review and w.rating %}
-    <tr><th scope="row">Rating</th><td>{{ w.rating }} / 10</td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Rating", lang=mlang, config=config) }}</th><td>{{ w.rating }} / 10</td></tr>
     {%- endif %}{% endfor %}{% endif %}
     {%- endif %}
     {%- if page.extra.reads %}
-    <tr><th scope="row">Reading</th><td>{% for wid in page.extra.reads %}{% include "partials/work_ref.html" %}{% if not loop.last %}; {% endif %}{% endfor %}</td></tr>
+    <tr><th scope="row">{{ i18n::t(text="Reading", lang=mlang, config=config) }}</th><td>{% for wid in page.extra.reads %}{% include "partials/work_ref.html" %}{% if not loop.last %}; {% endif %}{% endfor %}</td></tr>
     {%- endif %}
-    {%- if page.taxonomies.tags %}
-    <tr><th scope="row">Topics</th><td>{% for tag in page.taxonomies.tags %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}<a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">{% if tagdata and tag in tagdata %}{{ tagdata[tag].name }}{% else %}{{ tag }}{% endif %}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {%- if mtags | length > 0 %}{% set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+    <tr><th scope="row">{{ i18n::t(text="Topics", lang=mlang, config=config) }}</th><td>{% for tag in mtags %}{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}<a href="{{ i18n::topic_url(slug=tag, lang=mlang, base=config.default_language, used=true) | safe }}">{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=mlang, base=config.default_language) }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
     {%- endif %}
   </tbody>
 </table>
