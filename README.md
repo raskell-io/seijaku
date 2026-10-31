@@ -239,6 +239,8 @@ one term); it renders the default language's taxonomy in that language. Labels r
 `window.SEIJAKU_I18N`. In templates, use `{% import "macros/i18n.html" as i18n %}`, then `i18n::t(text=...,
 lang=lang, config=config)`, `i18n::url(path="@/about.md", lang=lang, base=config.default_language)`, and
 `i18n::status(p=..., lang=lang, config=config)` for project badges. Chinese and Korean get CJK font stacks.
+The sitemap lists the same hreflang alternates (`xhtml:link`, x-default the default language) for every URL that
+exists in more than one language, and leaves out redirect stubs (`extra.redirect_to`).
 
 Topics can be translated too: `data/tags.<lang>.toml` gives each slug of the vocabulary a `name` and
 `description` in that language, and `i18n::topic(slug, field, fallback, lang, base)` and

@@ -14,10 +14,12 @@
   {%- set focus_id = "t:" ~ focus_tag.slug %}
   {%- set n_topics = 0 %}
 {%- else %}
-  {%- set focus_id = "a:" ~ page.path %}
-  {%- for b in lpages %}{% if b.path != page.path %}
+  {#- The map knows pages by their English path: a translation (/ko/articles/x/) stands for its original. -#}
+  {%- set fpath = page.path %}{% if lml != config.default_language %}{% set fpath = page.path | trim_start_matches(pat="/" ~ lml) %}{% endif %}
+  {%- set focus_id = "a:" ~ fpath %}
+  {%- for b in lpages %}{% if b.path != fpath %}
     {%- if page.content is containing(b.path) %}{% set_global outlinks = outlinks | concat(with=b) %}{% endif %}
-    {%- if b.content is containing(page.path) %}{% set_global backlinks = backlinks | concat(with=b) %}{% endif %}
+    {%- if b.content is containing(fpath) %}{% set_global backlinks = backlinks | concat(with=b) %}{% endif %}
   {%- endif %}{% endfor %}
   {%- set n_topics = page.taxonomies.tags | default(value=[]) | length %}
 {%- endif %}

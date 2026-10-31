@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{#- Zola's sitemap, plus hreflang alternates (xhtml:link) for every URL that exists in more than one language:
+    a translation lives at the same path under its language prefix (/zh/about/ translates /about/), so the
+    versions of a page are found by swapping the prefix. Languages come from extra.seijaku.languages;
+    x-default is the default-language version. Redirect stubs (extra.redirect_to) are left out. Zola gives this template no `config`, so it reads config.toml. -#}
+{%- set cfg = load_data(path="config.toml", required=false) %}
+{%- if cfg and cfg.extra.seijaku and cfg.extra.seijaku.languages %}{% set langs = cfg.extra.seijaku.languages %}{% else %}{% set langs = [] %}{% endif %}
+{%- set dlang = cfg.default_language | default(value="en") %}
+{%- set root_base = cfg.base_url | default(value="") | trim_end_matches(pat="/") %}{% set root = root_base ~ "/" %}
+{%- set_global all = [] %}{% for e in entries %}{% set_global all = all | concat(with=e.permalink) %}{% endfor %}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    {%- for sitemap_entry in entries %}{% if not sitemap_entry.extra or not sitemap_entry.extra.redirect_to %}
+    <url>
+        <loc>{{ sitemap_entry.permalink | escape_xml | safe }}</loc>
+        {%- if sitemap_entry.updated %}
+        <lastmod>{{ sitemap_entry.updated }}</lastmod>
+        {%- endif %}
+        {%- if langs | length > 1 %}
+        {%- set_global key = sitemap_entry.permalink | trim_start_matches(pat=root) %}
+        {%- for l in langs %}{% if l.code != dlang and key is starting_with(l.code ~ "/") %}{% set_global key = key | trim_start_matches(pat=l.code ~ "/") %}{% endif %}{% endfor %}
+        {%- set_global vtags = [] %}{% set_global vurls = [] %}{% set_global xdef = "" %}
+        {%- for l in langs %}{% if l.code == dlang %}{% set u = root ~ key %}{% else %}{% set u = root ~ l.code ~ "/" ~ key %}{% endif %}
+        {%- if u in all %}{% set_global vtags = vtags | concat(with=l.hreflang | default(value=l.code)) %}{% set_global vurls = vurls | concat(with=u) %}{% if l.code == dlang %}{% set_global xdef = u %}{% endif %}{% endif %}{% endfor %}
+        {%- if vurls | length > 1 %}
+        {%- for vu in vurls %}
+        <xhtml:link rel="alternate" hreflang="{{ vtags | nth(n=loop.index0) }}" href="{{ vu | escape_xml | safe }}"/>
+        {%- endfor %}
+        {%- if xdef %}
+        <xhtml:link rel="alternate" hreflang="x-default" href="{{ xdef | escape_xml | safe }}"/>
+        {%- endif %}
+        {%- endif %}
+        {%- endif %}
+    </url>
+    {%- endif %}{% endfor %}
+</urlset>
