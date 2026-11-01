@@ -1,0 +1,40 @@
+// Image overlay (static/seijaku-lightbox.js): anything with data-lightbox opens its image in a native dialog,
+// fitted to the screen, with a zoom toggle and drag to pan.
+[data-lightbox] { cursor: zoom-in; }
+[data-lightbox]:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+html.has-lightbox { overflow: hidden; }
+
+.lightbox {
+  width: 100vw; max-width: none; height: 100dvh; max-height: none;
+  margin: 0; padding: 0; border: 0;
+  background: transparent; color: #f5f3ee;
+  overflow: hidden;
+}
+.lightbox::backdrop { background: rgba(8, 11, 10, 0.88); backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox[open] { animation: lightbox-in 180ms ease-out; }
+  .lightbox[open]::backdrop { animation: lightbox-in 180ms ease-out; }
+}
+@keyframes lightbox-in { from { opacity: 0; } }
+
+// The stage scrolls when the image is zoomed; auto margins centre the image without clipping its far edge.
+.lightbox__stage { position: absolute; inset: 0; display: flex; overflow: auto; padding: 4.5rem 1.5rem 2rem; overscroll-behavior: contain; }
+.lightbox__stage img {
+  margin: auto; display: block;
+  max-width: min(100%, 110rem); max-height: calc(100dvh - 7rem); width: auto; height: auto;
+  border-radius: 0.6rem; box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.5);
+  cursor: zoom-in; user-select: none; -webkit-user-drag: none;
+}
+.lightbox.is-zoomed .lightbox__stage img { flex: none; max-width: none; max-height: none; height: auto; cursor: grab; }
+.lightbox.is-zoomed .lightbox__stage:active img { cursor: grabbing; }
+
+.lightbox__bar { position: absolute; top: 1rem; right: 1rem; z-index: 1; display: flex; gap: 0.5rem; }
+.lightbox__btn {
+  display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 50%;
+  background: rgba(20, 24, 23, 0.72); color: inherit; cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.lightbox__btn:hover, .lightbox__btn:focus-visible { background: rgba(245, 243, 238, 0.16); border-color: rgba(255, 255, 255, 0.45); outline: none; }
+.lightbox__btn[aria-pressed="true"] { background: #f5f3ee; color: #111312; }

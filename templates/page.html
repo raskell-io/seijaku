@@ -70,7 +70,10 @@
     {%- if page.extra.cover %}{% set cover_src = get_url(path=page.extra.cover) %}{% set cover_alt = page.extra.cover_alt | default(value="") %}
     {%- else %}{% set cover_src = get_url(path=bookcover) %}{% set cover_alt = bookalt %}{% endif %}
     {%- set graded = page.extra.cover_grade | default(value=config.extra.seijaku.cover_grade | default(value=true)) %}
-    <figure class="pagehead__cover{% if graded %} pagehead__cover--graded{% endif %}{% if bookcover %} pagehead__cover--book{% endif %}"{% if graded %} tabindex="0"{% endif %}>
+    {#- A click opens the whole image in an overlay: the uncropped hero (extra.image) for an article, the
+        cover itself for a book. -#}
+    {%- if page.extra.image and not bookcover %}{% set lb_src = get_url(path=page.extra.image) %}{% else %}{% set lb_src = cover_src %}{% endif %}
+    <figure class="pagehead__cover{% if graded %} pagehead__cover--graded{% endif %}{% if bookcover %} pagehead__cover--book{% endif %}"{% if graded %} tabindex="0"{% endif %} data-lightbox="{{ lb_src | safe }}" data-lightbox-alt="{% if cover_alt %}{{ cover_alt }}{% else %}{{ page.title }}{% endif %}">
       <img src="{{ cover_src | safe }}" alt="{{ cover_alt }}" decoding="async">
       {%- if graded %}
       {#- Tritone grade in the theme palette (green-black, sea teal, champagne, pearl); hover or focus fades back to the original. -#}

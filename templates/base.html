@@ -273,6 +273,8 @@
   </dialog>
   <script src="{{ get_url(path="seijaku-search.js", cachebust=true) | safe }}" defer></script>
   {%- endif %}
+  {#- Image overlay for covers marked data-lightbox; it exits at once on pages without any. -#}
+  <script src="{{ get_url(path="seijaku-lightbox.js", cachebust=true) | safe }}" defer></script>
   {%- if config.extra.seijaku.code_copy %}
   <script>(function(){if(!navigator.clipboard){return}document.querySelectorAll(".prose pre").forEach(function(pre){var w=document.createElement("div");w.className="codeblock";pre.parentNode.insertBefore(w,pre);w.appendChild(pre);var b=document.createElement("button");b.type="button";b.className="codeblock__copy";b.textContent="copy";b.addEventListener("click",function(){var c=pre.querySelector("code")||pre;navigator.clipboard.writeText(c.innerText.replace(/\n$/,"")).then(function(){b.textContent="copied";setTimeout(function(){b.textContent="copy"},1600)})});w.appendChild(b)})})();</script>
   {%- endif %}

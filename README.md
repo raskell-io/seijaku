@@ -37,6 +37,11 @@ technical publication rather than a product company.
   theme palette, film grain, and a ring border, so mixed imagery reads as one series; hover or
   focus fades back to the original. Opt out per page with `extra.cover_grade = false` or
   site-wide with `cover_grade = false` under `[extra.seijaku]`
+- **Image overlay** — a click (or Enter) on an article cover opens the whole hero image (`extra.image`,
+  uncropped) in an overlay; review covers and the covers on the reading page open the same way. The overlay
+  zooms with a button or a double-click, pans by dragging, and closes with Escape, the close button or a click
+  outside. Any element with `data-lightbox="<image url>"` (and `data-lightbox-alt`) opens it
+  (`static/seijaku-lightbox.js`).
 - **After the article** — related reading (`extra.related = ["slug", ...]`, otherwise posts
   that share tags) and links to the older and newer post
 - **Now list** — optional `[[extra.now]]` blocks (`name`, `text`, `url`) in

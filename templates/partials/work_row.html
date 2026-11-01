@@ -23,7 +23,7 @@
 {%- if wwhen %}{% set wfmt = i18n::t(text="%B %Y", lang=lang, config=config) %}{% if wwhen | length == 4 %}{% set wlabel = wwhen %}{% else %}{% set wmonth = wwhen ~ "-01" %}{% set wlabel = wmonth | date(format=wfmt) %}{% endif %}{% set wverb_t = i18n::t(text=wverb, lang=lang, config=config) %}{% set wdate = wverb_t ~ " " ~ wlabel %}{% endif %}
 <li class="postlist__item readlog__item" id="{{ w.id }}" data-form="{{ w.kind }}" data-topic="{% set rtags = wtopics %}{% include "partials/topic_rollup.html" %}">
   {%- if w.cover %}{% set wsrc = get_url(path=w.cover) %}
-  <div class="readlog__cover">
+  <div class="readlog__cover" data-lightbox="{{ wsrc | safe }}" data-lightbox-alt="{{ w.title }}, {{ w.author }}">
     <img src="{{ wsrc | safe }}" alt="" loading="lazy" decoding="async">
     {#- Every cover is graded in the site's tritone except the one being read now, which shows in colour. -#}
     {%- if w.status != "reading" %}
