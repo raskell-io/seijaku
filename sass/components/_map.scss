@@ -38,7 +38,7 @@
 // Each kind's icon in its node colour, the same icon its nodes carry on the canvas (static/seijaku-map.js).
 .map__legend .kicon { width: 1.05rem; height: 1.05rem; margin: 0; vertical-align: 0; color: #f4f0df; }
 .map__legend [data-kind="tag"] .kicon { color: #72d7dc; }
-.map__legend [data-kind="talk"] .kicon, .map__legend [data-kind="series"] .kicon, .map__legend [data-kind="category"] .kicon, .map__legend [data-kind="project"] .kicon { color: #efd093; }
+.map__legend [data-kind="talk"] .kicon, .map__legend [data-kind="dataset"] .kicon, .map__legend [data-kind="series"] .kicon, .map__legend [data-kind="category"] .kicon, .map__legend [data-kind="project"] .kicon { color: #efd093; }
 .map__legend [data-kind="work"] .kicon { color: #a9e8e9; }
 .map__zoom button { min-width: 2rem; justify-content: center; padding-inline: 0.6rem; font-family: var(--font-mono); }
 

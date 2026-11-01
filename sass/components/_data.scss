@@ -1,0 +1,41 @@
+// Datasets (templates/datasets.html and dataset.html): the index of data files, and a dataset's page with its
+// download link and spec sheet. Record counts read as "31 people": the number, then the field name as code.
+.dset-counts { display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; }
+.dset-count { white-space: nowrap; }
+.dset-count__n { font-variant-numeric: tabular-nums; font-weight: 500; }
+.dset-count code, .dsets__links code, .dset-meta code, .dset-download code { font-family: var(--font-mono); font-size: 0.85em; }
+.dset-count code { color: var(--muted); }
+
+// The page: a download button and a link to the raw file under the deck, then the spec sheet.
+.dset-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-block-start: 1.5rem; }
+.dset-download {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1.1rem;
+  border: 1px solid var(--line-strong); border-radius: 100px; color: inherit; text-decoration: none; font-weight: 500;
+  transition: background 150ms ease;
+}
+.dset-download:hover, .dset-download:focus-visible { background: var(--tint-bar); }
+.dset-raw { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+.dset-raw:hover { color: var(--ink); }
+.dset-meta { margin-block-end: clamp(1.5rem, 3vw, 2.5rem); }
+.dset-meta td { overflow-wrap: anywhere; }
+.dset-sources { margin: 0; padding: 0; list-style: none; }
+.dset-sources li + li { margin-block-start: 0.5rem; }
+.dset-isbn { display: block; color: var(--muted); font: 400 0.8rem/1.5 var(--font-mono); }
+
+// The index: one block per dataset, hairlines between them.
+.dsets { list-style: none; margin: 0; padding: 0; max-width: 50rem; border-top: 1px solid var(--line); }
+.dsets__item { padding-block: clamp(1.25rem, 3vw, 2rem); border-bottom: 1px solid var(--line); }
+.dsets__title { margin: 0; font-size: clamp(1.3rem, 2.4vw, 1.65rem); font-weight: 500; line-height: 1.25; }
+.dsets__title a { color: inherit; text-decoration: none; }
+.dsets__title a:hover { text-decoration: underline; text-decoration-color: var(--line-strong); }
+.dsets__title .kicon { width: 1em; height: 1em; vertical-align: -0.12em; margin-inline-end: 0.4em; }
+.dsets__desc { margin: 0.6rem 0 0; color: var(--muted); line-height: 1.5; }
+.dsets__counts { margin: 0.9rem 0 0; }
+.dsets__facts { display: flex; flex-wrap: wrap; gap: 0.4rem 1.75rem; margin: 0.9rem 0 0; font-size: 0.9rem; }
+.dsets__facts div { display: flex; gap: 0.5rem; }
+.dsets__facts dt { color: var(--muted); }
+.dsets__facts dd { margin: 0; }
+.dsets__facts a { color: inherit; text-decoration-color: var(--line-strong); }
+.dsets__links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 1rem 0 0; font-size: 0.95rem; }
+.dsets__links a { color: inherit; text-decoration-color: var(--line-strong); overflow-wrap: anywhere; }
+.dsets__empty { color: var(--muted); }

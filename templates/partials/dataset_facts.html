@@ -1,0 +1,19 @@
+{#- The record counts of one dataset (`dp`, a dataset page), drawn as "31 people · 67 links", shared by the dataset
+    page and the data index. Front matter, under [extra]: file = "data/<slug>.json" (a path under static/),
+    counts = ["people", ...] (the top-level arrays to count; default every top-level array of a JSON object, or
+    the length of a top-level array). Field names stay as they are in the file, in every language. Prints
+    nothing for a file it cannot count (CSV and other formats). -#}
+{%- if dp.extra.file and dp.extra.file is ending_with(".json") %}
+  {%- set dd = load_data(path="static/" ~ dp.extra.file, format="json", required=false) %}
+  {%- set_global dkeys = [] %}{% set_global dns = [] %}
+  {%- if dd %}
+    {%- if dd is iterable and dd is not object %}
+      {%- set dn = dd | length %}{% set_global dkeys = ["records"] %}{% set_global dns = dns | concat(with=dn) %}
+    {%- elif dp.extra.counts %}
+      {%- for k in dp.extra.counts %}{% if k in dd %}{% set dn = dd[k] | length %}{% set_global dkeys = dkeys | concat(with=k) %}{% set_global dns = dns | concat(with=dn) %}{% endif %}{% endfor %}
+    {%- else %}
+      {%- for k, v in dd %}{% if v is iterable and v is not object %}{% set dn = v | length %}{% set_global dkeys = dkeys | concat(with=k) %}{% set_global dns = dns | concat(with=dn) %}{% endif %}{% endfor %}
+    {%- endif %}
+  {%- endif %}
+  {%- for k in dkeys %}<span class="dset-count"><span class="dset-count__n">{{ dns[loop.index0] }}</span> <code>{{ k }}</code></span>{% endfor %}
+{%- endif -%}

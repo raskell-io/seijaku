@@ -146,7 +146,7 @@ with form extended to articles, notes and talks.
 ### The map
 
 `template = "map.html"` draws the whole site as one graph (`partials/graph_data.html`,
-`static/seijaku-map.js`): pages from `graph_sections`, topics and their `broader` links, series,
+`static/seijaku-map.js`): pages from `graph_sections` (a section named `data` gives dataset nodes), topics and their `broader` links, series,
 categories, works from the reading log, and projects. Every node is the same disc, ringed in its kind's colour
 and carrying its kind's icon from `partials/kind_icons.html` (reviews, and the kind of each work, have their own),
 sized by its links; the legend shows the same icons. The kinds legend rests as a stack of chips and fans
@@ -165,7 +165,21 @@ topics, and every external link the pages cite (merged by URL, with the citing p
 they sit under a "References" heading). Point `extra.seijaku.search = "@/search.md"` at it and the nav
 dialog (press `/`) searches the same index, fetched from that page on first use. Filters are a chip per
 kind with live counts; Zola's elasticlunr index adds matches from page bodies. `?q=` and `?type=`
-(article, review, note, talk, work, project, topic, link) keep the state in the URL.
+(article, review, note, talk, dataset, work, project, topic, link) keep the state in the URL.
+
+### Datasets
+
+A section with `template = "datasets.html"` and `page_template = "dataset.html"` publishes data files. Each page
+describes one file under `static/` and takes, under `[extra]`: `file = "data/<slug>.json"` (the path under
+`static/`, so it is served at `/data/<slug>.json` beside the page at `/data/<slug>/`), `licence` and `licence_url`,
+`sources = [{ title, author, publisher, year, isbn, url }]`, `reads` (works from the reading log), `format`
+(default: the file's extension in capitals), and `counts` (the top-level arrays to count; default all of them).
+The page shows a download button and a spec sheet (file, format, record counts, licence, date, sources, reading,
+topics), then the body, which may embed a figure drawn from the file. The index lists every dataset with its
+description, record counts (`partials/dataset_facts.html`, read from the JSON at build time), format, licence,
+and links to the page and the raw file; a translated index lists the same datasets in its own chrome. Put the
+section in `graph_sections` and its pages become dataset nodes on the map and Data results in search
+(`?type=dataset`; the garden row carries the file's URL and licence).
 
 ### Reading log
 
@@ -203,7 +217,7 @@ lists, the section and category in a page's eyebrow, the form filters, and the k
 reading log (on its row and on the tile shown when a work has no cover). The icons are
 [Phosphor](https://phosphoricons.com) duotone (MIT), kept as one sprite in `partials/kind_icons.html` that
 `base.html` includes once per page, and drawn with `icons::kind(k)` from `macros/icons.html`: article,
-note, talk, project, series, review, book, novel, paper, report, essay, journal, and topic and link for the search results and chips (`static/seijaku-search.js` draws the same sprite). They take the size and
+note, talk, dataset, project, series, review, book, novel, paper, report, essay, journal, and topic and link for the search results and chips (`static/seijaku-search.js` draws the same sprite). They take the size and
 colour of the text around them. A new kind gets a `<symbol id="kicon-<kind>">` in the sprite and its name
 in the macro's list. Import the macro beside `i18n` in any template that includes a partial using it.
 

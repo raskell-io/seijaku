@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
+{#- A dataset: one data file under static/ and the page that describes it (what a record is, the fields, how it
+    was compiled, its limits), optionally with a figure drawn from the file. Set page_template = "dataset.html"
+    on the section (its index: template = "datasets.html"); with graph_sections containing the section, the page
+    is a dataset node on the map and a Data result in search.
+    Front matter: title, date, description, [taxonomies] tags, and under [extra]:
+      file = "data/<slug>.json"       the data file, a path under static/ (served at /data/<slug>.json)
+      licence, licence_url            the data's licence, e.g. "CC BY 4.0"
+      sources = [{ title, author, year, publisher, isbn, url }]   what the data was compiled from (all but title optional)
+      reads = ["<work-id>", ...]      works from the reading log the data draws on
+      format                          default: the file's extension in capitals
+      counts = ["people", ...]        top-level arrays to count (default: all of them)
+    `updated` (top level) is the date the data last changed. -#}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set dl = lang | default(value=config.default_language) %}
+{%- set dfmt = i18n::t(text="%B %-d, %Y", lang=dl, config=config) %}
+{%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
+{%- set ex = page.extra %}
+{%- if ex.file %}{% set durl = get_url(path=ex.file) %}{% set dname = ex.file | split(pat="/") | last %}{% set dext = dname | split(pat=".") | last | upper %}{% set dformat = ex.format | default(value=dext) %}{% endif %}
+<article class="post post--note post--dataset">
+  <header class="pagehead pagehead--note">
+    {%- set sec = get_section(path=page.ancestors | last) %}
+    <p class="pagehead__eyebrow"><a href="{{ sec.permalink | safe }}">{{ icons::kind(k="dataset") }}{{ i18n::t(text="Dataset", lang=dl, config=config) }}</a> · <time datetime="{{ page.date }}">{{ page.date | date(format=dfmt) }}</time>{% if page.updated %} · {{ i18n::t(text="updated", lang=dl, config=config) }} <time datetime="{{ page.updated }}">{{ page.updated | date(format=dfmt) }}</time>{% endif %}{% set lp = page %}{% set lhere = dl %}{% include "partials/lang_squares.html" %}</p>
+    <h1 class="pagehead__title">{{ page.title }}</h1>
+    {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{% endif %}
+    {%- if ex.file %}
+    <p class="dset-actions">
+      <a class="dset-download" href="{{ durl | safe }}" download>{{ i18n::t(text="Download", lang=dl, config=config) }} <code>{{ dname }}</code></a>
+      <a class="dset-raw" href="{{ durl | safe }}">{{ i18n::t(text="Open the raw file", lang=dl, config=config) }} →</a>
+    </p>
+    {%- endif %}
+  </header>
+  <table class="meta dset-meta">
+    <tbody>
+      {%- if ex.file %}
+      <tr><th scope="row">{{ i18n::t(text="File", lang=dl, config=config) }}</th><td><a href="{{ durl | safe }}"><code>{{ durl | replace(from=config.base_url, to="") }}</code></a></td></tr>
+      <tr><th scope="row">{{ i18n::t(text="Format", lang=dl, config=config) }}</th><td>{{ dformat }}</td></tr>
+      {%- if ex.file is ending_with(".json") %}{% set dp = page %}
+      <tr><th scope="row">{{ i18n::t(text="Records", lang=dl, config=config) }}</th><td class="dset-counts">{% include "partials/dataset_facts.html" %}</td></tr>
+      {%- endif %}
+      {%- endif %}
+      {%- if ex.licence %}
+      <tr><th scope="row">{{ i18n::t(text="Licence", lang=dl, config=config) }}</th><td>{% if ex.licence_url %}<a href="{{ ex.licence_url | safe }}" rel="license">{{ ex.licence }}</a>{% else %}{{ ex.licence }}{% endif %}</td></tr>
+      {%- endif %}
+      {%- if page.updated %}
+      <tr><th scope="row">{{ i18n::t(text="Updated", lang=dl, config=config) }}</th><td><time datetime="{{ page.updated }}">{{ page.updated | date(format=dfmt) }}</time></td></tr>
+      {%- else %}
+      <tr><th scope="row">{{ i18n::t(text="Published", lang=dl, config=config) }}</th><td><time datetime="{{ page.date }}">{{ page.date | date(format=dfmt) }}</time></td></tr>
+      {%- endif %}
+      {%- if ex.sources %}
+      <tr><th scope="row">{{ i18n::t(text="Sources", lang=dl, config=config) }}</th><td><ul class="dset-sources">
+        {%- for s in ex.sources %}
+        <li>{% if s.author %}{{ s.author }}, {% endif %}{% if s.url %}<a href="{{ s.url | safe }}"><cite>{{ s.title }}</cite></a>{% else %}<cite>{{ s.title }}</cite>{% endif %}{% if s.publisher or s.year %} ({% if s.publisher %}{{ s.publisher }}{% if s.year %}, {% endif %}{% endif %}{% if s.year %}{{ s.year }}{% endif %}){% endif %}{% if s.isbn %}<span class="dset-isbn">ISBN {{ s.isbn }}</span>{% endif %}</li>
+        {%- endfor %}
+      </ul></td></tr>
+      {%- endif %}
+      {%- if ex.reads %}
+      <tr><th scope="row">{{ i18n::t(text="Reading", lang=dl, config=config) }}</th><td>{% for wid in ex.reads %}{% include "partials/work_ref.html" %}{% if not loop.last %}; {% endif %}{% endfor %}</td></tr>
+      {%- endif %}
+      {%- if page.taxonomies.tags %}
+      <tr><th scope="row">{{ i18n::t(text="Topics", lang=dl, config=config) }}</th><td>{% for tag in page.taxonomies.tags %}{% if tagdata and tag in tagdata %}{% set tname = tagdata[tag].name %}{% else %}{% set tname = tag %}{% endif %}<a href="{{ i18n::topic_url(slug=tag, lang=dl, base=config.default_language, used=true) | safe }}">{{ i18n::topic(slug=tag, field="name", fallback=tname, lang=dl, base=config.default_language) }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+      {%- endif %}
+    </tbody>
+  </table>
+  <div class="post__body">
+    <div class="prose">
+      {{ page.content | safe }}
+    </div>
+  </div>
+  <footer class="post__footer">
+    {% include "partials/cite.html" %}
+    {% include "partials/local_map.html" %}
+  </footer>
+</article>
+{% endblock content %}
+{% block crumbs %}
+{%- set sec = get_section(path=page.ancestors | last) %} → <a href="{{ sec.permalink | safe }}">{{ sec.title }}</a> → <span aria-current="page">{{ page.title }}</span>{% endblock crumbs %}

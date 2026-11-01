@@ -9,11 +9,12 @@
 {%- set slug1 = page.slug | split(pat="-") | first %}{% set lastl = last | lower %}
 {%- set key = lastl ~ y ~ slug1 %}
 {%- set host = config.base_url | replace(from="https://", to="") %}{% set url_bare = page.permalink | replace(from="https://", to="") %}
-{%- set kind = "article" %}{% if page.components | first == "notes" %}{% set kind = "note" %}{% endif %}
+{%- set kind = "article" %}{% if page.components | first == "notes" %}{% set kind = "note" %}{% elif page.components | first == "data" %}{% set kind = "dataset" %}{% endif %}
 <details class="cite" data-ai-cite>
   <summary><span class="cite__title">Cite this {{ kind }}</span><span class="cite__toggle" aria-hidden="true"></span></summary>
   <div class="cite__body">
-    {%- set apa = last ~ ", " ~ initial ~ ". (" ~ d_apa ~ "). " ~ page.title ~ ". " ~ config.title ~ ". " ~ page.permalink %}
+    {%- if kind == "dataset" %}{% set apa_t = page.title ~ " [Data set]" %}{% else %}{% set apa_t = page.title %}{% endif %}
+    {%- set apa = last ~ ", " ~ initial ~ ". (" ~ d_apa ~ "). " ~ apa_t ~ ". " ~ config.title ~ ". " ~ page.permalink %}
     {%- set mla = last ~ ", " ~ first ~ ". “" ~ page.title ~ ".” " ~ config.title ~ ", " ~ d_mla ~ ", " ~ url_bare ~ "." %}
     {%- set plain = who ~ ", “" ~ page.title ~ "”, " ~ host ~ ", " ~ d_iso ~ ", " ~ page.permalink %}
     <div class="cite__row">

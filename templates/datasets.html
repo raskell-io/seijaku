@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "macros/i18n.html" as i18n %}{% import "macros/icons.html" as icons %}
+{#- The data index: every dataset in the section (pages with page_template = "dataset.html"), each with its
+    description, record counts, format, licence, and links to its page and to the raw file. Front matter:
+    template = "datasets.html", page_template = "dataset.html", sort_by = "date". The section's body is the
+    introduction. A translated index (_index.<code>.md) lists the default language's datasets in its own chrome,
+    each swapped for its translation where there is one. -#}
+{% block title %}{{ section.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
+{% block content %}
+{%- set dl = lang | default(value=config.default_language) %}
+{%- set dfmt = i18n::t(text="%B %-d, %Y", lang=dl, config=config) %}
+{%- set all_pages = section.pages %}
+{%- if dl != config.default_language %}
+{%- set suffix = "." ~ dl ~ ".md" %}{% set en_section = get_section(path=section.relative_path | replace(from=suffix, to=".md")) %}
+{%- set_global merged = [] %}
+{%- for p in en_section.pages %}{% set_global pick = p %}
+{%- for tr in p.translations %}{% if tr.lang == dl %}{% set_global pick = get_page(path=p.relative_path | replace(from=".md", to=suffix)) %}{% endif %}{% endfor %}
+{%- set_global merged = merged | concat(with=pick) %}
+{%- endfor %}
+{%- set all_pages = merged %}
+{%- endif %}
+<header class="pagehead">
+  {%- set total = all_pages | length %}
+  <p class="pagehead__eyebrow">{% if total == 1 %}{{ i18n::t(text="1 dataset", lang=dl, config=config) }}{% else %}{% set dtpl = i18n::t(text="{n} datasets", lang=dl, config=config) %}{{ dtpl | replace(from="{n}", to=total | as_str) }}{% endif %}{% set lp = section %}{% set lhere = dl %}{% include "partials/lang_squares.html" %}</p>
+  <h1 class="pagehead__title">{{ section.title }}</h1>
+  {%- if section.description %}
+  <p class="pagehead__deck">{{ section.description }}</p>
+  {%- endif %}
+</header>
+{%- if section.content %}
+<div class="section__intro prose">{{ section.content | safe }}</div>
+{%- endif %}
+{%- if total == 0 %}
+<p class="dsets__empty">{{ i18n::t(text="No datasets yet.", lang=dl, config=config) }}</p>
+{%- else %}
+<ul class="dsets">
+  {%- for dp in all_pages %}
+  {%- set ex = dp.extra %}
+  <li class="dsets__item">
+    <h2 class="dsets__title">{{ icons::kind(k="dataset") }}<a href="{{ dp.permalink | safe }}">{{ dp.title }}</a></h2>
+    {%- if dp.description %}<p class="dsets__desc">{{ dp.description }}</p>{% endif %}
+    {%- if ex.file %}{% set durl = get_url(path=ex.file) %}{% set dname = ex.file | split(pat="/") | last %}{% set dext = dname | split(pat=".") | last | upper %}
+    <p class="dsets__counts dset-counts">{% include "partials/dataset_facts.html" %}</p>
+    {%- endif %}
+    <dl class="dsets__facts">
+      {%- if ex.file %}<div><dt>{{ i18n::t(text="Format", lang=dl, config=config) }}</dt><dd>{{ ex.format | default(value=dext) }}</dd></div>{% endif %}
+      {%- if ex.licence %}<div><dt>{{ i18n::t(text="Licence", lang=dl, config=config) }}</dt><dd>{% if ex.licence_url %}<a href="{{ ex.licence_url | safe }}" rel="license">{{ ex.licence }}</a>{% else %}{{ ex.licence }}{% endif %}</dd></div>{% endif %}
+      {%- if dp.updated %}<div><dt>{{ i18n::t(text="Updated", lang=dl, config=config) }}</dt><dd><time datetime="{{ dp.updated }}">{{ dp.updated | date(format=dfmt) }}</time></dd></div>
+      {%- else %}<div><dt>{{ i18n::t(text="Published", lang=dl, config=config) }}</dt><dd><time datetime="{{ dp.date }}">{{ dp.date | date(format=dfmt) }}</time></dd></div>{% endif %}
+    </dl>
+    <p class="dsets__links">
+      <a href="{{ dp.permalink | safe }}">{{ i18n::t(text="About the data", lang=dl, config=config) }} →</a>
+      {%- if ex.file %}<a href="{{ durl | safe }}"><code>{{ durl | replace(from=config.base_url, to="") }}</code></a>{% endif %}
+    </p>
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif %}
+{% endblock content %}
+{% block crumbs %} → <span aria-current="page">{{ section.title }}</span>{% endblock crumbs %}

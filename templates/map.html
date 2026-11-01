@@ -49,6 +49,10 @@
     {%- if tsec and tsec.pages | length > 0 and "talks" in gsecs %}
     <button type="button" data-kind="talk" aria-pressed="true">{{ icons::kind(k="talk") }}<span>{{ i18n::t(text="Talks", lang=lang, config=config) }}</span></button>
     {%- endif %}
+    {%- set dsec = get_section(path="data/_index.md", required=false) %}
+    {%- if dsec and dsec.pages | length > 0 and "data" in gsecs %}
+    <button type="button" data-kind="dataset" aria-pressed="true">{{ icons::kind(k="dataset") }}<span>{{ i18n::t(text="Datasets", lang=lang, config=config) }}</span></button>
+    {%- endif %}
     <button type="button" data-kind="tag" aria-pressed="true">{{ icons::kind(k="topic") }}<span>{{ i18n::t(text="Topics", lang=lang, config=config) }}</span></button>
     <button type="button" data-kind="series" aria-pressed="true">{{ icons::kind(k="series") }}<span>{{ i18n::t(text="Series", lang=lang, config=config) }}</span></button>
     {%- set categories = get_taxonomy(kind="categories", required=false) %}

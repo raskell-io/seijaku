@@ -42,6 +42,7 @@
       {%- if part > 0 %}{% set ptxt = ptpl | replace(from="{n}", to=part | as_str) %}{% set eyebrow = ptxt ~ " · " ~ sname %}{% else %}{% set eyebrow = sname %}{% endif %}
     {%- endif %}
   {%- elif top == "notes" %}{% set kind = "note" %}{% set eyebrow = i18n::t(text="Note", lang=clang, config=config) %}
+  {%- elif top == "data" %}{% set kind = "dataset" %}{% set eyebrow = i18n::t(text="Dataset", lang=clang, config=config) %}{% if page.extra.licence %}{% set eyebrow = eyebrow ~ " · " ~ page.extra.licence %}{% endif %}
   {%- endif %}
   {%- if page.extra.review %}
   {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}

@@ -9,7 +9,7 @@
       topic_kinds = [{ key, name, desc }]              key: a topic kind in the vocabulary (domain, concept, ...)
       statuses = [{ key, name, desc }]                 key: a reading status (reading, next, backlog, read, set-aside)
       headings = { kinds, relations, topics, statuses } and decks = { ... } for the section heads
-    Keys counted: article, review, note, talk, topic, series, category, project, group, shelf, and each kind of work
+    Keys counted: article, review, note, talk, dataset, topic, series, category, project, group, shelf, and each kind of work
     (book, novel, paper, report, essay, journal). `icon` picks another icon than the key's (a shelf: journal). -#}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
@@ -21,6 +21,7 @@
 {%- set asec = get_section(path="articles/_index.md", required=false) %}
 {%- set nsec = get_section(path="notes/_index.md", required=false) %}
 {%- set tsec = get_section(path="talks/_index.md", required=false) %}
+{%- set dsec = get_section(path="data/_index.md", required=false) %}
 {%- set series = get_taxonomy(kind="series", required=false) %}
 {%- set categories = get_taxonomy(kind="categories", required=false) %}
 {%- set_global n_reviews = 0 %}{% if categories %}{% for c in categories.items %}{% if c.slug == "reviews" %}{% set_global n_reviews = c.pages | length %}{% endif %}{% endfor %}{% endif %}
@@ -53,6 +54,7 @@
       {%- elif k.key == "review" %}{% set n = n_reviews %}
       {%- elif k.key == "note" and nsec %}{% set n = nsec.pages | length %}
       {%- elif k.key == "talk" and tsec %}{% set n = tsec.pages | length %}
+      {%- elif k.key == "dataset" and dsec %}{% set n = dsec.pages | length %}
       {%- elif k.key == "topic" and tagdata %}{% set n = tagdata | length %}
       {%- elif k.key == "series" and series %}{% set n = series.items | length %}
       {%- elif k.key == "category" and categories %}{% set n = categories.items | length %}
