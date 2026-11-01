@@ -32,7 +32,7 @@
 {%- endif %}
 {%- if page.extra.facets %}{% set facet_list = page.extra.facets %}{% include "partials/facets.html" %}{% endif %}
 {#- Shelves: what is current stays in view; the rest folds. Reading now and Up next are always open; the
-    backlog, older years, and set-aside works are collapsed, each showing its count and a strip of covers.
+    backlog and set-aside works (the unfinished, together) and older years are collapsed, each showing its count and a strip of covers.
     The two most recent years of reading are open. Filters open every shelf with a match and hide the empty
     ones; a link to a work (/reading/#<id>) opens its shelf and its row. -#}
 {%- set_global years = [] %}
@@ -42,13 +42,13 @@
   {%- if current | length > 0 %}{% set sid = "shelf-reading" %}{% set stitle = i18n::t(text="Reading now", lang=lang, config=config) %}{% set sworks = current %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- if queue | length > 0 %}{% set sid = "shelf-next" %}{% set stitle = i18n::t(text="Up next", lang=lang, config=config) %}{% set sworks = queue %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- if backlog | length > 0 %}{% set sid = "shelf-backlog" %}{% set stitle = i18n::t(text="Backlog", lang=lang, config=config) %}{% set sworks = backlog %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = i18n::t(text="Set aside", lang=lang, config=config) %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- for y in years %}
   {%- set_global yworks = [] %}{% for w in done %}{% if w.finished is starting_with(y) %}{% set_global yworks = yworks | concat(with=w) %}{% endif %}{% endfor %}
   {%- if loop.first %}{% set sid = "shelf-read" %}{% else %}{% set sid = "shelf-read-" ~ y %}{% endif %}
   {%- set read_in = i18n::t(text="Read in {year}", lang=lang, config=config) %}{% set stitle = read_in | replace(from="{year}", to=y) %}{% set sworks = yworks %}{% if loop.index <= 2 %}{% set smode = "open" %}{% else %}{% set smode = "closed" %}{% endif %}
   {% include "partials/shelf.html" %}
   {%- endfor %}
-  {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = i18n::t(text="Set aside", lang=lang, config=config) %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
 </div>
 <script>(function(){
   var root = document.querySelector("[data-shelves]"); if (!root) { return; }
