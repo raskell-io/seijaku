@@ -1,54 +1,88 @@
+{%- import "macros/i18n.html" as i18n -%}
 {#- Social card data for this page, read after `zola build` by a renderer that draws og/<path>.png (1200x630).
     Enabled with extra.seijaku.og_cards = true. Fields: kind, eyebrow, title, description, meta, cover, and for
-    reviews (kind "review", pages with extra.review) work, author, and rating; the cover is then the book's. -#}
+    reviews (kind "review", pages with extra.review) work, author, and rating; the cover is then the book's.
+    Every label, date and count goes through the i18n labels, so a translated page carries its card in its own
+    language (lang, and the "On"/"by" words of a review card). Whether translated pages get their own card or
+    share the default language's is extra.seijaku.og_cards_translated, read in base.html. -#}
+{%- set clang = lang | default(value=config.default_language) %}
+{%- set_global chref = clang %}{% for l in config.extra.seijaku.languages | default(value=[]) %}{% if l.code == clang %}{% set_global chref = l.hreflang %}{% endif %}{% endfor %}
+{%- set dfmt = i18n::t(text="%-d %B %Y", lang=clang, config=config) %}
 {%- set kind = "page" %}{% set eyebrow = "" %}{% set title = config.title %}{% set desc = config.description | default(value="") %}{% set meta = "" %}{% set cover = "" %}
 {%- set_global work = "" %}{% set_global wauthor = "" %}{% set_global rating = "" %}
 {%- if page is defined %}
   {%- set title = page.title %}{% set desc = page.description | default(value=desc) %}
   {%- if page.extra.cover %}{% set cover = get_url(path=page.extra.cover) %}{% endif %}
-  {%- set top = page.components | first | default(value="") %}
-  {%- if top == "articles" %}
-    {%- set kind = "article" %}{% set eyebrow = "Article" %}
-    {%- if page.taxonomies.series %}
-      {%- set sname = page.taxonomies.series | first %}{% set part = 0 %}
-      {%- set sterm = get_taxonomy_term(kind="series", term=sname, required=false) %}
-      {%- if sterm %}{% for p in sterm.pages | sort(attribute="date") %}{% if p.path == page.path %}{% set_global part = loop.index %}{% endif %}{% endfor %}{% endif %}
-      {%- set sname = sname | replace(from="-", to=" ") | title %}
-      {%- if part > 0 %}{% set eyebrow = "Part " ~ part ~ " · " ~ sname %}{% else %}{% set eyebrow = sname %}{% endif %}
+  {#- A translation: its section is the one past the language prefix, and its series come from the original. -#}
+  {%- set_global csrc = page %}
+  {%- if clang != config.default_language %}{% for tr in page.translations | default(value=[]) %}{% if tr.lang == config.default_language %}{% set_global csrc = get_page(path=page.relative_path | replace(from="." ~ clang ~ ".md", to=".md")) %}{% endif %}{% endfor %}{% endif %}
+  {%- set top = csrc.path | trim_start_matches(pat="/") | split(pat="/") | first %}
+  {%- if page.extra.taxonomy and page.extra.term %}
+    {#- A translated taxonomy term page (template taxonomy_index.html): a topic, series or category. -#}
+    {%- set tterm = get_taxonomy_term(kind=page.extra.taxonomy, term=page.extra.term, lang=config.default_language, required=false) %}
+    {%- if tterm %}{% set n = tterm.pages | length %}{% else %}{% set n = 0 %}{% endif %}
+    {%- if page.extra.taxonomy == "tags" %}
+      {%- set kind = "topic" %}{% set eyebrow = i18n::t(text="Topic", lang=clang, config=config) %}
+      {%- if n == 1 %}{% set meta = i18n::t(text="1 article or note", lang=clang, config=config) %}{% else %}{% set mtpl = i18n::t(text="{n} articles and notes", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}{% endif %}
+    {%- elif page.extra.taxonomy == "series" %}
+      {%- set kind = "series" %}{% set eyebrow = i18n::t(text="Series", lang=clang, config=config) %}
+      {%- set mtpl = i18n::t(text="{n} parts", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}
+    {%- else %}
+      {%- set kind = "category" %}{% set eyebrow = i18n::t(text="Category", lang=clang, config=config) %}
+      {%- if n == 1 %}{% set meta = i18n::t(text="1 entry", lang=clang, config=config) %}{% else %}{% set mtpl = i18n::t(text="{n} entries", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}{% endif %}
     {%- endif %}
-  {%- elif top == "notes" %}{% set kind = "note" %}{% set eyebrow = "Note" %}
+  {%- elif top == "articles" %}
+    {%- set kind = "article" %}{% set eyebrow = i18n::t(text="Article", lang=clang, config=config) %}
+    {%- if csrc.taxonomies.series %}
+      {%- set sname = csrc.taxonomies.series | first %}{% set part = 0 %}
+      {%- set sterm = get_taxonomy_term(kind="series", term=sname, lang=config.default_language, required=false) %}
+      {%- if sterm %}{% for p in sterm.pages | sort(attribute="date") %}{% if p.path == csrc.path %}{% set_global part = loop.index %}{% endif %}{% endfor %}{% endif %}
+      {%- set sname = sname | replace(from="-", to=" ") | title %}
+      {%- set ptpl = i18n::t(text="Part {n}", lang=clang, config=config) %}
+      {%- if part > 0 %}{% set ptxt = ptpl | replace(from="{n}", to=part | as_str) %}{% set eyebrow = ptxt ~ " · " ~ sname %}{% else %}{% set eyebrow = sname %}{% endif %}
+    {%- endif %}
+  {%- elif top == "notes" %}{% set kind = "note" %}{% set eyebrow = i18n::t(text="Note", lang=clang, config=config) %}
   {%- endif %}
   {%- if page.extra.review %}
   {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
   {%- if rdata and rdata.works %}{% for w in rdata.works %}{% if w.id == page.extra.review %}
     {%- set_global kind = "review" %}{% set_global work = w.title %}{% set_global wauthor = w.author %}
-    {%- if w.kind == "book" or w.kind == "novel" %}{% set_global eyebrow = "Book review" %}{% else %}{% set wk = w.kind | capitalize %}{% set_global eyebrow = wk ~ " review" %}{% endif %}
+    {%- if w.kind == "book" or w.kind == "novel" %}{% set_global eyebrow = i18n::t(text="Book review", lang=clang, config=config) %}
+    {%- elif clang == config.default_language %}{% set wk = w.kind | capitalize %}{% set_global eyebrow = wk ~ " review" %}
+    {%- else %}{% set_global eyebrow = i18n::t(text="Review", lang=clang, config=config) %}{% endif %}
     {%- if w.rating %}{% set_global rating = w.rating ~ " / 10" %}{% set_global eyebrow = eyebrow ~ " · " ~ rating %}{% endif %}
     {%- if w.cover %}{% set_global cover = get_url(path=w.cover) %}{% endif %}
   {%- endif %}{% endfor %}{% endif %}
   {%- endif %}
-  {%- if page.date %}{% set meta = page.date | date(format="%-d %B %Y") %}{% endif %}
-  {%- if (kind == "article" or kind == "review") and page.reading_time %}{% set meta = meta ~ " · " ~ page.reading_time ~ " min read" %}{% endif %}
+  {%- if page.date %}{% set meta = page.date | date(format=dfmt) %}{% endif %}
+  {#- Reading time as on the page: Chinese is counted in characters, about 450 a minute. -#}
+  {%- set prt = page.reading_time | default(value=0) %}
+  {%- if clang == "zh" %}{% set pchars = page.content | striptags | length %}{% set prt = pchars / 450 %}{% set prt = prt | round(method="ceil") | int %}{% endif %}
+  {%- if (kind == "article" or kind == "review") and prt %}{% set minread = i18n::t(text="min read", lang=clang, config=config) %}{% set meta = meta ~ " · " ~ prt ~ " " ~ minread %}{% endif %}
 {%- elif term is defined %}
   {%- set n = term.pages | length %}
   {%- if taxonomy.name == "tags" %}
-    {%- set kind = "topic" %}{% set eyebrow = "Topic" %}{% set title = term.name %}
+    {%- set kind = "topic" %}{% set eyebrow = i18n::t(text="Topic", lang=clang, config=config) %}{% set title = term.name %}
     {%- set tagdata = load_data(path=config.extra.seijaku.tag_data | default(value="data/tags.toml"), required=false) %}
     {%- if tagdata and term.slug in tagdata %}{% set title = tagdata[term.slug].name %}{% set desc = tagdata[term.slug].description %}{% endif %}
-    {%- if n == 1 %}{% set meta = "1 article or note" %}{% else %}{% set meta = n ~ " articles and notes" %}{% endif %}
+    {%- if n == 1 %}{% set meta = i18n::t(text="1 article or note", lang=clang, config=config) %}{% else %}{% set mtpl = i18n::t(text="{n} articles and notes", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}{% endif %}
   {%- else %}
     {%- set title = term.name | replace(from="-", to=" ") | title %}
     {%- set ckey = taxonomy.name ~ "_descriptions" %}{% set sdesc = config.extra.seijaku[ckey] | default(value=false) %}
     {%- if sdesc and term.slug in sdesc %}{% set desc = sdesc[term.slug] %}{% endif %}
-    {%- if taxonomy.name == "series" %}{% set kind = "series" %}{% set eyebrow = "Series" %}{% set meta = n ~ " parts" %}
-    {%- else %}{% set kind = "category" %}{% set eyebrow = "Category" %}{% if n == 1 %}{% set meta = "1 entry" %}{% else %}{% set meta = n ~ " entries" %}{% endif %}{% endif %}
+    {%- if taxonomy.name == "series" %}{% set kind = "series" %}{% set eyebrow = i18n::t(text="Series", lang=clang, config=config) %}{% set mtpl = i18n::t(text="{n} parts", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}
+    {%- else %}{% set kind = "category" %}{% set eyebrow = i18n::t(text="Category", lang=clang, config=config) %}{% if n == 1 %}{% set meta = i18n::t(text="1 entry", lang=clang, config=config) %}{% else %}{% set mtpl = i18n::t(text="{n} entries", lang=clang, config=config) %}{% set meta = mtpl | replace(from="{n}", to=n | as_str) %}{% endif %}{% endif %}
   {%- endif %}
 {%- elif taxonomy is defined %}
   {%- set title = taxonomy.name | capitalize %}{% set n = terms | length %}{% set meta = n ~ " " ~ taxonomy.name %}
   {%- if taxonomy.name == "tags" %}{% set title = "Topics" %}{% set meta = n ~ " topics" %}{% set desc = "Every domain, concept, and technology the writing covers, and how they connect." %}
   {%- elif taxonomy.name == "series" %}{% set desc = "Writing meant to be read in order, one part after another." %}{% endif %}
 {%- elif section is defined %}
-  {%- if section.path == "/" %}{% set kind = "home" %}{% set title = config.extra.seijaku.og_home_title | default(value=config.title) %}{% set meta = config.extra.seijaku.og_home_meta | default(value="") %}
+  {%- set lhome = "_index." ~ clang ~ ".md" %}
+  {%- if section.path == "/" or section.relative_path == lhome %}{% set kind = "home" %}
+    {%- set htitle = config.extra.seijaku.og_home_title | default(value=config.title) %}{% set hmeta = config.extra.seijaku.og_home_meta | default(value="") %}
+    {%- set title = i18n::t(text=htitle, lang=clang, config=config) %}{% if hmeta %}{% set meta = i18n::t(text=hmeta, lang=clang, config=config) %}{% endif %}
   {%- else %}{% set kind = "section" %}{% set title = section.title %}{% set desc = section.description | default(value=desc) %}{% endif %}
 {%- endif %}
-<script type="application/json" id="og-card">{"kind":{{ kind | json_encode | safe }},"eyebrow":{{ eyebrow | json_encode | safe }},"title":{{ title | json_encode | safe }},"description":{{ desc | json_encode | safe }},"meta":{{ meta | json_encode | safe }},"cover":{{ cover | json_encode | safe }},"work":{{ work | json_encode | safe }},"author":{{ wauthor | json_encode | safe }},"rating":{{ rating | json_encode | safe }}}</script>
+{%- set on_word = i18n::t(text="On", lang=clang, config=config) %}{% set by_word = i18n::t(text="by", lang=clang, config=config) %}
+<script type="application/json" id="og-card">{"kind":{{ kind | json_encode | safe }},"eyebrow":{{ eyebrow | json_encode | safe }},"title":{{ title | json_encode | safe }},"description":{{ desc | json_encode | safe }},"meta":{{ meta | json_encode | safe }},"cover":{{ cover | json_encode | safe }},"work":{{ work | json_encode | safe }},"author":{{ wauthor | json_encode | safe }},"rating":{{ rating | json_encode | safe }},"lang":{{ chref | json_encode | safe }},"on":{{ on_word | json_encode | safe }},"by":{{ by_word | json_encode | safe }}}</script>

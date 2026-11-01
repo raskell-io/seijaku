@@ -37,8 +37,10 @@
   {%- elif config.extra.seijaku.og_cards %}
   {#- A generated card per page (partials/og_card.html carries its data): og/<path>.png, og/index.png for the home page. #}
   {%- set og_path = current_path | default(value="/") | trim_start_matches(pat="/") | trim_end_matches(pat="/") %}
-  {#- A translation shares the card of its default-language page: og/<path>.png without the language prefix. #}
-  {%- if here_lang != config.default_language %}{% set og_path = og_path | trim_start_matches(pat=here_lang) | trim_start_matches(pat="/") %}{% endif %}
+  {#- A translation shares the card of its default-language page (og/<path>.png without the language prefix),
+      unless extra.seijaku.og_cards_translated is on: then it gets its own card, og/<lang>/<path>.png, drawn in
+      its language from the same og_card data. #}
+  {%- if here_lang != config.default_language and not config.extra.seijaku.og_cards_translated | default(value=false) %}{% set og_path = og_path | trim_start_matches(pat=here_lang) | trim_start_matches(pat="/") %}{% endif %}
   {%- if og_path == "" %}{% set og_path = "index" %}{% endif %}
   {%- set og_image = get_url(path="og/" ~ og_path ~ ".png") %}{% set og_card = true %}
   {%- elif page is defined and page.extra.image %}{% set og_image = get_url(path=page.extra.image) %}{% endif %}

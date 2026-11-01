@@ -244,6 +244,9 @@ one term); it renders the default language's taxonomy in that language. Labels r
 `window.SEIJAKU_I18N`. In templates, use `{% import "macros/i18n.html" as i18n %}`, then `i18n::t(text=...,
 lang=lang, config=config)`, `i18n::url(path="@/about.md", lang=lang, base=config.default_language)`, and
 `i18n::status(p=..., lang=lang, config=config)` for project badges. Chinese and Korean get CJK font stacks.
+Social cards (`og_cards = true`) carry their data in the page's language: labels, dates, and counts go
+through the i18n labels. A translated page shares the default language's card unless
+`og_cards_translated = true`, which points it at its own card, `og/<lang>/<path>.png`.
 The sitemap lists the same hreflang alternates (`xhtml:link`, x-default the default language) for every URL that
 exists in more than one language, and leaves out redirect stubs (`extra.redirect_to`).
 
