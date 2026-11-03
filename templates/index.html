@@ -57,7 +57,7 @@
   </header>
   {%- if lang != config.default_language %}
   {#- Most of the writing is in the default language; say so on a translated home page. -#}
-  <p class="home-note">{{ i18n::t(text="Most of the writing on this site is in English; the pieces below are translated.", lang=lang, config=config) }}</p>
+  <p class="home-note">{{ i18n::t(text="Most of the writing on this site is in English; some pieces are translated.", lang=lang, config=config) }}</p>
   {%- endif %}
   {%- set_global latest = sec.pages %}
   {%- set nsec = get_section(path="notes/_index.md", required=false) %}
