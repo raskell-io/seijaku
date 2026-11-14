@@ -7,7 +7,7 @@
       groups = [{ title, deck, color = "#hex", kinds = [{ key, name, desc, where, icon, color }] }]   key: an icon and a count
       relations = [{ from, verb, to, desc }]          from/to: kind keys, drawn as their icons
       topic_kinds = [{ key, name, desc }]              key: a topic kind in the vocabulary (domain, concept, ...)
-      statuses = [{ key, name, desc }]                 key: a reading status (reading, next, backlog, read, set-aside)
+      statuses = [{ key, name, desc }]                 key: a reading status (reading, on-hold, next, backlog, read, set-aside)
       headings = { kinds, relations, topics, statuses } and decks = { ... } for the section heads
     Keys counted: article, review, note, talk, dataset, topic, series, category, project, group, shelf, and each kind of work
     (book, novel, paper, report, essay, journal). `icon` picks another icon than the key's (a shelf: journal). -#}
@@ -29,7 +29,7 @@
 {%- for sp in ex.project_sections | default(value=["projects", "apps"]) %}{% set ps = get_section(path=sp ~ "/_index.md", required=false) %}{% if ps %}
   {%- for tier in ps.extra.tiers | default(value=[]) %}{% if tier.projects | length > 0 %}{% set_global n_groups = n_groups + 1 %}{% set tn = tier.projects | length %}{% set_global n_projects = n_projects + tn %}{% endif %}{% endfor %}
 {%- endif %}{% endfor %}
-{%- set_global n_shelves = 0 %}{% for s in ["reading", "next", "backlog", "read", "set-aside"] %}{% if works | filter(attribute="status", value=s) | length > 0 %}{% set_global n_shelves = n_shelves + 1 %}{% endif %}{% endfor %}
+{%- set_global n_shelves = 0 %}{% for s in ["reading", "on-hold", "next", "backlog", "read", "set-aside"] %}{% if works | filter(attribute="status", value=s) | length > 0 %}{% set_global n_shelves = n_shelves + 1 %}{% endif %}{% endfor %}
 {%- set_global n_kinds = 0 %}{% for g in ex.groups | default(value=[]) %}{% set gn = g.kinds | length %}{% set_global n_kinds = n_kinds + gn %}{% endfor %}
 
 <header class="pagehead">

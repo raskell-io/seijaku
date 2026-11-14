@@ -13,10 +13,10 @@
   {%- elif a.extra.reads and w.id in a.extra.reads %}{% set_global wmentions = wmentions | concat(with=a) %}{% endif %}
 {%- endfor %}
 {%- set wtopics = w.topics | default(value=[]) %}{% set tags_index = i18n::url(path="/tags/", lang=lang, base=config.default_language) %}
-{#- The date line: "Started ..." while reading, "Finished ..." when read, "Set aside ..." when set aside.
+{#- The date line: "Started ..." while reading or on hold, "Finished ..." when read, "Set aside ..." when set aside.
     A date is a month ("2025-07", shown "July 2025") or a year ("2017"). -#}
 {%- set wdate = "" %}{% set wwhen = "" %}
-{%- if w.status == "reading" and w.started %}{% set wwhen = w.started %}{% set wverb = "Started" %}
+{%- if (w.status == "reading" or w.status == "on-hold") and w.started %}{% set wwhen = w.started %}{% set wverb = "Started" %}
 {%- elif w.status == "read" and w.finished %}{% set wwhen = w.finished %}{% set wverb = "Finished" %}
 {%- elif w.status == "set-aside" and w.finished %}{% set wwhen = w.finished %}{% set wverb = "Set aside" %}
 {%- elif w.status == "set-aside" and w.started %}{% set wwhen = w.started %}{% set wverb = "Started" %}{% endif %}

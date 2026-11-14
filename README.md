@@ -187,7 +187,7 @@ section in `graph_sections` and its pages become dataset nodes on the map and Da
 
 A page with `template = "reading.html"` lists the works in `data/reading.toml` (config
 `reading_data`): `[[works]]` with `id`, `title`, `subtitle`, `author`, `kind` (book, novel, paper,
-report, article, essay, journal), `year`, `edition` or `publisher`, `url`, `status` (reading, next, backlog,
+report, article, essay, journal), `year`, `edition` or `publisher`, `url`, `status` (reading, on-hold, next, backlog,
 read, set-aside), `started` / `finished` (a month, "YYYY-MM", shown as "October 2026", or a
 year, "YYYY", when that is all that is known; read works need `finished`),
 `topics` (tag slugs), a one-line `take`, `cover` (a path under `static/`), `rating` (1 to 10, shown on the row and in
@@ -195,8 +195,8 @@ the review's details), and `suggested_by` / `suggested_url` / `suggested_note` t
 suggested the work. Each row shows the
 cover, graded with the theme's tritone until hovered or opened (works without one get a typographic
 tile), with title and author; the rest opens below them, and `/reading/#<id>` opens that row.
-Shelves are Reading now, Up next, Backlog, Read (by year), and Set aside
-(`partials/shelf.html`): Reading now and Up next always show; the backlog, set-aside works, and all but the two most
+Shelves are Reading now, On hold, Up next, Backlog, Read (by year), and Set aside
+(`partials/shelf.html`): Reading now, On hold, and Up next always show; the backlog, set-aside works, and all but the two most
 recent years fold into `<details>` that show a count and a strip of covers while closed. Filters open the shelves
 with matches and hide the rest; facets announce changes with a `facets:update` event; `facets = ["form", "topic"]` under the page's `[extra]` adds filters. Point
 `extra.seijaku.reading = "@/reading.md"` at the page so map nodes and references link to it.

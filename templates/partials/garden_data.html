@@ -26,7 +26,7 @@
 {#- Works in the reading log; a work opens its review when there is one. -#}
 {%- if rdata and rdata.works %}{% for w in rdata.works %}{% set_global wurl = "" %}{% if rbase %}{% set_global wurl = rbase ~ "#" ~ w.id %}{% elif w.url %}{% set_global wurl = w.url %}{% endif %}
 {%- for a in spages %}{% if a.extra.review and a.extra.review == w.id %}{% set_global wurl = a.permalink %}{% endif %}{% endfor %}
-{%- if w.status == "read" %}{% set wstate = "Read" %}{% elif w.status == "reading" %}{% set wstate = "Reading now" %}{% elif w.status == "next" %}{% set wstate = "Up next" %}{% elif w.status == "backlog" %}{% set wstate = "Backlog" %}{% else %}{% set wstate = "Set aside" %}{% endif %}
+{%- if w.status == "read" %}{% set wstate = "Read" %}{% elif w.status == "reading" %}{% set wstate = "Reading now" %}{% elif w.status == "on-hold" %}{% set wstate = "On hold" %}{% elif w.status == "next" %}{% set wstate = "Up next" %}{% elif w.status == "backlog" %}{% set wstate = "Backlog" %}{% else %}{% set wstate = "Set aside" %}{% endif %}
 {%- set wkind = w.kind | capitalize %}
 {"k":"work","t":{{ w.title | json_encode | safe }},"u":{{ wurl | json_encode | safe }},"d":{% if w.take %}{{ w.take | json_encode | safe }}{% elif w.subtitle %}{{ w.subtitle | json_encode | safe }}{% else %}""{% endif %},"y":"{% if w.finished %}{{ w.finished }}{% elif w.started %}{{ w.started }}{% endif %}","g":{{ w.topics | default(value=[]) | json_encode | safe }},"c":[],"m":{% set wm = wkind ~ " · " ~ w.author ~ " · " ~ wstate %}{{ wm | json_encode | safe }},"s":{% if w.subtitle %}{% set wsub = w.subtitle %}{% else %}{% set wsub = "" %}{% endif %}{% set ws = w.author ~ " " ~ wsub ~ " " ~ w.kind ~ " " ~ wstate %}{{ ws | json_encode | safe }}},
 {%- endfor %}{% endif %}

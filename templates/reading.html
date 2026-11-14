@@ -18,12 +18,13 @@
 {%- set_global gpages = [] %}
 {%- for gs in gsecs %}{% set s = get_section(path=gs ~ "/_index.md", required=false) %}{% if s %}{% set_global gpages = gpages | concat(with=s.pages) %}{% endif %}{% endfor %}
 {%- set current = works | filter(attribute="status", value="reading") %}
+{%- set held = works | filter(attribute="status", value="on-hold") %}
 {%- set queue = works | filter(attribute="status", value="next") %}
 {%- set backlog = works | filter(attribute="status", value="backlog") %}
 {%- set done = works | filter(attribute="status", value="read") | sort(attribute="finished") | reverse %}
 {%- set aside = works | filter(attribute="status", value="set-aside") %}
 <header class="pagehead">
-  <p class="pagehead__eyebrow">{% if current | length > 0 %}{{ current | length }} {{ i18n::t(text="reading", lang=lang, config=config) }} · {% endif %}{% if queue | length > 0 %}{{ queue | length }} {{ i18n::t(text="up next", lang=lang, config=config) }} · {% endif %}{{ backlog | length }} {{ i18n::t(text="in the backlog", lang=lang, config=config) }} · {{ done | length }} {{ i18n::t(text="read", lang=lang, config=config) }}</p>
+  <p class="pagehead__eyebrow">{% if current | length > 0 %}{{ current | length }} {{ i18n::t(text="reading", lang=lang, config=config) }} · {% endif %}{% if held | length > 0 %}{{ held | length }} {{ i18n::t(text="on hold", lang=lang, config=config) }} · {% endif %}{% if queue | length > 0 %}{{ queue | length }} {{ i18n::t(text="up next", lang=lang, config=config) }} · {% endif %}{{ backlog | length }} {{ i18n::t(text="in the backlog", lang=lang, config=config) }} · {{ done | length }} {{ i18n::t(text="read", lang=lang, config=config) }}</p>
   <h1 class="pagehead__title">{{ page.title }}</h1>
   {%- if page.description %}<p class="pagehead__deck">{{ page.description }}</p>{%- endif %}
 </header>
@@ -31,7 +32,7 @@
 <div class="readlog__intro prose">{{ page.content | safe }}</div>
 {%- endif %}
 {%- if page.extra.facets %}{% set facet_list = page.extra.facets %}{% include "partials/facets.html" %}{% endif %}
-{#- Shelves: what is current stays in view; the rest folds. Reading now and Up next are always open; the
+{#- Shelves: what is current stays in view; the rest folds. Reading now, On hold, and Up next are always open; the
     backlog and set-aside works (the unfinished, together) and older years are collapsed, each showing its count and a strip of covers.
     The two most recent years of reading are open. Filters open every shelf with a match and hide the empty
     ones; a link to a work (/reading/#<id>) opens its shelf and its row. -#}
@@ -40,6 +41,7 @@
 <div class="shelves" data-shelves>
   <div class="shelves__bar" hidden><button type="button" class="shelves__all" data-shelves-all>{{ i18n::t(text="Open all shelves", lang=lang, config=config) }}</button></div>
   {%- if current | length > 0 %}{% set sid = "shelf-reading" %}{% set stitle = i18n::t(text="Reading now", lang=lang, config=config) %}{% set sworks = current %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
+  {%- if held | length > 0 %}{% set sid = "shelf-on-hold" %}{% set stitle = i18n::t(text="On hold", lang=lang, config=config) %}{% set sworks = held %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- if queue | length > 0 %}{% set sid = "shelf-next" %}{% set stitle = i18n::t(text="Up next", lang=lang, config=config) %}{% set sworks = queue %}{% set smode = "fixed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- if backlog | length > 0 %}{% set sid = "shelf-backlog" %}{% set stitle = i18n::t(text="Backlog", lang=lang, config=config) %}{% set sworks = backlog %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}
   {%- if aside | length > 0 %}{% set sid = "shelf-set-aside" %}{% set stitle = i18n::t(text="Set aside", lang=lang, config=config) %}{% set sworks = aside %}{% set smode = "closed" %}{% include "partials/shelf.html" %}{% endif %}

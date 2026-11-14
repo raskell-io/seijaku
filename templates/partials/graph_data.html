@@ -21,7 +21,7 @@
 {%- set rdata = load_data(path=config.extra.seijaku.reading_data | default(value="data/reading.toml"), required=false) %}
 {%- set_global works = [] %}{% if rdata and rdata.works %}{% set_global works = rdata.works %}{% endif %}
 {%- set rpage = config.extra.seijaku.reading | default(value="") %}{% if rpage %}{% set rbase = get_url(path=rpage) %}{% else %}{% set rbase = "" %}{% endif %}
-{%- set shelves = ["reading", "next", "backlog", "read", "set-aside"] %}{% set shelfnames = ["Reading now", "Up next", "Backlog", "Read", "Set aside"] %}
+{%- set shelves = ["reading", "on-hold", "next", "backlog", "read", "set-aside"] %}{% set shelfnames = ["Reading now", "On hold", "Up next", "Backlog", "Read", "Set aside"] %}
 {%- set psecs = project_sections | default(value=[config.extra.seijaku.projects_section | default(value="projects")]) %}
 {%- set_global projects = [] %}{% set_global pslugs = [] %}{% set_global phubs = [] %}{% set_global hubs = [] %}{% set_global hubnames = [] %}{% set_global huburls = [] %}
 {%- for ps in psecs %}{% set psec = get_section(path=ps ~ "/_index.md", required=false) %}
