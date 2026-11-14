@@ -8,7 +8,8 @@
                                         to its first link
       { url = "...", title = "..." }    any other link
     `note` replaces the description in every case. Set before including: `rdata` (the reading log), `month_fmt`,
-    `step` ("1 of 4", or empty), and `compact = true` for a card without a cover. -#}
+    `step` ("1 of 4", or empty), `compact = true` for a card without a cover, and `wide = true` for a card that
+    shows a page's own artwork (`item.image`, else the page's `og_image`) in full colour, with a review's rating. -#}
 {%- set c_kind = "" %}{% set c_href = "" %}{% set c_title = "" %}{% set c_note = item.note | default(value="") %}{% set c_meta = "" %}
 {%- set c_cover = "" %}{% set c_book = "" %}{% set c_logo = "" %}{% set c_accent = "" %}{% set c_ext = false %}
 {%- if item.path %}
@@ -18,7 +19,10 @@
   {%- set c_href = p.permalink %}{% set c_title = p.title %}
   {%- if not c_note %}{% set c_note = p.description | default(value="") %}{% endif %}
   {%- set c_meta = p.date | date(format=month_fmt) %}{% if p.reading_time %}{% set c_min = i18n::t(text="min read", lang=lang, config=config) %}{% set c_meta = c_meta ~ " · " ~ p.reading_time ~ " " ~ c_min %}{% endif %}
-  {%- if p.extra.cover %}{% set c_cover = p.extra.cover %}
+  {%- if wide | default(value=false) %}{% set c_art = item.image | default(value=p.extra.og_image | default(value="")) %}
+  {%- if p.extra.review and rdata %}{% set c_rw = rdata.works | filter(attribute="id", value=p.extra.review) %}{% if c_rw | length > 0 and c_rw[0].rating %}{% set c_meta = c_meta ~ " · " ~ c_rw[0].rating ~ " / 10" %}{% endif %}{% endif %}{% endif %}
+  {%- if c_art | default(value="") %}
+  {%- elif p.extra.cover %}{% set c_cover = p.extra.cover %}
   {%- elif p.extra.review and rdata %}{% set c_rw = rdata.works | filter(attribute="id", value=p.extra.review) %}{% if c_rw | length > 0 %}{% set c_book = c_rw[0].cover | default(value="") %}{% endif %}{% endif %}
 {%- elif item.work and rdata %}
   {%- set c_w = rdata.works | filter(attribute="id", value=item.work) | first %}
@@ -38,7 +42,9 @@
 {%- endif %}
 <a class="trackcard__link" href="{{ c_href | safe }}"{% if c_ext %} rel="noopener" target="_blank"{% endif %}>
   {%- if not compact | default(value=false) %}
-  {%- if c_cover %}
+  {%- if c_art | default(value="") %}
+  <span class="trackcard__cover trackcard__cover--art"><img src="{{ get_url(path=c_art) | safe }}" alt="" loading="lazy" decoding="async"></span>
+  {%- elif c_cover %}
   <span class="trackcard__cover">
     <img src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async">
     <img class="trackcard__grade" src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">

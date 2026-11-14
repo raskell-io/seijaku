@@ -5,7 +5,9 @@
       [[extra.tracks]] title, deck, items = [{ path = "articles/x.md", note = "..." }, ...]
     An item is a page (`path`), a work from the reading log (`work`), a project (`project`), or a link (`url` and
     `title`); see partials/track_card.html. `note` overrides the description. An optional [extra.quick] with
-    title, deck and items draws a row of compact cards above the tracks, for the shortest ways in. -#}
+    title, deck and items draws a row of compact cards above the tracks, for the shortest ways in. An optional
+    [extra.gallery] with title, deck and items (pages, `path`) draws a row of wide cards with each page's own
+    artwork: the item's `image`, else the page's `og_image`; reviews also show their rating. -#}
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 {% block description %}{% if page.description %}{{ page.description }}{% else %}{{ config.description }}{% endif %}{% endblock description %}
 {% block content %}
@@ -28,6 +30,20 @@
   <ol class="quick__items">
     {%- for item in shown %}
     <li class="trackcard trackcard--compact">{% set compact = true %}{% set step = "" %}{% include "partials/track_card.html" %}</li>
+    {%- endfor %}
+  </ol>
+</section>
+{%- endif %}
+
+{%- set gallery = page.extra.gallery | default(value=false) %}
+{%- if gallery %}
+<section class="gallery" aria-labelledby="gallery-title">
+  <h2 class="quick__title" id="gallery-title">{{ gallery.title }}</h2>
+  {%- if gallery.deck %}<p class="quick__deck">{{ gallery.deck }}</p>{% endif %}
+  {%- set_global shown = [] %}{% for item in gallery.items %}{% set ok = true %}{% if item.path %}{% set src = load_data(path="content/" ~ item.path, format="plain") %}{% if src is containing("draft = true") %}{% set ok = false %}{% endif %}{% endif %}{% if ok %}{% set_global shown = shown | concat(with=item) %}{% endif %}{% endfor %}
+  <ol class="gallery__items">
+    {%- for item in shown %}
+    <li class="trackcard trackcard--wide">{% set compact = false %}{% set wide = true %}{% set step = "" %}{% include "partials/track_card.html" %}</li>
     {%- endfor %}
   </ol>
 </section>
@@ -60,7 +76,7 @@
   {%- set_global shown = [] %}{% for item in t.items %}{% set ok = true %}{% if item.path %}{% set src = load_data(path="content/" ~ item.path, format="plain") %}{% if src is containing("draft = true") %}{% set ok = false %}{% endif %}{% endif %}{% if ok %}{% set_global shown = shown | concat(with=item) %}{% endif %}{% endfor %}
   <ol class="track__items">
     {%- for item in shown %}
-    {% set step_tpl = i18n::t(text="{n} of {total}", lang=lang, config=config) %}{% set step_n = loop.index ~ "" %}{% set step_len = shown | length %}{% set step_t = step_len ~ "" %}{% set step = step_tpl | replace(from="{n}", to=step_n) | replace(from="{total}", to=step_t) %}{% set compact = false %}
+    {% set step_tpl = i18n::t(text="{n} of {total}", lang=lang, config=config) %}{% set step_n = loop.index ~ "" %}{% set step_len = shown | length %}{% set step_t = step_len ~ "" %}{% set step = step_tpl | replace(from="{n}", to=step_n) | replace(from="{total}", to=step_t) %}{% set compact = false %}{% set wide = false %}
     <li class="trackcard">{% include "partials/track_card.html" %}</li>
     {%- endfor %}
   </ol>

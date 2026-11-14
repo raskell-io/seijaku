@@ -114,7 +114,9 @@ Cards can carry `support = [{ name, url }]` (GitHub Sponsors, Open Collective, K
 ### Reading tracks
 
 A page with `template = "tracks.html"` lists `[[extra.tracks]]` (title, deck, items), drawn as numbered rows of
-cards, and an optional `[extra.quick]` (title, deck, items) as a row of compact cards above them. An item is a page
+cards, an optional `[extra.quick]` (title, deck, items) as a row of compact cards above them, and an optional
+`[extra.gallery]` (title, deck, items of pages) as a row of wide cards showing each page's own artwork (`image`, else its
+`og_image`), with a review's rating. An item is a page
 (`path = "articles/x.md"`), a work from the reading log (`work = "<id>"`, its cover upright, linking to its row on
 the reading page), a project (`project = "<slug>"`, its logo on its brand colour, linking to its first link), or a
 link (`url`, `title`); `note` replaces the description. Every card shows its kind with its icon; a review without
