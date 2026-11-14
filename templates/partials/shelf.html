@@ -18,7 +18,7 @@
     <h2 class="shelf__title">{{ stitle }}</h2>
     <span class="shelf__count" data-total="{{ n }}">{{ n }}</span>
     <span class="shelf__peek" aria-hidden="true">
-      {%- for w in sworks | slice(end=7) %}{% if w.cover %}<img src="{{ get_url(path=w.cover) | safe }}" alt="" loading="lazy" decoding="async">{% else %}<span class="shelf__peek-tile"></span>{% endif %}{% endfor %}
+      {%- for w in sworks | slice(end=7) %}{% if w.cover %}<img src="{{ get_url(path=w.cover, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async">{% else %}<span class="shelf__peek-tile"></span>{% endif %}{% endfor %}
       {%- if n > 7 %}<span class="shelf__more">+{{ n - 7 }}</span>{% endif -%}
     </span>
     <span class="shelf__toggle" aria-hidden="true"></span>

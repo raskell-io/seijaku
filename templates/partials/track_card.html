@@ -45,17 +45,17 @@
 <a class="trackcard__link" href="{{ c_href | safe }}"{% if c_ext %} rel="noopener" target="_blank"{% endif %}>
   {%- if not compact | default(value=false) %}
   {%- if c_art | default(value="") %}
-  <span class="trackcard__cover trackcard__cover--art"><img src="{{ get_url(path=c_art) | safe }}" alt="" loading="lazy" decoding="async"></span>
+  <span class="trackcard__cover trackcard__cover--art"><img src="{{ get_url(path=c_art, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async"></span>
   {%- elif c_cover %}
   <span class="trackcard__cover">
-    <img src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async">
-    <img class="trackcard__grade" src="{{ get_url(path=c_cover) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+    <img src="{{ get_url(path=c_cover, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async">
+    <img class="trackcard__grade" src="{{ get_url(path=c_cover, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
   </span>
   {%- elif c_book %}
   <span class="trackcard__cover trackcard__cover--book">
     <span class="trackcard__book">
-      <img src="{{ get_url(path=c_book) | safe }}" alt="" loading="lazy" decoding="async">
-      <img class="trackcard__grade" src="{{ get_url(path=c_book) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
+      <img src="{{ get_url(path=c_book, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async">
+      <img class="trackcard__grade" src="{{ get_url(path=c_book, cachebust=true) | safe }}" alt="" loading="lazy" decoding="async" aria-hidden="true">
     </span>
   </span>
   {%- elif c_logo %}

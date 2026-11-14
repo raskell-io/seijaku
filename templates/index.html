@@ -93,7 +93,7 @@
     {%- if rpage %}{% set rpage_href = i18n::url(path=rpage, lang=lang, base=config.default_language) %}{% endif %}
     <li class="nowlist__wide nowlist__reading">
       {#- The cover of each book being read, in colour, in the reading page's frame; a work without a cover is text only. -#}
-      {%- for w in rnow %}{% if w.cover %}{% set wsrc = get_url(path=w.cover) %}
+      {%- for w in rnow %}{% if w.cover %}{% set wsrc = get_url(path=w.cover, cachebust=true) %}
       <a class="readlog__cover nowlist__cover" href="{% if rpage %}{{ rpage_href | safe }}#{{ w.id }}{% else %}#{% endif %}" aria-label="{{ w.title }}"><img src="{{ wsrc | safe }}" alt="" loading="lazy" decoding="async"></a>
       {%- endif %}{% endfor %}
       <div class="nowlist__body">

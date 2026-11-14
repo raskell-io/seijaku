@@ -67,8 +67,8 @@
     {%- endif %}
     {%- if (page.extra.cover or bookcover) and not page.extra.portrait %}
     {#- Optional cover beside the header (front matter: extra.cover, extra.cover_alt), or the reviewed book's. -#}
-    {%- if page.extra.cover %}{% set cover_src = get_url(path=page.extra.cover) %}{% set cover_alt = page.extra.cover_alt | default(value="") %}
-    {%- else %}{% set cover_src = get_url(path=bookcover) %}{% set cover_alt = bookalt %}{% endif %}
+    {%- if page.extra.cover %}{% set cover_src = get_url(path=page.extra.cover, cachebust=true) %}{% set cover_alt = page.extra.cover_alt | default(value="") %}
+    {%- else %}{% set cover_src = get_url(path=bookcover, cachebust=true) %}{% set cover_alt = bookalt %}{% endif %}
     {%- set graded = page.extra.cover_grade | default(value=config.extra.seijaku.cover_grade | default(value=true)) %}
     {#- A click opens the whole image in an overlay: the uncropped hero (extra.image) for an article, the
         cover itself for a book. -#}
