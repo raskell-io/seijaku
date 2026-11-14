@@ -61,7 +61,8 @@
   {%- endif %}
   {%- set_global latest = sec.pages %}
   {%- set nsec = get_section(path="notes/_index.md", required=false) %}
-  {%- if nsec %}{% set_global latest = latest | concat(with=nsec.pages) | sort(attribute="date") | reverse %}{% endif %}
+  {#- Notes first, then the sort and reverse: on the same date an article comes before a note. -#}
+  {%- if nsec %}{% set_global latest = nsec.pages | concat(with=latest) | sort(attribute="date") | reverse %}{% endif %}
   {%- set_global unpicked = [] %}
   {%- for lp in latest %}{% set lp_en = lp.path %}{% if lang != config.default_language %}{% set lp_en = lp.path | trim_start_matches(pat="/" ~ lang) %}{% endif %}{% if lp_en not in selected_paths %}{% set_global unpicked = unpicked | concat(with=lp) %}{% endif %}{% endfor %}
   {%- set_global latest = unpicked %}
