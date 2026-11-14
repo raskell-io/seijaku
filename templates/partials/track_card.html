@@ -9,7 +9,8 @@
       { url = "...", title = "..." }    any other link
     `note` replaces the description in every case. Set before including: `rdata` (the reading log), `month_fmt`,
     `step` ("1 of 4", or empty), `compact = true` for a card without a cover, and `wide = true` for a card that
-    shows a page's own artwork (`item.image`, else the page's `og_image`) in full colour, with a review's rating. -#}
+    shows a page's own artwork (`item.image`, else the page's `og_image`) in full colour, with a review's rating.
+    Any page item may also set `image` to show that artwork instead of its cover. -#}
 {%- set c_kind = "" %}{% set c_href = "" %}{% set c_title = "" %}{% set c_note = item.note | default(value="") %}{% set c_meta = "" %}
 {%- set c_cover = "" %}{% set c_book = "" %}{% set c_logo = "" %}{% set c_accent = "" %}{% set c_ext = false %}
 {%- if item.path %}
@@ -19,7 +20,8 @@
   {%- set c_href = p.permalink %}{% set c_title = p.title %}
   {%- if not c_note %}{% set c_note = p.description | default(value="") %}{% endif %}
   {%- set c_meta = p.date | date(format=month_fmt) %}{% if p.reading_time %}{% set c_min = i18n::t(text="min read", lang=lang, config=config) %}{% set c_meta = c_meta ~ " · " ~ p.reading_time ~ " " ~ c_min %}{% endif %}
-  {%- if wide | default(value=false) %}{% set c_art = item.image | default(value=p.extra.og_image | default(value="")) %}
+  {%- set c_art = item.image | default(value="") %}
+  {%- if wide | default(value=false) %}{% if not c_art %}{% set c_art = p.extra.og_image | default(value="") %}{% endif %}
   {%- if p.extra.review and rdata %}{% set c_rw = rdata.works | filter(attribute="id", value=p.extra.review) %}{% if c_rw | length > 0 and c_rw[0].rating %}{% set c_meta = c_meta ~ " · " ~ c_rw[0].rating ~ " / 10" %}{% endif %}{% endif %}{% endif %}
   {%- if c_art | default(value="") %}
   {%- elif p.extra.cover %}{% set c_cover = p.extra.cover %}
