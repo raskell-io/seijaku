@@ -38,3 +38,15 @@ html.has-lightbox { overflow: hidden; }
 }
 .lightbox__btn:hover, .lightbox__btn:focus-visible { background: rgba(245, 243, 238, 0.16); border-color: rgba(255, 255, 255, 0.45); outline: none; }
 .lightbox__btn[aria-pressed="true"] { background: #f5f3ee; color: #111312; }
+
+// Captioned photos in prose: an expand button over the top right corner of the image (added by the script).
+.prose figure.figure--lightbox { position: relative; }
+.figure__expand {
+  position: absolute; top: 0.75rem; right: 0.75rem; z-index: 1;
+  display: inline-grid; place-items: center; width: 2.4rem; height: 2.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 50%;
+  background: rgba(20, 24, 23, 0.55); color: #f5f3ee; cursor: zoom-in;
+  backdrop-filter: blur(6px);
+  opacity: 0.85; transition: opacity 0.15s, background-color 0.15s, border-color 0.15s;
+}
+.figure__expand:hover, .figure__expand:focus-visible { opacity: 1; background: rgba(20, 24, 23, 0.8); border-color: rgba(255, 255, 255, 0.6); outline: none; }

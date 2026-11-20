@@ -146,3 +146,12 @@
 .prose .in-short__toggle::after { transform: rotate(90deg); }
 .prose .in-short[open] .in-short__toggle::after { transform: rotate(0deg); }
 .prose .in-short__text { margin: 0; padding: 0 1.25rem 1.2rem; }
+
+// Photos with a caption in the body of a post: <figure><img><figcaption>.
+.prose figure { margin-block: 2em; }
+.prose figure img { width: 100%; margin-block: 0; }
+.prose figcaption { margin-top: 0.55em; padding-inline: 0.25em; font-size: 0.95rem; line-height: 1.5; color: var(--muted); }
+// Number the captioned figures of a post: "Fig. 1", "Fig. 2", ...
+.prose { counter-reset: figure; }
+.prose figure:has(figcaption) { counter-increment: figure; }
+.prose figcaption::before { content: "Fig. " counter(figure); margin-right: 0.6em; font-family: var(--font-mono); font-size: 0.82em; font-weight: 600; letter-spacing: 0.02em; color: var(--ink, currentColor); }
