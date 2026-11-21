@@ -75,6 +75,11 @@
 .project__wordmark { height: 1.75rem; width: auto; min-width: 0; max-width: 100%; object-fit: contain; object-position: left center; }
 .projects--venture .project__wordmark, .projects--large .project__wordmark { height: 2.2rem; }
 .projects--lab .project__wordmark, .projects--compact .project__wordmark { height: 1.25rem; }
+// Narrow cards (the homepage strip): a fixed type height left the wordmark squeezed to a sliver beside the logo.
+// There the pair fills the row (moved below the status notch, further down) and the wordmark takes the space left after the logo, scaling down only when it
+// must, up to the usual type height.
+.projects--strip .project__brand--pair { flex: 1 1 auto; }
+.projects--strip .project__brand--pair .project__wordmark { flex: 1 1 0; height: auto; max-height: 1.75rem; }
 .project__monogram { display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.04em; }
 .project__title { font-size: clamp(1.45rem, 1.9vw, 1.75rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
 .project__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; color: var(--muted); font-size: 1.05rem; line-height: 1.45; text-wrap: pretty; }
@@ -172,6 +177,8 @@
 .project__top { padding-inline-end: 6.5rem; }
 // A wide wordmark would run under the notch in narrow cards; start it just below the notch instead.
 .project__top:has(.project__logo--wide) { padding-inline-end: 0; margin-block-start: 1.6rem; }
+// The same for a logo with its wordmark in the narrow homepage strip, where the reserved space left it 84px.
+.projects--strip .project__top:has(.project__brand--pair) { padding-inline-end: 0; margin-block-start: 1.6rem; }
 
 // Brand glow (data: accents = [a, b]): two soft light sources in the project's own colours, the same
 // treatment as the header and footer washes. They sit over the card tint and fade toward the text.
