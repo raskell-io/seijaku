@@ -99,7 +99,13 @@
       <div class="nowlist__body">
       {%- if item.name %}{% set rname = item.name %}{% else %}{% set rname = i18n::t(text="Reading", lang=lang, config=config) %}{% endif %}
       <h3>{% if rpage %}<a href="{{ rpage_href | safe }}">{{ rname }}</a>{% else %}{{ rname }}{% endif %}</h3>
-      <p>{% for w in rnow %}{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} {{ i18n::t(text="by", lang=lang, config=config) }} {{ w.author }}{% if not loop.last %}, {% endif %}{% endfor %}.{% if item.text %} {{ item.text }}{% endif %}</p>
+      {#- Each book on its own line, larger than the other items, with its one-line take (English only, so on the
+          default language only), then the item's text. -#}
+      {%- for w in rnow %}
+      <p class="nowlist__book">{% if rpage %}<a href="{{ rpage_href | safe }}#{{ w.id }}"><cite>{{ w.title }}</cite></a>{% else %}<cite>{{ w.title }}</cite>{% endif %} <span class="nowlist__author">{{ i18n::t(text="by", lang=lang, config=config) }} {{ w.author }}</span></p>
+      {%- if w.take and lang == config.default_language %}<p class="nowlist__take">{{ w.take }}</p>{% endif %}
+      {%- endfor %}
+      {%- if item.text %}<p class="nowlist__more">{{ item.text }}</p>{% endif %}
       </div>
     </li>
     {%- endif %}

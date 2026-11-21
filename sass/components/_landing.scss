@@ -182,7 +182,16 @@
 .nowlist p { margin-block-start: 0.35rem; color: var(--muted); line-height: 1.45; text-wrap: pretty; }
 .nowlist__wide { grid-column: 1 / -1; }   // the reading item spans the row
 .nowlist__reading { display: flex; gap: 1.4rem; align-items: flex-start; }
-.nowlist__cover { display: block; flex: none; width: 5rem; }   // the reading page's cover frame, a little larger
+.nowlist__reading { gap: 1.6rem; padding-block: 1.4rem 1.2rem; }
+.nowlist__reading .nowlist__cover { display: block; flex: none; width: 6.5rem; }   // the reading page's cover frame, larger, so the book leads the item
+@media (max-width: 40rem) { .nowlist__reading .nowlist__cover { width: 5rem; } }
+.nowlist__reading .nowlist__book { margin-block-start: 0.5rem; color: var(--ink); font-size: 1.35rem; letter-spacing: -0.02em; line-height: 1.25; }
+.nowlist__book cite { font-style: italic; }
+.nowlist__book a { color: inherit; text-decoration: none; }
+.nowlist__book a:hover { text-decoration: underline; text-underline-offset: 0.16em; }
+.nowlist__author { color: var(--muted); font-size: 1rem; letter-spacing: 0; white-space: nowrap; }
+.nowlist__reading .nowlist__take { margin-block-start: 0.3rem; max-width: 40rem; }
+.nowlist__reading .nowlist__more { margin-block-start: 0.6rem; font-size: 0.9rem; }
 .nowlist__body { min-width: 0; }
 
 // A translated home page notes that the writing listed below is in English.
